@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
-    // Initialize auth state
+    // Khởi tạo trạng thái xác thực
     useEffect(() => {
         const initAuth = () => {
             try {
@@ -25,18 +25,18 @@ export const AuthProvider = ({ children }) => {
 
                 // Kiểm tra token có hợp lệ không
                 if (authenticated && currentUser) {
-                    // Có thể thêm logic kiểm tra token expiry ở đây
+                    // Có thể thêm logic kiểm tra token hết hạn ở đây
                     setUser(currentUser)
                     setIsAuthenticated(true)
                 } else {
-                    // Clear invalid auth data
+                    // Xóa dữ liệu xác thực không hợp lệ
                     authService.logout()
                     setUser(null)
                     setIsAuthenticated(false)
                 }
             } catch (error) {
                 console.error('Auth initialization error:', error)
-                // Clear invalid auth data
+                // Xóa dữ liệu xác thực không hợp lệ
                 authService.logout()
                 setUser(null)
                 setIsAuthenticated(false)
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         initAuth()
     }, [])
 
-    // Login function
+    // Hàm đăng nhập
     const login = async (credentials) => {
         try {
             setIsLoading(true)
@@ -69,13 +69,13 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    // Logout function
+    // Hàm đăng xuất
     const logout = async () => {
         try {
             setIsLoading(true)
             await authService.logout()
 
-            // Clear state
+            // Xóa trạng thái
             setUser(null)
             setIsAuthenticated(false)
 

@@ -3,11 +3,11 @@ const { User } = require('../models');
 const config = require('../config/app');
 
 /**
- * Middleware to verify JWT token
+ * Middleware để xác thực JWT token
  */
 const authenticate = async (req, res, next) => {
     try {
-        // Get token from header
+        // Lấy token từ header
         let token = req.headers.authorization;
 
         if (!token) {
@@ -18,15 +18,15 @@ const authenticate = async (req, res, next) => {
             });
         }
 
-        // Extract token from "Bearer <token>" format
+        // Trích xuất token từ định dạng "Bearer <token>"
         if (token.startsWith('Bearer ')) {
             token = token.slice(7, token.length);
         }
 
-        // Verify token
+        // Xác thực token
         const decoded = jwt.verify(token, config.jwt.secret);
 
-        // Find user
+        // Tìm người dùng
         const user = await User.findByPk(decoded.id);
 
         if (!user) {
@@ -45,7 +45,7 @@ const authenticate = async (req, res, next) => {
             });
         }
 
-        // Attach user to request
+        // Gắn người dùng vào request
         req.user = user;
         next();
     } catch (error) {
@@ -75,7 +75,7 @@ const authenticate = async (req, res, next) => {
 };
 
 /**
- * Middleware to check if user is admin
+ * Middleware để kiểm tra người dùng có phải admin không
  */
 const isAdmin = (req, res, next) => {
     if (!req.user) {
@@ -96,7 +96,7 @@ const isAdmin = (req, res, next) => {
 };
 
 /**
- * Middleware to check if user is customer or admin
+ * Middleware để kiểm tra người dùng có phải customer hoặc admin không
  */
 const isCustomerOrAdmin = (req, res, next) => {
     if (!req.user) {
@@ -117,7 +117,7 @@ const isCustomerOrAdmin = (req, res, next) => {
 };
 
 /**
- * Generate JWT token
+ * Tạo JWT token
  */
 const generateToken = (user) => {
     return jwt.sign(
@@ -134,7 +134,7 @@ const generateToken = (user) => {
 };
 
 /**
- * Generate refresh token
+ * Tạo refresh token
  */
 const generateRefreshToken = (user) => {
     return jwt.sign(

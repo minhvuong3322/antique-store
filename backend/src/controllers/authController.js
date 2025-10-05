@@ -2,14 +2,14 @@ const { User } = require('../models');
 const { generateToken, generateRefreshToken } = require('../middlewares/auth');
 
 /**
- * Register new user
+ * Đăng ký người dùng mới
  * POST /api/v1/auth/register
  */
 const register = async (req, res, next) => {
     try {
         const { email, password, full_name, phone, address } = req.body;
 
-        // Check if user already exists
+        // Kiểm tra người dùng đã tồn tại chưa
         const existingUser = await User.findByEmail(email);
         if (existingUser) {
             return res.status(400).json({
@@ -18,7 +18,7 @@ const register = async (req, res, next) => {
             });
         }
 
-        // Create new user
+        // Tạo người dùng mới
         const user = await User.create({
             email,
             password,
@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
             role: 'customer'
         });
 
-        // Generate tokens
+        // Tạo token
         const token = generateToken(user);
         const refreshToken = generateRefreshToken(user);
 
@@ -47,14 +47,14 @@ const register = async (req, res, next) => {
 };
 
 /**
- * Login user
+ * Đăng nhập người dùng
  * POST /api/v1/auth/login
  */
 const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
-        // Find user by email
+        // Tìm người dùng theo email
         const user = await User.scope('withPassword').findByEmail(email);
 
         if (!user) {
@@ -64,7 +64,7 @@ const login = async (req, res, next) => {
             });
         }
 
-        // Check if user is active
+        // Kiểm tra tài khoản có hoạt động không
         if (!user.is_active) {
             return res.status(401).json({
                 success: false,
@@ -72,7 +72,7 @@ const login = async (req, res, next) => {
             });
         }
 
-        // Compare password
+        // So sánh mật khẩu
         const isPasswordValid = await user.comparePassword(password);
 
         if (!isPasswordValid) {
@@ -82,7 +82,7 @@ const login = async (req, res, next) => {
             });
         }
 
-        // Generate tokens
+        // Tạo token
         const token = generateToken(user);
         const refreshToken = generateRefreshToken(user);
 
@@ -101,7 +101,7 @@ const login = async (req, res, next) => {
 };
 
 /**
- * Get current user profile
+ * Lấy thông tin người dùng hiện tại
  * GET /api/v1/auth/profile
  */
 const getProfile = async (req, res, next) => {
@@ -127,7 +127,7 @@ const getProfile = async (req, res, next) => {
 };
 
 /**
- * Update user profile
+ * Cập nhật thông tin người dùng
  * PUT /api/v1/auth/profile
  */
 const updateProfile = async (req, res, next) => {
@@ -142,7 +142,7 @@ const updateProfile = async (req, res, next) => {
             });
         }
 
-        // Update user info
+        // Cập nhật thông tin người dùng
         await user.update({
             full_name: full_name || user.full_name,
             phone: phone || user.phone,
@@ -163,14 +163,14 @@ const updateProfile = async (req, res, next) => {
 };
 
 /**
- * Change password
+ * Đổi mật khẩu
  * PUT /api/v1/auth/change-password
  */
 const changePassword = async (req, res, next) => {
     try {
         const { current_password, new_password } = req.body;
 
-        // Get user with password
+        // Lấy người dùng kèm mật khẩu
         const user = await User.scope('withPassword').findByPk(req.user.id);
 
         if (!user) {
@@ -180,7 +180,7 @@ const changePassword = async (req, res, next) => {
             });
         }
 
-        // Verify current password
+        // Xác thực mật khẩu hiện tại
         const isPasswordValid = await user.comparePassword(current_password);
 
         if (!isPasswordValid) {
@@ -190,7 +190,7 @@ const changePassword = async (req, res, next) => {
             });
         }
 
-        // Update password
+        // Cập nhật mật khẩu
         user.password = new_password;
         await user.save();
 
@@ -203,7 +203,7 @@ const changePassword = async (req, res, next) => {
     }
 };
 
-// Add scope to include password for login
+// Thêm scope để bao gồm mật khẩu cho đăng nhập
 User.addScope('withPassword', {
     attributes: { include: ['password'] }
 });
