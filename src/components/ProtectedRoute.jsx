@@ -1,10 +1,18 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { toast } from 'react-hot-toast'
+import { useEffect } from 'react'
 
 const ProtectedRoute = ({ children, requireAuth = true }) => {
     const { isAuthenticated, isLoading } = useAuth()
     const location = useLocation()
+
+    // Hiển thị thông báo khi cần đăng nhập nhưng chưa đăng nhập
+    useEffect(() => {
+        if (!isLoading && requireAuth && !isAuthenticated) {
+            toast.error('Vui lòng đăng nhập để tiếp tục')
+        }
+    }, [isLoading, requireAuth, isAuthenticated])
 
     // Hiển thị loading khi đang kiểm tra authentication
     if (isLoading) {
@@ -22,9 +30,6 @@ const ProtectedRoute = ({ children, requireAuth = true }) => {
 
     // Nếu cần đăng nhập nhưng chưa đăng nhập
     if (requireAuth && !isAuthenticated) {
-        // Hiển thị thông báo
-        toast.error('Vui lòng đăng nhập để tiếp tục')
-
         // Redirect về trang login với returnUrl
         return <Navigate to="/login" state={{ from: location }} replace />
     }

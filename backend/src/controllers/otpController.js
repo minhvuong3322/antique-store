@@ -231,6 +231,19 @@ exports.resetPassword = async (req, res, next) => {
         user.password = new_password;
         await user.save();
 
+        // Mark OTP as used after successful password reset
+        await Otp.update(
+            { is_used: true },
+            {
+                where: {
+                    email,
+                    otp_code,
+                    type: 'reset_password',
+                    is_used: false,
+                },
+            }
+        );
+
         logger.info({
             message: 'Password reset successfully',
             email,

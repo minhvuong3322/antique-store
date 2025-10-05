@@ -114,7 +114,12 @@ Otp.verifyOTP = async (email, otp_code, type = 'register') => {
         return { valid: false, message: 'OTP code has expired' };
     }
 
-    // Mark as used
+    // For password reset, don't mark as used yet - only mark as used after password is reset
+    if (type === 'reset_password') {
+        return { valid: true, message: 'OTP verified successfully', otp };
+    }
+
+    // Mark as used for other types (register, verify_email)
     await otp.update({ is_used: true });
 
     return { valid: true, message: 'OTP verified successfully', otp };
