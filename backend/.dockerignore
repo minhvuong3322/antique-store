@@ -1,0 +1,117 @@
+# =====================================================
+# Docker Ignore File for Antique Store Backend
+# Optimized to minimize image size and improve security
+# =====================================================
+
+# Dependencies - will be installed in container
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+package-lock.json
+yarn.lock
+
+# Environment variables - should be provided at runtime
+.env
+.env.*
+.env.local
+.env.*.local
+*.env
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation - not needed in production
+*.md
+!README.md
+docs/
+API_DOCUMENTATION.md
+CHANGELOG.md
+DEPLOYMENT.md
+DEVELOPER_GUIDE.md
+FEATURES.md
+FRONTEND_INTEGRATION.md
+PROJECT_SUMMARY.md
+QUICK_START.md
+QUICK_REFERENCE.md
+
+# Logs - will be generated in container
+logs/
+*.log
+
+# Testing
+coverage/
+.nyc_output/
+test/
+tests/
+__tests__/
+*.test.js
+*.spec.js
+jest.config.js
+.jest/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+.classpath
+.c9/
+.factorypath
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Build outputs (if any)
+dist/
+build/
+out/
+target/
+
+# Temporary files
+.cache/
+temp/
+tmp/
+*.tmp
+*.bak
+*.swp
+
+# Docker files (don't copy docker config into image)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+azure-pipelines.yml
+Jenkinsfile
+
+# Misc development files
+.eslintrc*
+.prettierrc*
+.editorconfig
+.husky/
+.commitlint*
+nodemon.json
+
+# Uploads (should be managed separately, e.g., S3, external volume)
+uploads/*
+!uploads/.gitkeep

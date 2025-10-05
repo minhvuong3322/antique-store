@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-vintage-cream dark:bg-dark-bg text-vintage-darkwood dark:text-vintage-cream;
+        @apply font-sans antialiased;
+        @apply transition-colors duration-300;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-serif;
+    }
+}
+
+@layer components {
+
+    /* Custom scrollbar for vintage feel */
+    ::-webkit-scrollbar {
+        @apply w-2;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-vintage-cream dark:bg-dark-bg;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-vintage-gold rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-vintage-bronze;
+    }
+
+    /* Vintage button styles */
+    .btn-vintage {
+        @apply px-6 py-3 bg-vintage-gold text-vintage-darkwood font-semibold rounded-md;
+        @apply hover:bg-vintage-bronze hover:text-white transition-all duration-300;
+        @apply shadow-vintage hover:shadow-vintage-lg;
+    }
+
+    .btn-outline-vintage {
+        @apply px-6 py-3 border-2 border-vintage-gold text-vintage-gold;
+        @apply hover:bg-vintage-gold hover:text-vintage-darkwood transition-all duration-300;
+        @apply rounded-md font-semibold;
+    }
+
+    /* Vintage card styles */
+    .card-vintage {
+        @apply bg-white dark:bg-dark-card rounded-lg shadow-vintage;
+        @apply border border-vintage-gold/20 dark:border-dark-border;
+        @apply transition-all duration-300;
+    }
+
+    .card-vintage:hover {
+        @apply shadow-vintage-lg transform -translate-y-1;
+    }
+
+    /* Vintage input styles */
+    .input-vintage {
+        @apply w-full px-4 py-2 border-2 border-vintage-gold/30 rounded-md;
+        @apply bg-vintage-ivory dark:bg-dark-card;
+        @apply focus:outline-none focus:border-vintage-gold;
+        @apply transition-colors duration-200;
+    }
+
+    /* Decorative divider */
+    .divider-vintage {
+        @apply h-px bg-gradient-to-r from-transparent via-vintage-gold to-transparent;
+    }
+}
+
+@layer utilities {
+    .text-gradient-vintage {
+        @apply bg-gradient-to-r from-vintage-gold to-vintage-bronze bg-clip-text text-transparent;
+    }
+
+    .bg-pattern-vintage {
+        background-image:
+            repeating-linear-gradient(45deg,
+                transparent,
+                transparent 10px,
+                rgba(212, 165, 116, 0.03) 10px,
+                rgba(212, 165, 116, 0.03) 20px);
+    }
+
+}

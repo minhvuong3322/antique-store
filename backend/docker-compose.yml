@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: antique-store-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: antique_store
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-antique123}
+      DB_DIALECT: mysql
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+    depends_on:
+      - db
+    networks:
+      - antique-network
+    volumes:
+      - ./uploads:/app/uploads
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: antique-store-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-antique123}
+      MYSQL_DATABASE: antique_store
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - antique-network
+
+  # phpMyAdmin (Optional - for database management)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: antique-store-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-antique123}
+    depends_on:
+      - db
+    networks:
+      - antique-network
+
+networks:
+  antique-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+
+
+

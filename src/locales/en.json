@@ -1,0 +1,93 @@
+{
+    "nav": {
+        "home": "Home",
+        "products": "Products",
+        "about": "About",
+        "contact": "Contact",
+        "cart": "Cart",
+        "account": "Account"
+    },
+    "hero": {
+        "title": "Discover Timeless Beauty",
+        "subtitle": "Curated collection of rare antique treasures",
+        "cta": "Explore Now",
+        "learn_more": "Learn More"
+    },
+    "home": {
+        "featured_title": "Featured Products",
+        "featured_subtitle": "Our most unique and valuable antique pieces",
+        "collection_title": "Collections",
+        "view_all": "View All",
+        "add_to_cart": "Add to Cart",
+        "view_details": "View Details"
+    },
+    "product": {
+        "era": "Era",
+        "condition": "Condition",
+        "origin": "Origin",
+        "price": "Price",
+        "in_stock": "In Stock",
+        "out_of_stock": "Out of Stock",
+        "unique": "Unique Piece",
+        "description": "Description",
+        "specifications": "Specifications"
+    },
+    "cart": {
+        "title": "Your Cart",
+        "empty": "Your cart is empty",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+        "checkout": "Checkout",
+        "continue_shopping": "Continue Shopping"
+    },
+    "footer": {
+        "description": "Preserving and honoring the value of time",
+        "quick_links": "Quick Links",
+        "categories": "Categories",
+        "contact_info": "Contact Info",
+        "newsletter": "Newsletter",
+        "newsletter_text": "Get updates on new products and special offers",
+        "subscribe": "Subscribe",
+        "rights": "All rights reserved by Antique Shop"
+    },
+    "common": {
+        "search": "Search...",
+        "filter": "Filter",
+        "sort": "Sort",
+        "language": "Language",
+        "theme": "Theme",
+        "dark_mode": "Dark Mode",
+        "light_mode": "Light Mode",
+        "error": "Error",
+        "success": "Success",
+        "ok": "OK",
+        "cancel": "Cancel",
+        "reload": "Reload"
+    },
+    "error": {
+        "auth": {
+            "token_invalid": "Your session is invalid. Please log in again.",
+            "token_expired": "Your session has expired. Please log in again.",
+            "unauthorized": "You must be logged in to access this resource.",
+            "forbidden": "You don't have permission to access this resource."
+        },
+        "validation": {
+            "general": "Please check your input and try again.",
+            "unique_constraint": "{{field}} already exists in the system.",
+            "foreign_key_constraint": "Invalid reference data provided.",
+            "field": "Validation error on {{field}}",
+            "required": "{{field}} is required.",
+            "email": "Please enter a valid email address.",
+            "password": "Password must be at least 6 characters.",
+            "positive": "{{field}} must be a positive number."
+        },
+        "resource": {
+            "not_found": "The requested resource was not found."
+        },
+        "server": {
+            "internal": "Something went wrong on our end. Please try again later.",
+            "database": "A database error occurred. Please try again."
+        }
+    }
+}
