@@ -282,8 +282,8 @@ CREATE TABLE users
                                                         -- SEED DATA: Sample Products
                                                         -- =====================================================
                                                         INSERT INTO products
-                                                                (category_id, name, slug, description, price, sale_price, stock_quantity, sku, `condition`, origin, year_manufactured, material, is_featured
-                                  
+                                                                (category_id, name, slug, description, price, sale_price, stock_quantity, sku, `condition`, origin, year_manufactu
+
                                                         ) VALUES
                                                         (1, 'Tủ thờ gỗ Hương', 'tu-tho-go-huong', 'Tủ thờ gỗ hương 3 cấp, chạm trổ tinh xảo', 25000000, 22000000, 2, 'TGH001', 'excellent', 'Việt Nam', 1920, 'Gỗ hương', TRUE),
                                                         (2, 'Bình hoa sứ Bát Tràng', 'binh-hoa-su-bat-trang', 'Bình hoa sứ men xanh, cao 35cm', 3500000, NULL, 5, 'BSB001', 'good', 'Việt Nam', 1950, 'Sứ', TRUE),
