@@ -2,40 +2,40 @@
 
 Một website thương mại điện tử hoàn chỉnh với thiết kế hoài cổ sang trọng, chuyên bán các sản phẩm đồ cổ độc đáo.
 
-## ✨ Tính Năng
+## Tính Năng
 
-### ✅ Đã Hoàn Thành
-- ✅ **Frontend hoàn chỉnh** với React 18 + TailwindCSS
-- ✅ **Backend API đầy đủ** với Node.js + Express + Sequelize
-- ✅ **Database PostgreSQL/MySQL** với schema hoàn chỉnh
-- ✅ **Xác thực người dùng** (Đăng ký, đăng nhập, JWT)
-- ✅ **Quản lý sản phẩm** (CRUD, phân loại, tìm kiếm)
-- ✅ **Giỏ hàng** (Thêm, sửa, xóa sản phẩm)
-- ✅ **Đơn hàng** (Tạo đơn, theo dõi trạng thái)
-- ✅ **Thanh toán** (Tích hợp VNPay, MoMo)
-- ✅ **OTP xác thực** (Email verification, reset password)
-- ✅ **Responsive design** (Mobile-first)
-- ✅ **Dark/Light mode**
-- ✅ **Đa ngôn ngữ** (Tiếng Việt & English)
-- ✅ **Docker support** (Containerization)
-- ✅ **File upload** (Hình ảnh sản phẩm)
-- ✅ **Comment tiếng Việt** (Toàn bộ codebase)
+### Đã Hoàn Thành
+- **Frontend hoàn chỉnh** với React 18 + TailwindCSS
+- **Backend API đầy đủ** với Node.js + Express + Sequelize
+- **Database PostgreSQL/MySQL** với schema hoàn chỉnh
+- **Xác thực người dùng** (Đăng ký, đăng nhập, JWT)
+- **Quản lý sản phẩm** (CRUD, phân loại, tìm kiếm)
+- **Giỏ hàng** (Thêm, sửa, xóa sản phẩm)
+- **Đơn hàng** (Tạo đơn, theo dõi trạng thái)
+- **Thanh toán** (Tích hợp VNPay, MoMo)
+- **OTP xác thực** (Email verification, reset password)
+- **Responsive design** (Mobile-first)
+- **Dark/Light mode**
+  **Đa ngôn ngữ** (Tiếng Việt & English)
+- **Docker support** (Containerization)
+- **File upload** (Hình ảnh sản phẩm)
+- **Comment tiếng Việt** (Toàn bộ codebase)
 
-### 🔄 Đang Phát Triển
-- 🔄 **Admin dashboard** (Quản lý sản phẩm, đơn hàng)
-- 🔄 **Social login** (Google, Facebook)
-- 🔄 **Email notifications** (Thông báo đơn hàng)
-- 🔄 **Advanced search** (Tìm kiếm nâng cao)
-- 🔄 **Product reviews** (Đánh giá sản phẩm)
+### Đang Phát Triển
+- **Admin dashboard** (Quản lý sản phẩm, đơn hàng)
+- **Social login** (Google, Facebook)
+- **Email notifications** (Thông báo đơn hàng)
+- **Advanced search** (Tìm kiếm nâng cao)
+- **Product reviews** (Đánh giá sản phẩm)
 
-### 📋 Roadmap Tương Lai
-- 📋 **Analytics dashboard** (Thống kê bán hàng)
-- 📋 **Inventory management** (Quản lý kho)
-- 📋 **SEO optimization** (Tối ưu SEO)
-- 📋 **Mobile app** (React Native)
-- 📋 **Multi-vendor** (Nhiều nhà bán)
+### Roadmap Tương Lai
+- **Analytics dashboard** (Thống kê bán hàng)
+- **Inventory management** (Quản lý kho)
+- **SEO optimization** (Tối ưu SEO)
+- **Mobile app** (React Native)
+- **Multi-vendor** (Nhiều nhà bán)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: React 18 + Vite
@@ -96,7 +96,7 @@ antique-store/
 └── 📄 README.md                # Tài liệu dự án
 ```
 
-## 🚀 Cài Đặt & Chạy Dự Án
+## Cài Đặt & Chạy Dự Án
 
 ### Yêu Cầu Hệ Thống
 - **Node.js**: >= 18.x
@@ -144,7 +144,7 @@ cd backend
 docker-compose up -d
 ```
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### Authentication
 ```javascript
@@ -187,7 +187,7 @@ POST   /api/v1/otp/verify             // Xác thực OTP
 POST   /api/v1/otp/resend             // Gửi lại OTP
 ```
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
 - **Vintage Gold**: #D4A574 - Màu vàng sang trọng
@@ -201,7 +201,7 @@ POST   /api/v1/otp/resend             // Gửi lại OTP
 - **Body**: Cormorant Garamond - Font dễ đọc, thanh lịch
 - **Accent**: Cinzel - Font trang trọng cho tiêu đề đặc biệt
 
-## 📊 Database Schema
+## Database Schema
 
 ### Bảng Chính
 - **users** - Người dùng (Admin, Customer)
@@ -214,10 +214,10 @@ POST   /api/v1/otp/resend             // Gửi lại OTP
 - **otps** - Mã OTP xác thực
 
 ### Dữ Liệu Mẫu
-- ✅ **14 danh mục** sản phẩm
-- ✅ **20 sản phẩm** với hình ảnh và mô tả
-- ✅ **Admin account**: admin@antiquestore.com / admin123
-- ✅ **Sample users** và OTP records
+- **14 danh mục** sản phẩm
+- **20 sản phẩm** với hình ảnh và mô tả
+- **Admin account**: admin@antiquestore.com / admin123
+- **Sample users** và OTP records
 
 ## 🔧 Development
 
@@ -261,7 +261,7 @@ SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 ```
 
-## 👥 Team & Contribution
+## Team & Contribution
 
 - **Full-stack Developer**: Minh Vuong
 - **Frontend**: React + TailwindCSS
@@ -270,7 +270,7 @@ SMTP_PASS=your-app-password
 - **Design**: Vintage/Antique theme
 - **Language**: Vietnamese comments & documentation
 
-## 📄 License
+## License
 
 MIT License - Tự do sử dụng cho mục đích thương mại và học tập.
 
