@@ -284,7 +284,7 @@ CREATE TABLE users
                                                         INSERT INTO products
                                                                 (category_id, name, slug, description, price, sale_price, stock_quantity, sku, `condition`, origin, year_manufactu
 
-                                                        ) VALUES
+                                                                ) VALUES
                                                         (1, 'Tủ thờ gỗ Hương', 'tu-tho-go-huong', 'Tủ thờ gỗ hương 3 cấp, chạm trổ tinh xảo', 25000000, 22000000, 2, 'TGH001', 'excellent', 'Việt Nam', 1920, 'Gỗ hương', TRUE),
                                                         (2, 'Bình hoa sứ Bát Tràng', 'binh-hoa-su-bat-trang', 'Bình hoa sứ men xanh, cao 35cm', 3500000, NULL, 5, 'BSB001', 'good', 'Việt Nam', 1950, 'Sứ', TRUE),
                                                         (3, 'Tượng Phật bằng đồng', 'tuong-phat-bang-dong', 'Tượng Phật Thích Ca cao 40cm', 8000000, 7500000, 1, 'TPD001', 'excellent', 'Việt Nam', 1930, 'Đồng', FALSE),

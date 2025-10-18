@@ -17,25 +17,35 @@ const app = express();
 // Security headers
 app.use(helmet());
 
-// CORS
-const corsOptions = {
-    origin: function (origin, callback) {
-        const allowedOrigins = config.cors.origin.split(',').map(o => o.trim());
+// CORS - Simplified for development
+if (config.node_env === 'development') {
+    // Allow all origins in development
+    app.use(cors({
+        origin: true,
+        credentials: true,
+        optionsSuccessStatus: 200
+    }));
+} else {
+    // Strict CORS in production
+    const corsOptions = {
+        origin: function (origin, callback) {
+            const allowedOrigins = config.cors.origin.split(',').map(o => o.trim());
 
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+            // Allow requests with no origin (like mobile apps or curl requests)
+            if (!origin) return callback(null, true);
 
-        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: config.cors.credentials,
-    optionsSuccessStatus: 200
-};
+            if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: config.cors.credentials,
+        optionsSuccessStatus: 200
+    };
 
-app.use(cors(corsOptions));
+    app.use(cors(corsOptions));
+}
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));

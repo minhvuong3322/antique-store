@@ -117,6 +117,32 @@ const isCustomerOrAdmin = (req, res, next) => {
 };
 
 /**
+ * Middleware nâng cao để kiểm tra role
+ * Sử dụng: authorize('admin', 'supplier')
+ */
+const authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Chưa xác thực',
+                code: 'NOT_AUTHENTICATED'
+            });
+        }
+
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                message: `Quyền truy cập bị từ chối. Yêu cầu role: ${roles.join(', ')}`,
+                code: 'FORBIDDEN'
+            });
+        }
+
+        next();
+    };
+};
+
+/**
  * Tạo JWT token
  */
 const generateToken = (user) => {
@@ -150,8 +176,10 @@ const generateRefreshToken = (user) => {
 
 module.exports = {
     authenticate,
+    protect: authenticate, // Alias for authenticate
     isAdmin,
     isCustomerOrAdmin,
+    authorize, // New: flexible role-based authorization
     generateToken,
     generateRefreshToken
 };

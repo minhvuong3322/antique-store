@@ -61,7 +61,7 @@ const User = sequelize.define('User', {
         allowNull: true
     },
     role: {
-        type: DataTypes.ENUM('admin', 'customer'),
+        type: DataTypes.ENUM('admin', 'customer', 'supplier'),
         defaultValue: 'customer',
         allowNull: false
     },
@@ -76,6 +76,14 @@ const User = sequelize.define('User', {
 }, {
     tableName: 'users',
     timestamps: true,
+    defaultScope: {
+        attributes: { exclude: ['password'] } // Hide password by default
+    },
+    scopes: {
+        withPassword: {
+            attributes: {} // Include all attributes including password
+        }
+    },
     hooks: {
         // Hash password before creating user
         beforeCreate: async (user) => {

@@ -203,11 +203,6 @@ const changePassword = async (req, res, next) => {
     }
 };
 
-// Thêm scope để bao gồm mật khẩu cho đăng nhập
-User.addScope('withPassword', {
-    attributes: { include: ['password'] }
-});
-
 module.exports = {
     register,
     login,

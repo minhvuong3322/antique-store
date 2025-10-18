@@ -10,6 +10,13 @@ const cartRoutes = require('./cartRoutes');
 const orderRoutes = require('./orderRoutes');
 const paymentRoutes = require('./paymentRoutes');
 
+// New routes - Extended features
+const warrantyRoutes = require('./warrantyRoutes');
+const supplierRoutes = require('./supplierRoutes');
+const warehouseRoutes = require('./warehouseRoutes');
+const invoiceRoutes = require('./invoiceRoutes');
+const adminRoutes = require('./adminRoutes');
+
 // Health check
 router.get('/health', (req, res) => {
     res.json({
@@ -27,6 +34,13 @@ router.use('/categories', categoryRoutes);
 router.use('/cart', cartRoutes);
 router.use('/orders', orderRoutes);
 router.use('/payments', paymentRoutes);
+
+// New API routes - Extended features
+router.use('/warranties', warrantyRoutes);
+router.use('/suppliers', supplierRoutes);
+router.use('/warehouse', warehouseRoutes);
+router.use('/invoices', invoiceRoutes);
+router.use('/admin', adminRoutes);
 
 module.exports = router;
 
