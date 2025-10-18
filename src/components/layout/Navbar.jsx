@@ -14,7 +14,8 @@ import {
     Sun,
     Moon,
     Search,
-    LogOut
+    LogOut,
+    Shield
 } from 'lucide-react'
 
 const Navbar = () => {
@@ -37,6 +38,7 @@ const Navbar = () => {
     const navLinks = [
         { path: '/', label: t('nav.home') },
         { path: '/products', label: t('nav.products') },
+        { path: '/warranty-lookup', label: 'Tra cứu bảo hành' },
         { path: '/about', label: t('nav.about') },
         { path: '/contact', label: t('nav.contact') },
     ]
@@ -98,6 +100,19 @@ const Navbar = () => {
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-2">
                                 <Avatar user={user} size="sm" />
+                                {/* Admin Panel Button - Only show for admin users */}
+                                {user?.role === 'admin' && (
+                                    <Link
+                                        to="/admin/dashboard"
+                                        className="flex items-center space-x-1 px-3 py-2 bg-vintage-gold/20 hover:bg-vintage-gold/30 rounded-lg transition-colors"
+                                        title="Admin Panel"
+                                    >
+                                        <Shield className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
+                                        <span className="text-sm text-vintage-bronze dark:text-vintage-gold font-medium hidden md:block">
+                                            Quản lý
+                                        </span>
+                                    </Link>
+                                )}
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center space-x-1 px-3 py-2 hover:bg-vintage-gold/10 rounded-lg transition-colors"
@@ -173,6 +188,17 @@ const Navbar = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    {/* Admin Panel Button for Mobile - Only show for admin users */}
+                                    {user?.role === 'admin' && (
+                                        <Link
+                                            to="/admin/dashboard"
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="w-full text-vintage-bronze dark:text-vintage-gold hover:text-vintage-gold transition-colors font-serif flex items-center space-x-2 px-3 py-2 bg-vintage-gold/20 rounded-lg mb-2"
+                                        >
+                                            <Shield className="w-4 h-4" />
+                                            <span>Admin Panel - Quản lý</span>
+                                        </Link>
+                                    )}
                                     <button
                                         onClick={() => {
                                             handleLogout()

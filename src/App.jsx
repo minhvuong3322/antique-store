@@ -5,6 +5,7 @@ import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { AuthProvider } from './context/AuthContext'
 import Layout from './components/layout/Layout'
+import AdminLayout from './components/layout/AdminLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import ProductsPage from './pages/ProductsPage'
@@ -18,6 +19,17 @@ import VerifyOTPPage from './pages/VerifyOTPPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import WarrantyLookup from './pages/WarrantyLookup'
+// Admin Pages
+import Dashboard from './pages/admin/Dashboard'
+import Products from './pages/admin/Products'
+import Orders from './pages/admin/Orders'
+import Users from './pages/admin/Users'
+import Suppliers from './pages/admin/Suppliers'
+import Warehouse from './pages/admin/Warehouse'
+import Warranties from './pages/admin/Warranties'
+import Invoices from './pages/admin/Invoices'
+import Analytics from './pages/admin/Analytics'
 import TestAPI from './components/TestAPI'
 
 function App() {
@@ -37,58 +49,86 @@ function App() {
                             }}
                         />
                         <Router>
-                            <Layout>
-                                <Routes>
-                                    {/* Public routes */}
-                                    <Route path="/" element={<HomePage />} />
-                                    <Route path="/products" element={<ProductsPage />} />
-                                    <Route path="/products/:id" element={<ProductDetailPage />} />
-                                    <Route path="/about" element={<AboutPage />} />
-                                    <Route path="/contact" element={<ContactPage />} />
+                            <Routes>
+                                {/* Public routes with main layout */}
+                                <Route path="/" element={<Layout><HomePage /></Layout>} />
+                                <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
+                                <Route path="/products/:id" element={<Layout><ProductDetailPage /></Layout>} />
+                                <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+                                <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+                                <Route path="/warranty-lookup" element={<Layout><WarrantyLookup /></Layout>} />
+                                <Route path="/test-api" element={<Layout><TestAPI /></Layout>} />
 
-                                    {/* Auth routes - redirect if already logged in */}
-                                    <Route path="/login" element={
+                                {/* Auth routes - redirect if already logged in */}
+                                <Route path="/login" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={false}>
                                             <LoginPage />
                                         </ProtectedRoute>
-                                    } />
-                                    <Route path="/register" element={
+                                    </Layout>
+                                } />
+                                <Route path="/register" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={false}>
                                             <RegisterPage />
                                         </ProtectedRoute>
-                                    } />
-                                    <Route path="/forgot-password" element={
+                                    </Layout>
+                                } />
+                                <Route path="/forgot-password" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={false}>
                                             <ForgotPasswordPage />
                                         </ProtectedRoute>
-                                    } />
-                                    <Route path="/verify-otp" element={
+                                    </Layout>
+                                } />
+                                <Route path="/verify-otp" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={false}>
                                             <VerifyOTPPage />
                                         </ProtectedRoute>
-                                    } />
-                                    <Route path="/reset-password" element={
+                                    </Layout>
+                                } />
+                                <Route path="/reset-password" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={false}>
                                             <ResetPasswordPage />
                                         </ProtectedRoute>
-                                    } />
+                                    </Layout>
+                                } />
 
-                                    {/* Protected routes - require authentication */}
-                                    <Route path="/cart" element={
+                                {/* Protected routes - require authentication */}
+                                <Route path="/cart" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={true}>
                                             <CartPage />
                                         </ProtectedRoute>
-                                    } />
-                                    <Route path="/checkout" element={
+                                    </Layout>
+                                } />
+                                <Route path="/checkout" element={
+                                    <Layout>
                                         <ProtectedRoute requireAuth={true}>
                                             <CheckoutPage />
                                         </ProtectedRoute>
-                                    } />
+                                    </Layout>
+                                } />
 
-                                    {/* Test route */}
-                                    <Route path="/test-api" element={<TestAPI />} />
-                                </Routes>
-                            </Layout>
+                                {/* Admin Routes - Separate Layout */}
+                                <Route path="/admin" element={
+                                    <ProtectedRoute requireAuth={true} requireRole="admin">
+                                        <AdminLayout />
+                                    </ProtectedRoute>
+                                }>
+                                    <Route path="dashboard" element={<Dashboard />} />
+                                    <Route path="products" element={<Products />} />
+                                    <Route path="orders" element={<Orders />} />
+                                    <Route path="users" element={<Users />} />
+                                    <Route path="suppliers" element={<Suppliers />} />
+                                    <Route path="warehouse" element={<Warehouse />} />
+                                    <Route path="warranties" element={<Warranties />} />
+                                    <Route path="invoices" element={<Invoices />} />
+                                    <Route path="analytics" element={<Analytics />} />
+                                </Route>
+                            </Routes>
                         </Router>
                     </WishlistProvider>
                 </CartProvider>

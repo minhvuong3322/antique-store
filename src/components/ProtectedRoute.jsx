@@ -3,8 +3,8 @@ import { useAuth } from '../context/AuthContext'
 import { toast } from 'react-hot-toast'
 import { useEffect } from 'react'
 
-const ProtectedRoute = ({ children, requireAuth = true }) => {
-    const { isAuthenticated, isLoading } = useAuth()
+const ProtectedRoute = ({ children, requireAuth = true, requireRole = null }) => {
+    const { isAuthenticated, isLoading, user } = useAuth()
     const location = useLocation()
 
     // Hiển thị thông báo khi cần đăng nhập nhưng chưa đăng nhập
@@ -32,6 +32,14 @@ const ProtectedRoute = ({ children, requireAuth = true }) => {
     if (requireAuth && !isAuthenticated) {
         // Redirect về trang login với returnUrl
         return <Navigate to="/login" state={{ from: location }} replace />
+    }
+
+    // Kiểm tra role nếu được yêu cầu
+    if (requireAuth && isAuthenticated && requireRole) {
+        if (!user || user.role !== requireRole) {
+            toast.error('Bạn không có quyền truy cập trang này')
+            return <Navigate to="/" replace />
+        }
     }
 
     // Nếu đã đăng nhập và đang ở trang login/register, redirect về trang chủ
