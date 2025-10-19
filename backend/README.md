@@ -2,7 +2,7 @@
 
 Backend API cho hệ thống TMĐT Shop Đồ Cổ (Antique Store) được xây dựng bằng Node.js, Express, và Sequelize.
 
-## 📋 Mục lục
+##  Mục lục
 
 - [Tính năng](#tính-năng)
 - [Công nghệ sử dụng](#công-nghệ-sử-dụng)
@@ -13,47 +13,47 @@ Backend API cho hệ thống TMĐT Shop Đồ Cổ (Antique Store) được xây
 - [Database Schema](#database-schema)
 - [Deployment](#deployment)
 
-## 🎯 Tính năng
+##  Tính năng
 
 ### Authentication & Authorization
-- ✅ Đăng ký tài khoản
-- ✅ Đăng nhập (JWT authentication)
-- ✅ Quản lý profile người dùng
-- ✅ Đổi mật khẩu
-- ✅ Phân quyền Admin/Customer
+-  Đăng ký tài khoản
+-  Đăng nhập (JWT authentication)
+-  Quản lý profile người dùng
+-  Đổi mật khẩu
+-  Phân quyền Admin/Customer
 
 ### Quản lý sản phẩm
-- ✅ CRUD sản phẩm (Admin)
-- ✅ Xem danh sách sản phẩm (Pagination, Search, Filter)
-- ✅ Xem chi tiết sản phẩm
-- ✅ Sản phẩm nổi bật
+-  CRUD sản phẩm (Admin)
+-  Xem danh sách sản phẩm (Pagination, Search, Filter)
+-  Xem chi tiết sản phẩm
+-  Sản phẩm nổi bật
 
 ### Quản lý danh mục
-- ✅ CRUD danh mục (Admin)
-- ✅ Danh mục cha - con (nested categories)
-- ✅ Xem sản phẩm theo danh mục
+-  CRUD danh mục (Admin)
+-  Danh mục cha - con (nested categories)
+-  Xem sản phẩm theo danh mục
 
 ### Giỏ hàng
-- ✅ Thêm sản phẩm vào giỏ
-- ✅ Cập nhật số lượng
-- ✅ Xóa sản phẩm khỏi giỏ
-- ✅ Xóa toàn bộ giỏ hàng
+-  Thêm sản phẩm vào giỏ
+-  Cập nhật số lượng
+-  Xóa sản phẩm khỏi giỏ
+-  Xóa toàn bộ giỏ hàng
 
 ### Đơn hàng
-- ✅ Tạo đơn hàng từ giỏ hàng
-- ✅ Xem lịch sử đơn hàng
-- ✅ Chi tiết đơn hàng
-- ✅ Hủy đơn hàng
-- ✅ Cập nhật trạng thái (Admin)
-- ✅ Quản lý tồn kho tự động
+-  Tạo đơn hàng từ giỏ hàng
+-  Xem lịch sử đơn hàng
+-  Chi tiết đơn hàng
+-  Hủy đơn hàng
+-  Cập nhật trạng thái (Admin)
+-  Quản lý tồn kho tự động
 
 ### Thanh toán
-- ✅ COD (Cash on Delivery)
-- ✅ Mock VNPay integration
-- ✅ Mock Momo integration
-- ✅ Thống kê thanh toán (Admin)
+-  COD (Cash on Delivery)
+-  Mock VNPay integration
+-  Mock Momo integration
+-  Thống kê thanh toán (Admin)
 
-## 🛠 Công nghệ sử dụng
+##  Công nghệ sử dụng
 
 - **Runtime**: Node.js v16+
 - **Framework**: Express.js
@@ -66,7 +66,7 @@ Backend API cho hệ thống TMĐT Shop Đồ Cổ (Antique Store) được xây
 - **Logging**: morgan
 - **Environment**: dotenv
 
-## 📦 Cài đặt
+##  Cài đặt
 
 ### Yêu cầu hệ thống
 
@@ -110,7 +110,7 @@ mysql -u root -p antique_store < database/schema.sql
 psql -U postgres -d antique_store -f database/schema-postgresql.sql
 ```
 
-## ⚙️ Cấu hình
+##  Cấu hình
 
 ### Tạo file `.env`
 
@@ -147,9 +147,9 @@ CORS_ORIGIN=http://localhost:5173
 BCRYPT_ROUNDS=10
 ```
 
-**⚠️ Quan trọng:** Thay đổi `JWT_SECRET` trong môi trường production!
+** Quan trọng:** Thay đổi `JWT_SECRET` trong môi trường production!
 
-## 🚀 Chạy ứng dụng
+##  Chạy ứng dụng
 
 ### Development mode
 
@@ -172,7 +172,7 @@ npm start
 curl http://localhost:5000/api/v1/health
 ```
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Base URL: `/api/v1`
 
@@ -267,7 +267,7 @@ Xem chi tiết thiết kế database tại:
 6. **order_details** - Chi tiết đơn hàng
 7. **payments** - Thanh toán
 
-## 📝 Ví dụ API Requests
+##  Ví dụ API Requests
 
 ### 1. Đăng ký tài khoản
 
@@ -325,7 +325,7 @@ curl -X POST http://localhost:5000/api/v1/orders \
   }'
 ```
 
-## 🚢 Deployment
+##  Deployment
 
 ### Deploy trên Heroku
 
@@ -389,31 +389,24 @@ docker build -t antique-store-api .
 docker run -p 5000:5000 --env-file .env antique-store-api
 ```
 
-## 🔒 Bảo mật
+##  Bảo mật
 
-- ✅ JWT authentication
-- ✅ Password hashing với bcrypt
-- ✅ Helmet.js cho security headers
-- ✅ CORS configuration
-- ✅ Input validation với express-validator
-- ✅ SQL injection prevention (Sequelize ORM)
-- ✅ Rate limiting (recommended for production)
+-  JWT authentication
+-  Password hashing với bcrypt
+-  Helmet.js cho security headers
+-  CORS configuration
+-  Input validation với express-validator
+-  SQL injection prevention (Sequelize ORM)
+-  Rate limiting (recommended for production)
 
-## 📄 License
+##  License
 
 MIT License
 
-## 👥 Contributors
+##  Contributors
 
 - Backend Developer: Antique Store Team
 
-## 📞 Support
-
-Nếu có vấn đề, hãy tạo issue trên GitHub repository.
-
----
-
-**Happy Coding! 🚀**
 
 
 
