@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 import { getErrorMessage } from '../utils/errorHandler';
+import SocialLogin from '../components/auth/SocialLogin';
 
 const RegisterPage = () => {
     const { t } = useTranslation();
@@ -208,6 +209,11 @@ const RegisterPage = () => {
                             {loading ? 'Đang đăng ký...' : 'Đăng Ký'}
                         </button>
                     </form>
+
+                    {/* Social Login */}
+                    <div className="mt-6">
+                        <SocialLogin />
+                    </div>
 
                     {/* Login Link */}
                     <div className="mt-6 text-center">

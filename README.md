@@ -219,7 +219,7 @@ POST   /api/v1/otp/resend             // Gửi lại OTP
 - **Admin account**: admin@antiquestore.com / admin123
 - **Sample users** và OTP records
 
-## 🔧 Development
+## Development
 
 ### Scripts Available
 

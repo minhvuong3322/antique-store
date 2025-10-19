@@ -6,10 +6,15 @@ export const orderService = {
         return await api.post('/orders', orderData);
     },
 
-    // Lấy lịch sử đơn hàng
-    getOrders: async (params = {}) => {
+    // Lấy lịch sử đơn hàng của tôi
+    getMyOrders: async (params = {}) => {
         const queryString = new URLSearchParams(params).toString();
         return await api.get(`/orders?${queryString}`);
+    },
+
+    // Alias for backward compatibility
+    getOrders: async (params = {}) => {
+        return orderService.getMyOrders(params);
     },
 
     // Lấy chi tiết đơn hàng
@@ -24,8 +29,7 @@ export const orderService = {
 
     // Admin: Lấy tất cả đơn hàng
     getAllOrders: async (params = {}) => {
-        const queryString = new URLSearchParams(params).toString();
-        return await api.get(`/orders/admin/all?${queryString}`);
+        return await api.get('/admin/orders', { params });
     },
 
     // Admin: Cập nhật trạng thái

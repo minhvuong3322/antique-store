@@ -1,4 +1,8 @@
 require('dotenv').config();
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const app = require('./app');
 const config = require('./config/app');
 const { testConnection } = require('./config/database');
@@ -13,41 +17,96 @@ const startServer = async () => {
         // Kiểm tra kết nối database
         await testConnection();
 
-        // Đồng bộ database (chỉ trong development)
+        // Kiểm tra database schema (không alter)
+        // Lưu ý: Sử dụng SQL schema files để quản lý database thay vì auto-sync
         if (config.node_env === 'development') {
-            console.log('📝 Đang đồng bộ database...');
-            await syncDatabase({ alter: true }); // Sử dụng alter: true để đồng bộ thay đổi schema
+            console.log('✅ Bỏ qua auto-sync (dùng SQL schema files)');
+            // await syncDatabase({ alter: false }); // Tắt để tránh lỗi "Too many keys"
+        }
+
+        const PORT = config.port;
+        let server;
+        let protocol = 'http';
+
+        // =====================================================
+        // HTTPS Configuration
+        // =====================================================
+        if (config.ssl.enabled) {
+            try {
+                // Đọc SSL certificate và key
+                const keyPath = path.resolve(__dirname, '..', config.ssl.keyPath);
+                const certPath = path.resolve(__dirname, '..', config.ssl.certPath);
+
+                // Kiểm tra file tồn tại
+                if (!fs.existsSync(keyPath)) {
+                    throw new Error(`SSL key file không tồn tại: ${keyPath}`);
+                }
+                if (!fs.existsSync(certPath)) {
+                    throw new Error(`SSL certificate file không tồn tại: ${certPath}`);
+                }
+
+                const httpsOptions = {
+                    key: fs.readFileSync(keyPath),
+                    cert: fs.readFileSync(certPath)
+                };
+
+                // Tạo HTTPS server
+                server = https.createServer(httpsOptions, app);
+                protocol = 'https';
+
+                console.log('');
+                console.log('========================================');
+                console.log('🔒 SSL/TLS đã được kích hoạt');
+                console.log(`📁 Key: ${keyPath}`);
+                console.log(`📁 Cert: ${certPath}`);
+                console.log('========================================');
+
+            } catch (sslError) {
+                console.error('❌ Lỗi khi khởi tạo SSL:', sslError.message);
+                console.log('⚠️  Fallback về HTTP server...');
+                server = http.createServer(app);
+                protocol = 'http';
+            }
+        } else {
+            // Tạo HTTP server
+            server = http.createServer(app);
+            protocol = 'http';
         }
 
         // Khởi động server
-        const PORT = config.port;
-        const server = app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log('');
             console.log('========================================');
             console.log(`🚀 Server đang chạy trên port ${PORT}`);
             console.log(`📍 Môi trường: ${config.node_env}`);
-            console.log(`🌐 URL API: http://localhost:${PORT}${config.api_prefix}`);
-            console.log(`📚 Kiểm tra sức khỏe: http://localhost:${PORT}${config.api_prefix}/health`);
+            console.log(`🔐 Protocol: ${protocol.toUpperCase()}`);
+            console.log(`🌐 URL API: ${protocol}://localhost:${PORT}${config.api_prefix}`);
+            console.log(`📚 Health Check: ${protocol}://localhost:${PORT}${config.api_prefix}/health`);
+
+            if (protocol === 'https' && config.node_env === 'development') {
+                console.log('');
+                console.log('⚠️  HTTPS Development Mode:');
+                console.log('   Trình duyệt sẽ cảnh báo về self-signed certificate');
+                console.log('   Click "Advanced" → "Proceed to localhost"');
+                console.log('   Hoặc trust certificate bằng cách chạy:');
+                console.log('   cd backend/scripts && ./generate-ssl-cert.sh');
+            }
+
             console.log('========================================');
             console.log('');
         });
 
         // Tắt server một cách graceful
-        process.on('SIGTERM', () => {
-            console.log('Nhận tín hiệu SIGTERM: đang đóng HTTP server');
+        const gracefulShutdown = (signal) => {
+            console.log(`\nNhận tín hiệu ${signal}: đang đóng ${protocol.toUpperCase()} server`);
             server.close(() => {
-                console.log('HTTP server đã đóng');
+                console.log(`${protocol.toUpperCase()} server đã đóng`);
                 process.exit(0);
             });
-        });
+        };
 
-        process.on('SIGINT', () => {
-            console.log('\nNhận tín hiệu SIGINT: đang đóng HTTP server');
-            server.close(() => {
-                console.log('HTTP server đã đóng');
-                process.exit(0);
-            });
-        });
+        process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+        process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
     } catch (error) {
         console.error('❌ Không thể khởi động server:', error);

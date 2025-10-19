@@ -6,6 +6,15 @@ module.exports = {
     port: process.env.PORT || 5000,
     api_prefix: process.env.API_PREFIX || '/api/v1',
 
+    // SSL/TLS Configuration
+    ssl: {
+        enabled: process.env.ENABLE_SSL === 'true',
+        keyPath: process.env.SSL_KEY_PATH || './certs/localhost.key',
+        certPath: process.env.SSL_CERT_PATH || './certs/localhost.crt',
+        // Optional: CA bundle for intermediate certificates
+        caPath: process.env.SSL_CA_PATH || null
+    },
+
     // JWT
     jwt: {
         secret: process.env.JWT_SECRET || 'your-secret-key',
@@ -16,7 +25,7 @@ module.exports = {
 
     // CORS
     cors: {
-        origin: process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:3000',
+        origin: process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:3000,https://localhost:5173,https://localhost:5174,https://localhost:5175',
         credentials: true
     },
 

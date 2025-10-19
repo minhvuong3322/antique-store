@@ -44,10 +44,14 @@ build/
 uploads/*
 !uploads/.gitkeep
 
+# SSL Certificates (development)
+certs/*.key
+certs/*.crt
+certs/*.pem
+certs/*.csr
+
 # Misc
 .cache/
 temp/
 tmp/
-
-
 

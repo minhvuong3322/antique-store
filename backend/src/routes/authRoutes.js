@@ -25,12 +25,28 @@ const changePasswordValidation = [
     validate
 ];
 
+// OAuth validation
+const googleLoginValidation = [
+    body('idToken').notEmpty().withMessage('Google ID Token là bắt buộc'),
+    validate
+];
+
+const facebookLoginValidation = [
+    body('accessToken').notEmpty().withMessage('Facebook access token là bắt buộc'),
+    body('userID').notEmpty().withMessage('Facebook userID là bắt buộc'),
+    validate
+];
+
 // Routes
 router.post('/register', registerValidation, authController.register);
 router.post('/login', loginValidation, authController.login);
 router.get('/profile', authenticate, authController.getProfile);
 router.put('/profile', authenticate, authController.updateProfile);
 router.put('/change-password', authenticate, changePasswordValidation, authController.changePassword);
+
+// OAuth routes
+router.post('/google', googleLoginValidation, authController.googleLogin);
+router.post('/facebook', facebookLoginValidation, authController.facebookLogin);
 
 module.exports = router;
 

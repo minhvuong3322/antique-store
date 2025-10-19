@@ -1,29 +1,39 @@
 import api from './api';
 
 export const adminService = {
-    // Dashboard Statistics
-    getDashboardStats: () => {
-        return api.get('/admin/dashboard-stats');
+    // Dashboard Overview
+    getDashboardOverview: () => {
+        return api.get('/admin/dashboard/overview');
+    },
+
+    // Recent Activities
+    getRecentActivities: (limit = 20) => {
+        return api.get('/admin/dashboard/recent-activities', { params: { limit } });
     },
 
     // Comprehensive analytics
     getComprehensiveAnalytics: () => {
-        return api.get('/admin/analytics');
+        return api.get('/admin/dashboard/analytics');
     },
 
     // Revenue statistics
     getRevenueStatistics: (period = 'month') => {
-        return api.get('/admin/revenue', { params: { period } });
+        return api.get('/admin/dashboard/revenue', { params: { period } });
     },
 
     // Top products
     getTopProducts: (limit = 10) => {
-        return api.get('/admin/top-products', { params: { limit } });
+        return api.get('/admin/dashboard/top-products', { params: { limit } });
     },
 
     // Orders by status
     getOrdersByStatus: () => {
-        return api.get('/admin/orders-by-status');
+        return api.get('/admin/dashboard/orders-by-status');
+    },
+
+    // Category statistics
+    getCategoryStatistics: () => {
+        return api.get('/admin/dashboard/categories-stats');
     },
 
     // User Management
@@ -37,14 +47,6 @@ export const adminService = {
 
     updateUser: (id, data) => {
         return api.put(`/admin/users/${id}`, data);
-    },
-
-    updateUserRole: (id, role) => {
-        return api.put(`/admin/users/${id}/role`, { role });
-    },
-
-    deactivateUser: (id) => {
-        return api.put(`/admin/users/${id}/deactivate`);
     },
 
     deleteUser: (id) => {

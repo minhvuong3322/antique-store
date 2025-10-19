@@ -114,3 +114,56 @@ uploads/
 # Backup files
 *.bak
 *.backup
+
+# SSL Certificates
+*.key
+*.crt
+*.pem
+certs/
+
+# Temporary documentation files (keep only main docs)
+HTTPS_*.md
+OAUTH_IMPLEMENTATION*.md
+HTTPS_*.txt
+
+# Development and testing files
+*.test.js
+*.spec.js
+test/
+tests/
+__tests__/
+
+# IDE specific files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/shelf/
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Package manager files
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
+
+# Build artifacts
+*.map
+*.min.js
+*.min.css
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+.tmp/

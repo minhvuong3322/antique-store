@@ -57,6 +57,26 @@ export const authService = {
     changePassword: async (passwords) => {
         return await api.put('/auth/change-password', passwords);
     },
+
+    // Đăng nhập với Google
+    loginWithGoogle: async (idToken) => {
+        const response = await api.post('/auth/google', { idToken });
+        if (response.success && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        return response;
+    },
+
+    // Đăng nhập với Facebook
+    loginWithFacebook: async (accessToken, userID) => {
+        const response = await api.post('/auth/facebook', { accessToken, userID });
+        if (response.success && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        return response;
+    },
 };
 
 

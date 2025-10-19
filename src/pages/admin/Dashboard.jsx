@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import {
     UserGroupIcon,
     ShoppingBagIcon,
@@ -25,14 +25,14 @@ const Dashboard = () => {
         try {
             setLoading(true);
             const [overviewRes, activitiesRes, topProductsRes] = await Promise.all([
-                axios.get('/admin/dashboard/overview'),
-                axios.get('/admin/dashboard/recent-activities'),
-                axios.get('/admin/dashboard/top-products?limit=5')
+                api.get('/admin/dashboard/overview'),
+                api.get('/admin/dashboard/recent-activities'),
+                api.get('/admin/dashboard/top-products?limit=5')
             ]);
 
-            setOverview(overviewRes.data.data);
-            setRecentOrders(activitiesRes.data.data.recent_orders || []);
-            setTopProducts(topProductsRes.data.data || []);
+            setOverview(overviewRes.data);
+            setRecentOrders(activitiesRes.data.recent_orders || []);
+            setTopProducts(topProductsRes.data || []);
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
@@ -142,8 +142,8 @@ const Dashboard = () => {
                             <div className="bg-gray-50 dark:bg-gray-700 px-5 py-3">
                                 <div className="text-sm">
                                     <span className={`flex items-center ${stat.changeType === 'positive' ? 'text-green-600' :
-                                            stat.changeType === 'negative' ? 'text-red-600' :
-                                                'text-gray-600 dark:text-gray-400'
+                                        stat.changeType === 'negative' ? 'text-red-600' :
+                                            'text-gray-600 dark:text-gray-400'
                                         }`}>
                                         {stat.changeType === 'positive' && <ArrowTrendingUpIcon className="h-4 w-4 mr-1" />}
                                         {stat.changeType === 'negative' && <ArrowTrendingDownIcon className="h-4 w-4 mr-1" />}

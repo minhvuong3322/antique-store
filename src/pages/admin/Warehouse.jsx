@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { warehouseService } from '../../services/warehouseService';
-import axios from 'axios';
 import {
     PlusIcon,
     ArrowDownTrayIcon,
@@ -237,8 +236,8 @@ const Warehouse = () => {
                     <button
                         onClick={() => setActiveTab('logs')}
                         className={`py-2 border-b-2 font-medium text-sm ${activeTab === 'logs'
-                                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                            ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
                             }`}
                     >
                         Lịch sử
@@ -246,8 +245,8 @@ const Warehouse = () => {
                     <button
                         onClick={() => setActiveTab('low-stock')}
                         className={`py-2 border-b-2 font-medium text-sm ${activeTab === 'low-stock'
-                                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                            ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
                             }`}
                     >
                         Sắp hết hàng ({lowStockProducts.length})
@@ -480,8 +479,8 @@ const Warehouse = () => {
                                     <button
                                         type="submit"
                                         className={`px-4 py-2 text-white rounded-lg transition-colors ${modalType === 'import' ? 'bg-green-600 hover:bg-green-700' :
-                                                modalType === 'export' ? 'bg-red-600 hover:bg-red-700' :
-                                                    'bg-blue-600 hover:bg-blue-700'
+                                            modalType === 'export' ? 'bg-red-600 hover:bg-red-700' :
+                                                'bg-blue-600 hover:bg-blue-700'
                                             }`}
                                     >
                                         Xác nhận

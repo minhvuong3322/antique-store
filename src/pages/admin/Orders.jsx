@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { orderService } from '../../services/orderService';
+import { invoiceService } from '../../services/invoiceService';
 import {
     MagnifyingGlassIcon,
     EyeIcon,
@@ -28,8 +29,8 @@ const Orders = () => {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/orders', { params: filters });
-            setOrders(response.data.data || []);
+            const response = await orderService.getAllOrders(filters);
+            setOrders(response.data?.orders || []);
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Không thể tải danh sách đơn hàng');
@@ -40,8 +41,8 @@ const Orders = () => {
 
     const fetchOrderDetail = async (orderId) => {
         try {
-            const response = await axios.get(`/orders/${orderId}`);
-            setSelectedOrder(response.data.data);
+            const response = await orderService.getOrderById(orderId);
+            setSelectedOrder(response.data?.order);
             setShowDetailModal(true);
         } catch (error) {
             console.error('Error fetching order detail:', error);
@@ -51,7 +52,7 @@ const Orders = () => {
 
     const handleUpdateStatus = async (orderId, newStatus) => {
         try {
-            await axios.put(`/orders/${orderId}`, { status: newStatus });
+            await orderService.updateOrderStatus(orderId, newStatus);
             toast.success('Cập nhật trạng thái thành công');
             fetchOrders();
             if (selectedOrder?.id === orderId) {
@@ -59,17 +60,17 @@ const Orders = () => {
             }
         } catch (error) {
             console.error('Error updating order:', error);
-            toast.error('Không thể cập nhật trạng thái');
+            toast.error(error.message || 'Không thể cập nhật trạng thái');
         }
     };
 
     const handleCreateInvoice = async (orderId) => {
         try {
-            await axios.post('/invoices', { order_id: orderId });
+            await invoiceService.create({ order_id: orderId });
             toast.success('Tạo hóa đơn thành công');
         } catch (error) {
             console.error('Error creating invoice:', error);
-            toast.error(error.response?.data?.message || 'Không thể tạo hóa đơn');
+            toast.error(error.message || 'Không thể tạo hóa đơn');
         }
     };
 
@@ -399,8 +400,8 @@ const Orders = () => {
                                                 onClick={() => handleUpdateStatus(selectedOrder.id, opt.value)}
                                                 disabled={selectedOrder.status === opt.value}
                                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedOrder.status === opt.value
-                                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600'
-                                                        : `bg-${opt.color}-100 text-${opt.color}-800 hover:bg-${opt.color}-200 dark:bg-${opt.color}-900 dark:text-${opt.color}-200`
+                                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600'
+                                                    : `bg-${opt.color}-100 text-${opt.color}-800 hover:bg-${opt.color}-200 dark:bg-${opt.color}-900 dark:text-${opt.color}-200`
                                                     }`}
                                             >
                                                 {opt.label}

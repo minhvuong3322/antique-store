@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { productService } from '../../services/productService';
+import { categoryService } from '../../services/categoryService';
 import {
     PlusIcon,
     PencilIcon,
@@ -51,8 +52,8 @@ const Products = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/products', { params: filters });
-            setProducts(response.data.data || []);
+            const response = await productService.getProducts(filters);
+            setProducts(response.data?.products || []);
         } catch (error) {
             console.error('Error fetching products:', error);
             toast.error('Không thể tải danh sách sản phẩm');
@@ -63,8 +64,8 @@ const Products = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('/categories');
-            setCategories(response.data.data || []);
+            const response = await categoryService.getAll();
+            setCategories(response.data?.categories || []);
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
@@ -74,10 +75,10 @@ const Products = () => {
         e.preventDefault();
         try {
             if (editingProduct) {
-                await axios.put(`/products/${editingProduct.id}`, formData);
+                await productService.updateProduct(editingProduct.id, formData);
                 toast.success('Cập nhật sản phẩm thành công');
             } else {
-                await axios.post('/products', formData);
+                await productService.createProduct(formData);
                 toast.success('Thêm sản phẩm thành công');
             }
             setShowModal(false);
@@ -85,7 +86,7 @@ const Products = () => {
             fetchProducts();
         } catch (error) {
             console.error('Error saving product:', error);
-            toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+            toast.error(error.message || 'Có lỗi xảy ra');
         }
     };
 
@@ -115,12 +116,12 @@ const Products = () => {
         if (!window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
 
         try {
-            await axios.delete(`/products/${id}`);
+            await productService.deleteProduct(id);
             toast.success('Xóa sản phẩm thành công');
             fetchProducts();
         } catch (error) {
             console.error('Error deleting product:', error);
-            toast.error('Không thể xóa sản phẩm');
+            toast.error(error.message || 'Không thể xóa sản phẩm');
         }
     };
 
@@ -341,8 +342,8 @@ const Products = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`text-sm font-medium ${product.stock_quantity <= 10
-                                                        ? 'text-red-600'
-                                                        : 'text-gray-900 dark:text-white'
+                                                    ? 'text-red-600'
+                                                    : 'text-gray-900 dark:text-white'
                                                     }`}>
                                                     {product.stock_quantity}
                                                 </span>
@@ -354,8 +355,8 @@ const Products = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.is_active
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
                                                     }`}>
                                                     {product.is_active ? 'Hoạt động' : 'Không hoạt động'}
                                                 </span>

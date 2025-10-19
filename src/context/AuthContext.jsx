@@ -88,12 +88,56 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    // Hàm đăng nhập Google
+    const loginWithGoogle = async (idToken) => {
+        try {
+            setIsLoading(true)
+            const response = await authService.loginWithGoogle(idToken)
+
+            if (response.success) {
+                setUser(response.data.user)
+                setIsAuthenticated(true)
+                return { success: true, message: response.message }
+            } else {
+                throw new Error(response.message)
+            }
+        } catch (error) {
+            console.error('Google login error:', error)
+            throw error
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Hàm đăng nhập Facebook
+    const loginWithFacebook = async (accessToken, userID) => {
+        try {
+            setIsLoading(true)
+            const response = await authService.loginWithFacebook(accessToken, userID)
+
+            if (response.success) {
+                setUser(response.data.user)
+                setIsAuthenticated(true)
+                return { success: true, message: response.message }
+            } else {
+                throw new Error(response.message)
+            }
+        } catch (error) {
+            console.error('Facebook login error:', error)
+            throw error
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     const value = {
         user,
         isAuthenticated,
         isLoading,
         login,
-        logout
+        logout,
+        loginWithGoogle,
+        loginWithFacebook
     }
 
     return (

@@ -17,6 +17,7 @@ const ProductSupplier = require('./ProductSupplier');
 const WarehouseLog = require('./WarehouseLog');
 const Warranty = require('./Warranty');
 const Invoice = require('./Invoice');
+const SocialAuth = require('./SocialAuth');
 
 // =====================================================
 // DEFINE ASSOCIATIONS
@@ -107,6 +108,10 @@ Invoice.belongsTo(Order, { foreignKey: 'order_id', as: 'order' });
 User.hasMany(Invoice, { foreignKey: 'created_by', as: 'invoices' });
 Invoice.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
 
+// User - SocialAuth (1:N) - OAuth providers
+User.hasMany(SocialAuth, { foreignKey: 'user_id', as: 'social_auths' });
+SocialAuth.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 // =====================================================
 // SYNC DATABASE (Development only)
 // =====================================================
@@ -136,6 +141,7 @@ module.exports = {
     WarehouseLog,
     Warranty,
     Invoice,
+    SocialAuth,
     syncDatabase
 };
 

@@ -15,7 +15,8 @@ import {
     Moon,
     Search,
     LogOut,
-    Shield
+    Shield,
+    Package
 } from 'lucide-react'
 
 const Navbar = () => {
@@ -100,6 +101,17 @@ const Navbar = () => {
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-2">
                                 <Avatar user={user} size="sm" />
+                                {/* My Orders Button */}
+                                <Link
+                                    to="/my-orders"
+                                    className="flex items-center space-x-1 px-3 py-2 hover:bg-vintage-gold/10 rounded-lg transition-colors"
+                                    title="Đơn hàng của tôi"
+                                >
+                                    <Package className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
+                                    <span className="text-sm text-vintage-bronze dark:text-vintage-gold font-medium hidden lg:block">
+                                        Đơn hàng
+                                    </span>
+                                </Link>
                                 {/* Admin Panel Button - Only show for admin users */}
                                 {user?.role === 'admin' && (
                                     <Link
@@ -188,6 +200,15 @@ const Navbar = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    {/* My Orders Button for Mobile */}
+                                    <Link
+                                        to="/my-orders"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full text-vintage-bronze dark:text-vintage-gold hover:text-vintage-gold transition-colors font-serif flex items-center space-x-2 px-3 py-2 hover:bg-vintage-gold/10 rounded-lg mb-2"
+                                    >
+                                        <Package className="w-4 h-4" />
+                                        <span>Đơn hàng của tôi</span>
+                                    </Link>
                                     {/* Admin Panel Button for Mobile - Only show for admin users */}
                                     {user?.role === 'admin' && (
                                         <Link

@@ -253,6 +253,424 @@ const sendWelcomeEmail = async (email, full_name) => {
 };
 
 /**
+ * Send Order Confirmation Email
+ */
+const sendOrderConfirmationEmail = async (email, orderData) => {
+    try {
+        const transporter = initializeTransporter();
+
+        const { order_number, total_amount, order_details, shipping_address } = orderData;
+
+        // Build product list HTML
+        const productsHTML = order_details.map(item => `
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                    ${item.Product?.name || 'Sản phẩm'}
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">
+                    ${item.quantity}
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">
+                    ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.unit_price)}
+                </td>
+            </tr>
+        `).join('');
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px;">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">
+                                ✅ Đơn Hàng Đã Được Xác Nhận!
+                            </h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="margin: 0 0 20px; color: #333333;">
+                                Cảm ơn bạn đã đặt hàng tại Antique Store!
+                            </h2>
+                            
+                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
+                                Đơn hàng <strong>#${order_number}</strong> của bạn đã được xác nhận và đang được xử lý.
+                            </p>
+                            
+                            <!-- Order Details -->
+                            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                <h3 style="margin: 0 0 15px; color: #333;">Chi Tiết Đơn Hàng</h3>
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    <thead>
+                                        <tr style="background-color: #e9ecef;">
+                                            <th style="padding: 10px; text-align: left;">Sản phẩm</th>
+                                            <th style="padding: 10px; text-align: center;">SL</th>
+                                            <th style="padding: 10px; text-align: right;">Giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${productsHTML}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2" style="padding: 15px 10px 10px; text-align: right; font-weight: bold;">
+                                                Tổng cộng:
+                                            </td>
+                                            <td style="padding: 15px 10px 10px; text-align: right; font-weight: bold; color: #10b981; font-size: 18px;">
+                                                ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total_amount)}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <!-- Shipping Address -->
+                            <div style="margin: 20px 0;">
+                                <h3 style="margin: 0 0 10px; color: #333;">Địa Chỉ Giao Hàng</h3>
+                                <p style="color: #666; margin: 0; line-height: 1.6;">
+                                    ${shipping_address}
+                                </p>
+                            </div>
+                            
+                            <p style="color: #666666; font-size: 14px; margin-top: 20px;">
+                                Chúng tôi sẽ thông báo cho bạn khi đơn hàng được giao đi.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 20px 40px; text-align: center; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
+                            <p style="margin: 0; color: #999999; font-size: 12px;">
+                                © 2025 Antique Store. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+        `;
+
+        await transporter.sendMail({
+            from: `"Antique Store" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: `✅ Xác Nhận Đơn Hàng #${order_number}`,
+            html: htmlContent,
+        });
+
+        logger.info({ message: 'Order confirmation email sent', email, order_number });
+        return { success: true };
+    } catch (error) {
+        logger.logError(error, { operation: 'sendOrderConfirmationEmail', email });
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Send Invoice Email with PDF attachment
+ */
+const sendInvoiceEmail = async (email, invoiceData, pdfBuffer = null) => {
+    try {
+        const transporter = initializeTransporter();
+
+        const { invoice_number, order_number, total_amount } = invoiceData;
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px;">
+                    <tr>
+                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">
+                                📄 Hóa Đơn Điện Tử
+                            </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="margin: 0 0 20px; color: #333333;">
+                                Hóa Đơn #${invoice_number}
+                            </h2>
+                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
+                                Cảm ơn bạn đã mua hàng tại Antique Store!
+                            </p>
+                            <p style="color: #666666; font-size: 16px;">
+                                Đơn hàng: <strong>#${order_number}</strong><br>
+                                Tổng tiền: <strong style="color: #3b82f6; font-size: 20px;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total_amount)}</strong>
+                            </p>
+                            <p style="color: #666666; font-size: 14px; margin-top: 20px;">
+                                ${pdfBuffer ? 'Hóa đơn chi tiết được đính kèm dưới dạng file PDF.' : 'Hóa đơn chi tiết sẽ được gửi trong email tiếp theo.'}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px 40px; text-align: center; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
+                            <p style="margin: 0; color: #999999; font-size: 12px;">
+                                © 2025 Antique Store. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+        `;
+
+        const mailOptions = {
+            from: `"Antique Store" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: `📄 Hóa Đơn #${invoice_number} - Đơn Hàng #${order_number}`,
+            html: htmlContent,
+        };
+
+        // Attach PDF if provided
+        if (pdfBuffer) {
+            mailOptions.attachments = [{
+                filename: `invoice-${invoice_number}.pdf`,
+                content: pdfBuffer,
+                contentType: 'application/pdf'
+            }];
+        }
+
+        await transporter.sendMail(mailOptions);
+
+        logger.info({ message: 'Invoice email sent', email, invoice_number });
+        return { success: true };
+    } catch (error) {
+        logger.logError(error, { operation: 'sendInvoiceEmail', email });
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Send Warranty Created Email
+ */
+const sendWarrantyEmail = async (email, warrantyData) => {
+    try {
+        const transporter = initializeTransporter();
+
+        const { warranty_code, order_number, expiry_date, product_name } = warrantyData;
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Warranty</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px;">
+                    <tr>
+                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">
+                                🛡️ Thông Tin Bảo Hành
+                            </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="margin: 0 0 20px; color: #333333;">
+                                Bảo Hành Đã Được Kích Hoạt!
+                            </h2>
+                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
+                                Sản phẩm <strong>${product_name || 'của bạn'}</strong> từ đơn hàng <strong>#${order_number}</strong> đã được kích hoạt bảo hành.
+                            </p>
+                            
+                            <!-- Warranty Code Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px; padding: 20px; display: inline-block;">
+                                            <p style="margin: 0 0 5px; color: #ffffff; font-size: 14px;">Mã Bảo Hành</p>
+                                            <p style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold; letter-spacing: 2px;">
+                                                ${warranty_code}
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="color: #666666; font-size: 16px;">
+                                Ngày hết hạn: <strong>${new Date(expiry_date).toLocaleDateString('vi-VN')}</strong>
+                            </p>
+                            
+                            <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                                <p style="margin: 0; color: #92400e; font-size: 14px;">
+                                    💡 <strong>Lưu ý:</strong> Vui lòng giữ mã bảo hành này để tra cứu và yêu cầu bảo hành khi cần.
+                                </p>
+                            </div>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="http://localhost:5173/warranty-lookup" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                            Tra Cứu Bảo Hành
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px 40px; text-align: center; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
+                            <p style="margin: 0; color: #999999; font-size: 12px;">
+                                © 2025 Antique Store. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+        `;
+
+        await transporter.sendMail({
+            from: `"Antique Store" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: `🛡️ Kích Hoạt Bảo Hành - Mã ${warranty_code}`,
+            html: htmlContent,
+        });
+
+        logger.info({ message: 'Warranty email sent', email, warranty_code });
+        return { success: true };
+    } catch (error) {
+        logger.logError(error, { operation: 'sendWarrantyEmail', email });
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Send Order Status Update Email
+ */
+const sendOrderStatusUpdateEmail = async (email, orderData) => {
+    try {
+        const transporter = initializeTransporter();
+
+        const { order_number, status } = orderData;
+
+        const statusMessages = {
+            confirmed: {
+                title: '✅ Đơn Hàng Đã Được Xác Nhận',
+                message: 'Đơn hàng của bạn đã được xác nhận và đang được chuẩn bị.',
+                color: '#10b981'
+            },
+            shipping: {
+                title: '🚚 Đơn Hàng Đang Được Giao',
+                message: 'Đơn hàng của bạn đang trên đường giao đến địa chỉ của bạn.',
+                color: '#6366f1'
+            },
+            delivered: {
+                title: '✨ Đơn Hàng Đã Giao Thành Công',
+                message: 'Đơn hàng của bạn đã được giao thành công. Cảm ơn bạn đã mua hàng!',
+                color: '#8b5cf6'
+            },
+            cancelled: {
+                title: '❌ Đơn Hàng Đã Bị Hủy',
+                message: 'Đơn hàng của bạn đã bị hủy. Vui lòng liên hệ với chúng tôi nếu có thắc mắc.',
+                color: '#ef4444'
+            }
+        };
+
+        const statusInfo = statusMessages[status] || statusMessages.confirmed;
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Status Update</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px;">
+                    <tr>
+                        <td style="padding: 40px; text-align: center; background-color: ${statusInfo.color}; border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">
+                                ${statusInfo.title}
+                            </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px;">
+                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
+                                Đơn hàng <strong>#${order_number}</strong> đã được cập nhật.
+                            </p>
+                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
+                                ${statusInfo.message}
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="http://localhost:5173/my-orders" style="display: inline-block; padding: 15px 40px; background-color: ${statusInfo.color}; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                            Xem Chi Tiết Đơn Hàng
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px 40px; text-align: center; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
+                            <p style="margin: 0; color: #999999; font-size: 12px;">
+                                © 2025 Antique Store. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+        `;
+
+        await transporter.sendMail({
+            from: `"Antique Store" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: `${statusInfo.title} - Đơn Hàng #${order_number}`,
+            html: htmlContent,
+        });
+
+        logger.info({ message: 'Order status update email sent', email, order_number, status });
+        return { success: true };
+    } catch (error) {
+        logger.logError(error, { operation: 'sendOrderStatusUpdateEmail', email });
+        return { success: false, error: error.message };
+    }
+};
+
+/**
  * Verify email configuration
  */
 const verifyEmailConfig = async () => {
@@ -270,6 +688,10 @@ const verifyEmailConfig = async () => {
 module.exports = {
     sendOTPEmail,
     sendWelcomeEmail,
+    sendOrderConfirmationEmail,
+    sendInvoiceEmail,
+    sendWarrantyEmail,
+    sendOrderStatusUpdateEmail,
     verifyEmailConfig,
 };
 

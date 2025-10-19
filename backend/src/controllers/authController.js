@@ -1,5 +1,6 @@
 const { User } = require('../models');
 const { generateToken, generateRefreshToken } = require('../middlewares/auth');
+const oauthService = require('../services/oauthService');
 
 /**
  * Đăng ký người dùng mới
@@ -203,12 +204,80 @@ const changePassword = async (req, res, next) => {
     }
 };
 
+/**
+ * Đăng nhập bằng Google
+ * POST /api/v1/auth/google
+ */
+const googleLogin = async (req, res, next) => {
+    try {
+        const { idToken } = req.body;
+
+        if (!idToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'Google ID Token là bắt buộc'
+            });
+        }
+
+        const result = await oauthService.googleLogin(idToken);
+
+        res.json({
+            success: true,
+            message: 'Đăng nhập Google thành công',
+            data: result
+        });
+    } catch (error) {
+        if (error.message === 'Invalid Google token') {
+            return res.status(401).json({
+                success: false,
+                message: 'Google token không hợp lệ'
+            });
+        }
+        next(error);
+    }
+};
+
+/**
+ * Đăng nhập bằng Facebook
+ * POST /api/v1/auth/facebook
+ */
+const facebookLogin = async (req, res, next) => {
+    try {
+        const { accessToken, userID } = req.body;
+
+        if (!accessToken || !userID) {
+            return res.status(400).json({
+                success: false,
+                message: 'Facebook access token và userID là bắt buộc'
+            });
+        }
+
+        const result = await oauthService.facebookLogin(accessToken, userID);
+
+        res.json({
+            success: true,
+            message: 'Đăng nhập Facebook thành công',
+            data: result
+        });
+    } catch (error) {
+        if (error.message === 'Invalid Facebook token') {
+            return res.status(401).json({
+                success: false,
+                message: 'Facebook token không hợp lệ'
+            });
+        }
+        next(error);
+    }
+};
+
 module.exports = {
     register,
     login,
     getProfile,
     updateProfile,
-    changePassword
+    changePassword,
+    googleLogin,
+    facebookLogin
 };
 
 

@@ -20,6 +20,8 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import WarrantyLookup from './pages/WarrantyLookup'
+import MyOrders from './pages/MyOrders'
+import OrderDetail from './pages/OrderDetail'
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard'
 import Products from './pages/admin/Products'
@@ -48,7 +50,7 @@ function App() {
                                 },
                             }}
                         />
-                        <Router>
+                        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                             <Routes>
                                 {/* Public routes with main layout */}
                                 <Route path="/" element={<Layout><HomePage /></Layout>} />
@@ -108,6 +110,20 @@ function App() {
                                     <Layout>
                                         <ProtectedRoute requireAuth={true}>
                                             <CheckoutPage />
+                                        </ProtectedRoute>
+                                    </Layout>
+                                } />
+                                <Route path="/my-orders" element={
+                                    <Layout>
+                                        <ProtectedRoute requireAuth={true}>
+                                            <MyOrders />
+                                        </ProtectedRoute>
+                                    </Layout>
+                                } />
+                                <Route path="/orders/:id" element={
+                                    <Layout>
+                                        <ProtectedRoute requireAuth={true}>
+                                            <OrderDetail />
                                         </ProtectedRoute>
                                     </Layout>
                                 } />

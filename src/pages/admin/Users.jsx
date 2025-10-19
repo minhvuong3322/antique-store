@@ -68,7 +68,7 @@ const Users = () => {
             fetchUsers();
         } catch (error) {
             console.error('Error updating user:', error);
-            toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+            toast.error(error.message || 'Có lỗi xảy ra');
         }
     };
 
@@ -246,8 +246,8 @@ const Users = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
                                                     }`}>
                                                     {user.is_active ? 'Hoạt động' : 'Không hoạt động'}
                                                 </span>
