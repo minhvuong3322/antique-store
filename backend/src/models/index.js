@@ -15,7 +15,6 @@ const Otp = require('./Otp');
 const Supplier = require('./Supplier');
 const ProductSupplier = require('./ProductSupplier');
 const WarehouseLog = require('./WarehouseLog');
-const Warranty = require('./Warranty');
 const Invoice = require('./Invoice');
 const SocialAuth = require('./SocialAuth');
 const Review = require('./Review');
@@ -56,7 +55,6 @@ module.exports = {
     Supplier,
     ProductSupplier,
     WarehouseLog,
-    Warranty,
     Invoice,
     SocialAuth,
     Review,

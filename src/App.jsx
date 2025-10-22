@@ -20,7 +20,6 @@ import VerifyOTPPage from './pages/VerifyOTPPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import WarrantyLookup from './pages/WarrantyLookup'
 import MyOrders from './pages/MyOrders'
 import OrderDetail from './pages/OrderDetail'
 // Admin Pages
@@ -30,7 +29,6 @@ import Orders from './pages/admin/Orders'
 import Users from './pages/admin/Users'
 import Suppliers from './pages/admin/Suppliers'
 import Warehouse from './pages/admin/Warehouse'
-import Warranties from './pages/admin/Warranties'
 import Invoices from './pages/admin/Invoices'
 import Analytics from './pages/admin/Analytics'
 import TestAPI from './components/TestAPI'
@@ -59,7 +57,6 @@ function App() {
                                 <Route path="/products/:id" element={<Layout><ProductDetailPage /></Layout>} />
                                 <Route path="/about" element={<Layout><AboutPage /></Layout>} />
                                 <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
-                                <Route path="/warranty-lookup" element={<Layout><WarrantyLookup /></Layout>} />
                                 <Route path="/test-api" element={<Layout><TestAPI /></Layout>} />
 
                                 {/* Auth routes - redirect if already logged in */}
@@ -148,7 +145,6 @@ function App() {
                                     <Route path="users" element={<Users />} />
                                     <Route path="suppliers" element={<Suppliers />} />
                                     <Route path="warehouse" element={<Warehouse />} />
-                                    <Route path="warranties" element={<Warranties />} />
                                     <Route path="invoices" element={<Invoices />} />
                                     <Route path="analytics" element={<Analytics />} />
                                 </Route>

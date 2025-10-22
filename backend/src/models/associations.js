@@ -19,7 +19,6 @@ const setupAssociations = () => {
     const Supplier = require('./Supplier');
     const ProductSupplier = require('./ProductSupplier');
     const WarehouseLog = require('./WarehouseLog');
-    const Warranty = require('./Warranty');
     const Invoice = require('./Invoice');
     const SocialAuth = require('./SocialAuth');
     const Review = require('./Review');
@@ -172,17 +171,6 @@ const setupAssociations = () => {
         as: 'product'
     });
 
-    // Product - Warranty (1:N)
-    Product.hasMany(Warranty, {
-        foreignKey: 'product_id',
-        as: 'warranties',
-        onDelete: 'RESTRICT'
-    });
-    Warranty.belongsTo(Product, {
-        foreignKey: 'product_id',
-        as: 'product'
-    });
-
     // Product - Review (1:N)
     Product.hasMany(Review, {
         foreignKey: 'product_id',
@@ -216,17 +204,6 @@ const setupAssociations = () => {
         onDelete: 'CASCADE'
     });
     Payment.belongsTo(Order, {
-        foreignKey: 'order_id',
-        as: 'order'
-    });
-
-    // Order - Warranty (1:N)
-    Order.hasMany(Warranty, {
-        foreignKey: 'order_id',
-        as: 'warranties',
-        onDelete: 'CASCADE'
-    });
-    Warranty.belongsTo(Order, {
         foreignKey: 'order_id',
         as: 'order'
     });

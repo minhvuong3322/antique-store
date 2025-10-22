@@ -467,108 +467,6 @@ const sendInvoiceEmail = async (email, invoiceData, pdfBuffer = null) => {
 };
 
 /**
- * Send Warranty Created Email
- */
-const sendWarrantyEmail = async (email, warrantyData) => {
-    try {
-        const transporter = initializeTransporter();
-
-        const { warranty_code, order_number, expiry_date, product_name } = warrantyData;
-
-        const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Warranty</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
-        <tr>
-            <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px;">
-                    <tr>
-                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px 8px 0 0;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">
-                                🛡️ Thông Tin Bảo Hành
-                            </h1>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 40px;">
-                            <h2 style="margin: 0 0 20px; color: #333333;">
-                                Bảo Hành Đã Được Kích Hoạt!
-                            </h2>
-                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
-                                Sản phẩm <strong>${product_name || 'của bạn'}</strong> từ đơn hàng <strong>#${order_number}</strong> đã được kích hoạt bảo hành.
-                            </p>
-                            
-                            <!-- Warranty Code Box -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
-                                <tr>
-                                    <td align="center">
-                                        <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 8px; padding: 20px; display: inline-block;">
-                                            <p style="margin: 0 0 5px; color: #ffffff; font-size: 14px;">Mã Bảo Hành</p>
-                                            <p style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold; letter-spacing: 2px;">
-                                                ${warranty_code}
-                                            </p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <p style="color: #666666; font-size: 16px;">
-                                Ngày hết hạn: <strong>${new Date(expiry_date).toLocaleDateString('vi-VN')}</strong>
-                            </p>
-                            
-                            <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
-                                <p style="margin: 0; color: #92400e; font-size: 14px;">
-                                    💡 <strong>Lưu ý:</strong> Vui lòng giữ mã bảo hành này để tra cứu và yêu cầu bảo hành khi cần.
-                                </p>
-                            </div>
-                            
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="http://localhost:5173/warranty-lookup" style="display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                                            Tra Cứu Bảo Hành
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 20px 40px; text-align: center; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
-                            <p style="margin: 0; color: #999999; font-size: 12px;">
-                                © 2025 Antique Store. All rights reserved.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-        `;
-
-        await transporter.sendMail({
-            from: `"Antique Store" <${process.env.SMTP_USER}>`,
-            to: email,
-            subject: `🛡️ Kích Hoạt Bảo Hành - Mã ${warranty_code}`,
-            html: htmlContent,
-        });
-
-        logger.info({ message: 'Warranty email sent', email, warranty_code });
-        return { success: true };
-    } catch (error) {
-        logger.logError(error, { operation: 'sendWarrantyEmail', email });
-        return { success: false, error: error.message };
-    }
-};
-
-/**
  * Send Order Status Update Email
  */
 const sendOrderStatusUpdateEmail = async (email, orderData) => {
@@ -690,7 +588,6 @@ module.exports = {
     sendWelcomeEmail,
     sendOrderConfirmationEmail,
     sendInvoiceEmail,
-    sendWarrantyEmail,
     sendOrderStatusUpdateEmail,
     verifyEmailConfig,
 };

@@ -59,7 +59,6 @@ const Navbar = () => {
     const navLinks = [
         { path: '/', label: t('nav.home') },
         { path: '/products', label: t('nav.products') },
-        { path: '/warranty-lookup', label: 'Tra cứu bảo hành' },
         { path: '/about', label: t('nav.about') },
         { path: '/contact', label: t('nav.contact') },
     ]

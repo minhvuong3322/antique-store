@@ -1,4 +1,4 @@
-const { User, Product, Order, OrderDetail, Payment, Category, Supplier, Invoice, Warranty, WarehouseLog, sequelize } = require('../models');
+const { User, Product, Order, OrderDetail, Payment, Category, Supplier, Invoice, WarehouseLog, sequelize } = require('../models');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 
@@ -451,11 +451,6 @@ exports.getComprehensiveAnalytics = async (req, res, next) => {
             raw: true
         });
 
-        // Warranty statistics
-        const totalWarranties = await Warranty.count();
-        const activeWarranties = await Warranty.count({ where: { status: 'active' } });
-        const claimedWarranties = await Warranty.count({ where: { status: 'claimed' } });
-
         // Invoice statistics
         const totalInvoices = await Invoice.count();
         const paidInvoices = await Invoice.count({ where: { payment_status: 'paid' } });
@@ -487,11 +482,6 @@ exports.getComprehensiveAnalytics = async (req, res, next) => {
                 },
                 orders: {
                     by_status: ordersByStatus
-                },
-                warranties: {
-                    total: totalWarranties,
-                    active: activeWarranties,
-                    claimed: claimedWarranties
                 },
                 invoices: {
                     total: totalInvoices,
