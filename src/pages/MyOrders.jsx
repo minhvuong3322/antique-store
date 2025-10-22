@@ -165,8 +165,8 @@ const MyOrders = () => {
                             setPagination({ ...pagination, page: 1 });
                         }}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === filterOption.value
-                                ? 'bg-vintage-bronze text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                            ? 'bg-vintage-bronze text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
                             }`}
                     >
                         {filterOption.label}

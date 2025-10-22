@@ -12,6 +12,7 @@ import ProductsPage from './pages/ProductsPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
+import WishlistPage from './pages/WishlistPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -103,6 +104,13 @@ function App() {
                                     <Layout>
                                         <ProtectedRoute requireAuth={true}>
                                             <CartPage />
+                                        </ProtectedRoute>
+                                    </Layout>
+                                } />
+                                <Route path="/wishlist" element={
+                                    <Layout>
+                                        <ProtectedRoute requireAuth={true}>
+                                            <WishlistPage />
                                         </ProtectedRoute>
                                     </Layout>
                                 } />

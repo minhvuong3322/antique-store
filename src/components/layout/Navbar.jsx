@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../../context/ThemeContext'
 import { useCart } from '../../context/CartContext'
+import { useWishlist } from '../../context/WishlistContext'
 import { useAuth } from '../../context/AuthContext'
 import LanguageSwitcher from '../LanguageSwitcher'
 import Avatar from '../Avatar'
@@ -16,16 +17,35 @@ import {
     Search,
     LogOut,
     Shield,
-    Package
+    Package,
+    Heart
 } from 'lucide-react'
 
 const Navbar = () => {
     const { t, i18n } = useTranslation()
     const { isDark, toggleTheme } = useTheme()
     const { getCartItemsCount } = useCart()
+    const { getWishlistCount } = useWishlist()
     const { user, isAuthenticated, logout } = useAuth()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
     const cartItemsCount = getCartItemsCount()
+    const wishlistCount = getWishlistCount()
+    const dropdownRef = useRef(null)
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsUserMenuOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
 
     const handleLogout = async () => {
         try {
@@ -100,41 +120,92 @@ const Navbar = () => {
                         {/* User Account / Login / Logout */}
                         {isAuthenticated ? (
                             <div className="flex items-center space-x-2">
-                                <Avatar user={user} size="sm" />
-                                {/* My Orders Button */}
-                                <Link
-                                    to="/my-orders"
-                                    className="flex items-center space-x-1 px-3 py-2 hover:bg-vintage-gold/10 rounded-lg transition-colors"
-                                    title="Đơn hàng của tôi"
-                                >
-                                    <Package className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
-                                    <span className="text-sm text-vintage-bronze dark:text-vintage-gold font-medium hidden lg:block">
-                                        Đơn hàng
-                                    </span>
-                                </Link>
-                                {/* Admin Panel Button - Only show for admin users */}
-                                {user?.role === 'admin' && (
-                                    <Link
-                                        to="/admin/dashboard"
-                                        className="flex items-center space-x-1 px-3 py-2 bg-vintage-gold/20 hover:bg-vintage-gold/30 rounded-lg transition-colors"
-                                        title="Admin Panel"
+                                {/* User Avatar with Dropdown */}
+                                <div className="relative" ref={dropdownRef}>
+                                    <button
+                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                        onMouseEnter={() => setIsUserMenuOpen(true)}
+                                        className="cursor-pointer p-1 rounded-full hover:bg-vintage-gold/10 transition-colors"
                                     >
-                                        <Shield className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
-                                        <span className="text-sm text-vintage-bronze dark:text-vintage-gold font-medium hidden md:block">
-                                            Quản lý
-                                        </span>
-                                    </Link>
-                                )}
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex items-center space-x-1 px-3 py-2 hover:bg-vintage-gold/10 rounded-lg transition-colors"
-                                    title="Đăng xuất"
-                                >
-                                    <LogOut className="w-4 h-4 text-vintage-darkwood dark:text-vintage-cream" />
-                                    <span className="text-sm text-vintage-darkwood dark:text-vintage-cream font-medium hidden md:block">
-                                        Đăng xuất
-                                    </span>
-                                </button>
+                                        <Avatar user={user} size="sm" />
+                                    </button>
+
+                                    {/* Dropdown Menu */}
+                                    {isUserMenuOpen && (
+                                        <div
+                                            className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-dark-card border border-vintage-gold/20 rounded-lg shadow-vintage py-2 z-50"
+                                            onMouseEnter={() => setIsUserMenuOpen(true)}
+                                            onMouseLeave={() => setIsUserMenuOpen(false)}
+                                        >
+                                            <div className="px-4 py-2 border-b border-vintage-gold/20">
+                                                <div className="text-sm font-medium text-vintage-darkwood dark:text-vintage-cream">
+                                                    {user?.full_name || user?.email}
+                                                </div>
+                                                <div className="text-xs text-vintage-gold">
+                                                    {user?.email}
+                                                </div>
+                                            </div>
+
+                                            {/* Wishlist Menu Item */}
+                                            <Link
+                                                to="/wishlist"
+                                                onClick={() => setIsUserMenuOpen(false)}
+                                                className="flex items-center space-x-3 px-4 py-3 hover:bg-vintage-gold/10 transition-colors"
+                                            >
+                                                <Heart className="w-4 h-4 text-red-500" />
+                                                <span className="text-sm text-vintage-darkwood dark:text-vintage-cream">
+                                                    Yêu thích
+                                                </span>
+                                                {wishlistCount > 0 && (
+                                                    <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                                        {wishlistCount}
+                                                    </div>
+                                                )}
+                                            </Link>
+
+                                            {/* My Orders Menu Item */}
+                                            <Link
+                                                to="/my-orders"
+                                                onClick={() => setIsUserMenuOpen(false)}
+                                                className="flex items-center space-x-3 px-4 py-3 hover:bg-vintage-gold/10 transition-colors"
+                                            >
+                                                <Package className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
+                                                <span className="text-sm text-vintage-darkwood dark:text-vintage-cream">
+                                                    Đơn hàng của tôi
+                                                </span>
+                                            </Link>
+
+                                            {/* Admin Panel - Only show for admin users */}
+                                            {user?.role === 'admin' && (
+                                                <Link
+                                                    to="/admin/dashboard"
+                                                    onClick={() => setIsUserMenuOpen(false)}
+                                                    className="flex items-center space-x-3 px-4 py-3 hover:bg-vintage-gold/10 transition-colors"
+                                                >
+                                                    <Shield className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
+                                                    <span className="text-sm text-vintage-darkwood dark:text-vintage-cream">
+                                                        Admin Panel
+                                                    </span>
+                                                </Link>
+                                            )}
+
+                                            <div className="border-t border-vintage-gold/20 mt-2 pt-2">
+                                                <button
+                                                    onClick={() => {
+                                                        handleLogout()
+                                                        setIsUserMenuOpen(false)
+                                                    }}
+                                                    className="flex items-center space-x-3 px-4 py-3 hover:bg-vintage-gold/10 transition-colors w-full text-left"
+                                                >
+                                                    <LogOut className="w-4 h-4 text-vintage-darkwood dark:text-vintage-cream" />
+                                                    <span className="text-sm text-vintage-darkwood dark:text-vintage-cream">
+                                                        Đăng xuất
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ) : (
                             <Link
@@ -200,6 +271,20 @@ const Navbar = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    {/* Wishlist Button for Mobile */}
+                                    <Link
+                                        to="/wishlist"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full text-red-500 hover:text-red-600 transition-colors font-serif flex items-center space-x-2 px-3 py-2 hover:bg-vintage-gold/10 rounded-lg mb-2"
+                                    >
+                                        <Heart className="w-4 h-4" />
+                                        <span>Yêu thích</span>
+                                        {wishlistCount > 0 && (
+                                            <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                                {wishlistCount}
+                                            </div>
+                                        )}
+                                    </Link>
                                     {/* My Orders Button for Mobile */}
                                     <Link
                                         to="/my-orders"

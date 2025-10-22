@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ShoppingCart, Heart, Share2, ChevronLeft, Star, Loader2 } from 'lucide-react'
+import { ShoppingCart, Heart, Share2, ChevronLeft, Star, Loader2, Check, HeartIcon } from 'lucide-react'
 import { formatCurrency } from '../utils/format'
 import { productService } from '../services/productService'
+import { useCart } from '../context/CartContext'
+import { useWishlist } from '../context/WishlistContext'
 
 const ProductDetailPage = () => {
     const { id } = useParams()
@@ -12,6 +14,12 @@ const ProductDetailPage = () => {
     const [product, setProduct] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [addedToCart, setAddedToCart] = useState(false)
+    const [quantity, setQuantity] = useState(1)
+
+    // Contexts
+    const { addToCart, isInCart, getItemQuantity } = useCart()
+    const { toggleWishlist, isInWishlist } = useWishlist()
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -35,6 +43,105 @@ const ProductDetailPage = () => {
             fetchProduct()
         }
     }, [id])
+
+    // Handlers for the action buttons
+    const handleAddToCart = () => {
+        if (!product || product.stock_quantity <= 0) return
+
+        addToCart(product, quantity)
+        setAddedToCart(true)
+
+        // Reset the added state after 2 seconds
+        setTimeout(() => {
+            setAddedToCart(false)
+        }, 2000)
+    }
+
+    const handleToggleWishlist = () => {
+        if (!product) return
+        toggleWishlist(product)
+    }
+
+    const handleShare = async () => {
+        const url = window.location.href
+        const title = product?.name || 'Sản phẩm từ Shop Đồ Cổ'
+        const text = `Xem sản phẩm này: ${title}`
+
+        // Check if Web Share API is available and we're in a secure context
+        if (navigator.share && window.isSecureContext) {
+            try {
+                await navigator.share({
+                    title,
+                    text,
+                    url
+                })
+                return
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.log('Web Share API failed, falling back to clipboard')
+                }
+                // Continue to fallback if sharing was cancelled or failed
+            }
+        }
+
+        // Fallback: Copy to clipboard
+        try {
+            await navigator.clipboard.writeText(url)
+            // Show success message without using alert
+            const message = document.createElement('div')
+            message.textContent = '✅ Đã sao chép link sản phẩm!'
+            message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300'
+            document.body.appendChild(message)
+
+            setTimeout(() => {
+                message.style.opacity = '0'
+                setTimeout(() => {
+                    document.body.removeChild(message)
+                }, 300)
+            }, 2000)
+        } catch (error) {
+            // Final fallback for older browsers
+            try {
+                const textArea = document.createElement('textarea')
+                textArea.value = url
+                textArea.style.position = 'fixed'
+                textArea.style.left = '-999999px'
+                textArea.style.top = '-999999px'
+                document.body.appendChild(textArea)
+                textArea.focus()
+                textArea.select()
+                document.execCommand('copy')
+                document.body.removeChild(textArea)
+
+                // Show success message
+                const message = document.createElement('div')
+                message.textContent = '✅ Đã sao chép link sản phẩm!'
+                message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300'
+                document.body.appendChild(message)
+
+                setTimeout(() => {
+                    message.style.opacity = '0'
+                    setTimeout(() => {
+                        document.body.removeChild(message)
+                    }, 300)
+                }, 2000)
+            } catch (fallbackError) {
+                console.error('Failed to copy to clipboard:', fallbackError)
+                // Show error message
+                const message = document.createElement('div')
+                message.textContent = '❌ Không thể sao chép link'
+                message.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300'
+                document.body.appendChild(message)
+
+                setTimeout(() => {
+                    message.style.opacity = '0'
+                    setTimeout(() => {
+                        document.body.removeChild(message)
+                    }, 300)
+                }, 2000)
+            }
+        }
+    }
 
     if (loading) {
         return (
@@ -219,16 +326,79 @@ const ProductDetailPage = () => {
                             </div>
                         </div>
 
+                        {/* Quantity Selector */}
+                        <div className="flex items-center gap-4 mb-6">
+                            <label className="text-vintage-wood dark:text-vintage-lightwood font-serif">
+                                Số lượng:
+                            </label>
+                            <div className="flex items-center border-2 border-vintage-gold rounded-md">
+                                <button
+                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    className="px-3 py-1 hover:bg-vintage-gold/10 transition-colors"
+                                    disabled={quantity <= 1}
+                                >
+                                    -
+                                </button>
+                                <span className="px-4 py-1 border-x border-vintage-gold/20 min-w-[60px] text-center">
+                                    {quantity}
+                                </span>
+                                <button
+                                    onClick={() => setQuantity(Math.min(product?.stock_quantity || 1, quantity + 1))}
+                                    className="px-3 py-1 hover:bg-vintage-gold/10 transition-colors"
+                                    disabled={quantity >= (product?.stock_quantity || 1)}
+                                >
+                                    +
+                                </button>
+                            </div>
+                            <span className="text-sm text-vintage-wood dark:text-vintage-lightwood">
+                                (Còn {product?.stock_quantity || 0} sản phẩm)
+                            </span>
+                        </div>
+
                         {/* Actions */}
                         <div className="flex gap-4 mb-8">
-                            <button className="flex-1 btn-vintage flex items-center justify-center">
-                                <ShoppingCart className="w-5 h-5 mr-2" />
-                                {t('home.add_to_cart')}
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={!product || product.stock_quantity <= 0 || addedToCart}
+                                className={`flex-1 btn-vintage flex items-center justify-center transition-all duration-300 ${addedToCart
+                                    ? 'bg-green-600 hover:bg-green-700 border-green-600'
+                                    : product?.stock_quantity <= 0
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : ''
+                                    }`}
+                            >
+                                {addedToCart ? (
+                                    <>
+                                        <Check className="w-5 h-5 mr-2" />
+                                        Đã thêm vào giỏ
+                                    </>
+                                ) : (
+                                    <>
+                                        <ShoppingCart className="w-5 h-5 mr-2" />
+                                        {product?.stock_quantity <= 0 ? 'Hết hàng' : t('home.add_to_cart')}
+                                    </>
+                                )}
                             </button>
-                            <button className="p-3 border-2 border-vintage-gold rounded-md hover:bg-vintage-gold/10 transition-colors">
-                                <Heart className="w-6 h-6 text-vintage-gold" />
+
+                            <button
+                                onClick={handleToggleWishlist}
+                                className={`p-3 border-2 rounded-md transition-all duration-300 ${product && isInWishlist(product.id)
+                                    ? 'bg-red-500 border-red-500 text-white hover:bg-red-600'
+                                    : 'border-vintage-gold text-vintage-gold hover:bg-vintage-gold/10'
+                                    }`}
+                                title={product && isInWishlist(product.id) ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}
+                            >
+                                <Heart
+                                    className={`w-6 h-6 transition-all duration-300 ${product && isInWishlist(product.id) ? 'fill-current' : ''
+                                        }`}
+                                />
                             </button>
-                            <button className="p-3 border-2 border-vintage-gold rounded-md hover:bg-vintage-gold/10 transition-colors">
+
+                            <button
+                                onClick={handleShare}
+                                className="p-3 border-2 border-vintage-gold rounded-md hover:bg-vintage-gold/10 transition-colors"
+                                title="Chia sẻ sản phẩm"
+                            >
                                 <Share2 className="w-6 h-6 text-vintage-gold" />
                             </button>
                         </div>
