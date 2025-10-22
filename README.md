@@ -21,24 +21,50 @@ Một website thương mại điện tử hoàn chỉnh với thiết kế hoài
 
 ##  Quick Start
 
+### 🚀 Setup Tự Động (Khuyến nghị)
+
+**Windows:**
+```bash
+# 1. Clone repository
+git clone https://github.com/Minhvuong3322/antique-store.git
+cd antique-store
+
+# 2. Chạy setup tự động
+setup.bat
+```
+
+**Linux/Mac:**
+```bash
+# 1. Clone repository
+git clone https://github.com/Minhvuong3322/antique-store.git
+cd antique-store
+
+# 2. Chạy setup tự động
+chmod +x setup.sh
+./setup.sh
+```
+
+### 📋 Setup Thủ Công
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/Minhvuong3322/antique-store.git
 cd antique-store
 
 # 2. Install dependencies
-npm install                    # Frontend dependencies
-cd backend && npm install      # Backend dependencies
+npm install --legacy-peer-deps  # Frontend dependencies
+cd backend && npm install       # Backend dependencies
 cd ..
 
-# 3. Setup database (MySQL/PostgreSQL)
-# Tạo database: antique_store
-# Import: backend/database/antique_store.sql
+# 3. Setup database
+cd backend
+node scripts/setup-database.js  # Tự động tạo DB và schema
+node scripts/seed-sample-data.js # Tạo dữ liệu mẫu
 
 # 4. Configure environment
-cd backend
-cp env.example .env
-# Chỉnh sửa .env với database credentials
+cp backend/env.example backend/.env
+cp env.frontend.example .env.local
+# Chỉnh sửa các file .env với thông tin của bạn
 
 # 5. Run development servers
 cd backend
@@ -52,7 +78,7 @@ npm run dev                    # Frontend: http://localhost:5173
 # Password: admin123
 ```
 
->  **Tip**: Xem phần [Cài Đặt & Chạy Dự Án](#cài-đặt--chạy-dự-án) để biết hướng dẫn chi tiết hơn.
+>  **Tip**: Script setup tự động sẽ xử lý tất cả dependencies và tạo file cấu hình. Xem phần [Cài Đặt & Chạy Dự Án](#cài-đặt--chạy-dự-án) để biết hướng dẫn chi tiết hơn.
 
 ##  Table of Contents
 
@@ -237,23 +263,44 @@ antique-store/
 
 ### Cài Đặt Nhanh
 
+#### 🚀 Cách 1: Setup Tự Động (Khuyến nghị)
+
+**Windows:**
+```bash
+git clone https://github.com/Minhvuong3322/antique-store.git
+cd antique-store
+setup.bat
+```
+
+**Linux/Mac:**
+```bash
+git clone https://github.com/Minhvuong3322/antique-store.git
+cd antique-store
+chmod +x setup.sh
+./setup.sh
+```
+
+#### 📋 Cách 2: Setup Thủ Công
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/Minhvuong3322/antique-store.git
 cd antique-store
 
 # 2. Cài đặt dependencies
-npm install                    # Frontend
-cd backend && npm install      # Backend
+npm install --legacy-peer-deps  # Frontend
+cd backend && npm install        # Backend
+cd ..
 
-# 3. Cấu hình database
-# Tạo database và import file SQL
-mysql -u root -p antique_store < antique_store.sql
+# 3. Setup database tự động
+cd backend
+node scripts/setup-database.js   # Tạo DB và schema
+node scripts/seed-sample-data.js # Tạo dữ liệu mẫu
 
 # 4. Cấu hình environment
-cd backend
-cp env.example .env
-# Chỉnh sửa file .env với thông tin database
+cp backend/env.example backend/.env
+cp env.frontend.example .env.local
+# Chỉnh sửa các file .env với thông tin của bạn
 
 # 5. Chạy dự án
 # Terminal 1: Backend
@@ -262,6 +309,27 @@ npm run dev
 
 # Terminal 2: Frontend
 npm run dev
+```
+
+#### 🔧 Troubleshooting
+
+**Lỗi "Cannot find module 'dotenv'":**
+```bash
+cd backend
+npm install
+```
+
+**Lỗi "Missing required parameter: client_id" (Google OAuth):**
+```bash
+# Tạo file .env.local
+cp env.frontend.example .env.local
+# Cập nhật VITE_GOOGLE_CLIENT_ID trong .env.local
+```
+
+**Database connection failed:**
+```bash
+# Kiểm tra MySQL/PostgreSQL đang chạy
+# Cập nhật thông tin trong backend/.env
 ```
 
 ### Cài Đặt Với Docker
@@ -490,8 +558,9 @@ npm run logs:combined # Xem combined logs (tail -f)
 
 #### Backend Helper Scripts (trong /backend/scripts)
 ```bash
-node scripts/create-admin.js          # Tạo admin account
+node scripts/setup-database.js         # Setup database tự động (MỚI)
 node scripts/seed-sample-data.js      # Seed dữ liệu mẫu
+node scripts/create-admin.js          # Tạo admin account
 node scripts/sync-database.js         # Sync database schema
 node scripts/quick-seed.js            # Quick seed cho development
 node scripts/fix-social-auth-column.js # Fix social auth columns
@@ -500,6 +569,12 @@ node scripts/fix-social-auth-column.js # Fix social auth columns
 powershell scripts/generate-ssl-cert.ps1        # Windows
 bash scripts/generate-ssl-cert.sh               # Linux/Mac
 bash scripts/setup-letsencrypt.sh               # Let's Encrypt setup
+```
+
+#### Setup Scripts (trong root directory)
+```bash
+setup.bat                            # Windows setup tự động (MỚI)
+./setup.sh                            # Linux/Mac setup tự động (MỚI)
 ```
 
 ### Environment Variables
@@ -567,11 +642,15 @@ LOG_LEVEL=info
 LOG_FILE=true
 ```
 
-#### Frontend (.env trong root directory)
+#### Frontend (.env.local trong root directory)
 ```env
 # API Configuration
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:5000/api/v1
 VITE_API_BASE_URL=http://localhost:5000
+
+# HTTPS Configuration (Development)
+VITE_ENABLE_HTTPS=false
+# Set to 'true' để enable HTTPS với SSL certificates
 
 # Google OAuth
 VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
@@ -583,6 +662,34 @@ VITE_FACEBOOK_APP_ID=your-facebook-app-id
 VITE_APP_NAME=Antique Store
 VITE_APP_URL=http://localhost:5173
 ```
+
+### 🔒 HTTP vs HTTPS Configuration
+
+**Development (Mặc định):**
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000`
+- Không cần SSL certificates
+
+**Development với HTTPS:**
+```bash
+# 1. Tạo SSL certificates
+cd backend/scripts
+powershell ./generate-ssl-cert.ps1  # Windows
+bash ./generate-ssl-cert.sh         # Linux/Mac
+
+# 2. Cập nhật backend/.env
+ENABLE_SSL=true
+
+# 3. Cập nhật .env.local
+VITE_ENABLE_HTTPS=true
+VITE_API_URL=https://localhost:5000/api/v1
+
+# 4. Restart servers
+```
+
+**Production:**
+- Sử dụng Let's Encrypt hoặc valid SSL certificates
+- Cấu hình domain và HTTPS trong production environment
 
 ##  Production Deployment
 
