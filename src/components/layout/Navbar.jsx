@@ -29,15 +29,21 @@ const Navbar = () => {
     const { user, isAuthenticated, logout } = useAuth()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+    const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
     const cartItemsCount = getCartItemsCount()
     const wishlistCount = getWishlistCount()
     const dropdownRef = useRef(null)
+    const searchRef = useRef(null)
 
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsUserMenuOpen(false)
+            }
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setIsSearchOpen(false)
             }
         }
 
@@ -52,6 +58,20 @@ const Navbar = () => {
             await logout()
         } catch (error) {
             console.error('Logout error:', error)
+        }
+    }
+
+    const handleSearch = (e) => {
+        e.preventDefault()
+        if (searchQuery.trim()) {
+            // Redirect to products page with search query
+            window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`
+        }
+    }
+
+    const handleSearchKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch(e)
         }
     }
 
@@ -95,10 +115,52 @@ const Navbar = () => {
 
                     {/* Right Side Icons */}
                     <div className="flex items-center space-x-4">
-                        {/* Search Icon */}
-                        <button className="p-2 hover:bg-vintage-gold/10 rounded-lg transition-colors">
-                            <Search className="w-5 h-5 text-vintage-darkwood dark:text-vintage-cream" />
-                        </button>
+                        {/* Search */}
+                        <div className="relative" ref={searchRef}>
+                            {isSearchOpen ? (
+                                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-dark-card border border-vintage-gold/20 rounded-lg shadow-vintage p-4 z-50">
+                                    <form onSubmit={handleSearch} className="space-y-3">
+                                        <div className="flex items-center space-x-2">
+                                            <Search className="w-4 h-4 text-vintage-gold" />
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onKeyPress={handleSearchKeyPress}
+                                                placeholder="Tìm kiếm sản phẩm..."
+                                                className="flex-1 bg-transparent border-none outline-none text-vintage-darkwood dark:text-vintage-cream placeholder-vintage-gold/60"
+                                                autoFocus
+                                            />
+                                        </div>
+                                        <div className="flex justify-end space-x-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsSearchOpen(false)}
+                                                className="px-3 py-1 text-sm text-vintage-gold hover:text-vintage-bronze transition-colors"
+                                            >
+                                                Hủy
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="px-4 py-1 bg-vintage-gold text-white text-sm rounded hover:bg-vintage-bronze transition-colors"
+                                            >
+                                                Tìm kiếm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            ) : null}
+                            <button
+                                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                                className="p-2 hover:bg-vintage-gold/10 rounded-lg transition-colors"
+                                title="Tìm kiếm sản phẩm"
+                                aria-label="Mở tìm kiếm"
+                                role="button"
+                                tabIndex={0}
+                            >
+                                <Search className="w-5 h-5 text-vintage-darkwood dark:text-vintage-cream" />
+                            </button>
+                        </div>
 
                         {/* Language Toggle */}
                         <LanguageSwitcher />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { Filter, Grid, List, Loader2 } from 'lucide-react'
 import ProductCard from '../components/products/ProductCard'
 import { productService } from '../services/productService'
@@ -7,6 +8,7 @@ import { categoryService } from '../services/categoryService'
 
 const ProductsPage = () => {
     const { t } = useTranslation()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
     const [selectedCategory, setSelectedCategory] = useState('all')
     const [priceRange, setPriceRange] = useState([0, 100000000])
@@ -14,6 +16,15 @@ const ProductsPage = () => {
     const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [searchQuery, setSearchQuery] = useState('')
+
+    // Initialize search query from URL params
+    useEffect(() => {
+        const searchFromUrl = searchParams.get('search')
+        if (searchFromUrl) {
+            setSearchQuery(searchFromUrl)
+        }
+    }, [searchParams])
 
     // Fetch products and categories from API
     useEffect(() => {
@@ -24,7 +35,7 @@ const ProductsPage = () => {
 
                 // Fetch both products and categories
                 const [productsResponse, categoriesResponse] = await Promise.all([
-                    productService.getProducts(),
+                    productService.getProducts({ search: searchQuery }),
                     categoryService.getCategories()
                 ])
 
@@ -46,7 +57,7 @@ const ProductsPage = () => {
         }
 
         fetchData()
-    }, [])
+    }, [searchQuery])
 
     // Filter products
     const filteredProducts = products.filter(product => {
@@ -67,10 +78,13 @@ const ProductsPage = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="font-elegant text-4xl md:text-5xl text-vintage-darkwood dark:text-vintage-gold mb-4">
-                        {t('nav.products')}
+                        {searchQuery ? `Kết quả tìm kiếm: "${searchQuery}"` : t('nav.products')}
                     </h1>
                     <p className="text-vintage-wood dark:text-vintage-lightwood font-serif">
-                        Khám phá {filteredProducts.length} sản phẩm độc đáo
+                        {searchQuery
+                            ? `Tìm thấy ${filteredProducts.length} sản phẩm cho "${searchQuery}"`
+                            : `Khám phá ${filteredProducts.length} sản phẩm độc đáo`
+                        }
                     </p>
                 </div>
 
