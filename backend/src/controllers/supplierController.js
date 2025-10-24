@@ -343,9 +343,8 @@ exports.addProductToSupplier = async (req, res, next) => {
             });
         }
 
-        const productSupplier = await ProductSupplier.create({
+        const productSupplier = await supplier.createProductSupplier({
             product_id,
-            supplier_id: req.params.id,
             supply_price,
             is_primary
         });

@@ -79,9 +79,8 @@ const createOrder = async (req, res, next) => {
         for (const item of cartItems) {
             const price = item.product.sale_price || item.product.price;
 
-            await OrderDetail.create(
+            await order.createOrderDetail(
                 {
-                    order_id: order.id,
                     product_id: item.product_id,
                     quantity: item.quantity,
                     unit_price: price,
@@ -98,9 +97,8 @@ const createOrder = async (req, res, next) => {
         }
 
         // Create payment record
-        await Payment.create(
+        await order.createPayment(
             {
-                order_id: order.id,
                 amount: total_amount,
                 payment_method,
                 payment_status: payment_method === 'COD' ? 'pending' : 'pending'

@@ -137,7 +137,7 @@ const createProduct = async (req, res, next) => {
             });
         }
 
-        const product = await Product.create(productData);
+        const product = await category.createProduct(productData);
 
         res.status(201).json({
             success: true,

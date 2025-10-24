@@ -88,8 +88,7 @@ const addToCart = async (req, res, next) => {
             await cartItem.update({ quantity: newQuantity });
         } else {
             // Create new cart item
-            cartItem = await CartItem.create({
-                user_id,
+            cartItem = await req.user.createCartItem({
                 product_id,
                 quantity
             });
