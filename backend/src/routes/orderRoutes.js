@@ -25,7 +25,7 @@ router.get('/:id', orderController.getOrderById);
 router.put('/:id/cancel', orderController.cancelOrder);
 
 // Admin routes
-router.get('/admin/all', isAdmin, orderController.getAllOrders);
+router.get('/admin/orders', isAdmin, orderController.getAllOrders);
 router.put('/:id/status', isAdmin, updateStatusValidation, orderController.updateOrderStatus);
 
 module.exports = router;

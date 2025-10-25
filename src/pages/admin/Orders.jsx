@@ -66,7 +66,7 @@ const Orders = () => {
 
     const handleCreateInvoice = async (orderId) => {
         try {
-            await invoiceService.create({ order_id: orderId });
+            await invoiceService.createInvoice({ order_id: orderId });
             toast.success('Tạo hóa đơn thành công');
         } catch (error) {
             console.error('Error creating invoice:', error);
