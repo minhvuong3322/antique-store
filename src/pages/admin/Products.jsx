@@ -46,14 +46,20 @@ const Products = () => {
 
     useEffect(() => {
         fetchProducts();
-        fetchCategories();
     }, [filters]);
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
 
     const fetchProducts = async () => {
         try {
             setLoading(true);
             const response = await productService.getProducts(filters);
             setProducts(response.data?.products || []);
+            setTotalPages(response.data.pagination?.total_pages || 1);
+            setTotalItems(response.data.pagination?.total || 0);
         } catch (error) {
             console.error('Error fetching products:', error);
             toast.error('Không thể tải danh sách sản phẩm');
@@ -61,6 +67,9 @@ const Products = () => {
             setLoading(false);
         }
     };
+
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
 
     const fetchCategories = async () => {
         try {
@@ -74,6 +83,7 @@ const Products = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            
             if (editingProduct) {
                 await productService.updateProduct(editingProduct.id, formData);
                 toast.success('Cập nhật sản phẩm thành công');
@@ -97,7 +107,7 @@ const Products = () => {
             category_id: product.category_id,
             description: product.description || '',
             price: product.price,
-            sale_price: product.sale_price || '',
+            sale_price: product.sale_price || null,
             stock_quantity: product.stock_quantity,
             sku: product.sku || '',
             condition: product.condition || 'excellent',
@@ -105,7 +115,7 @@ const Products = () => {
             year_manufactured: product.year_manufactured || '',
             material: product.material || '',
             dimensions: product.dimensions || '',
-            weight: product.weight || '',
+            weight: product.weight || null,
             is_featured: product.is_featured,
             is_active: product.is_active
         });
@@ -380,9 +390,73 @@ const Products = () => {
                                 })}
                             </tbody>
                         </table>
+                {/* Pagination */}
+                {!loading && products.length > 0 && (
+                    <div className="flex flex-col items-center justify-center px-6 py-4 bg-gray-50 dark:bg-gray-700 space-y-3">
+                        {/* Thông tin tổng quan */}
+                        <p className="text-sm text-gray-500 dark:text-gray-300">
+                            Trang {filters.page} / {totalPages} — Tổng {totalItems} sản phẩm
+                        </p>
+
+                        {/* Thanh phân trang */}
+                        <div className="flex space-x-2 items-center">
+                            {/* Nút Trang trước */}
+                            <button
+                                disabled={filters.page <= 1}
+                                onClick={() =>
+                                    setFilters((prev) => ({ ...prev, page: prev.page - 1 }))
+                                }
+                                className={`px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 ${
+                                    filters.page <= 1
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                            >
+                                Trang trước
+                            </button>
+
+                            {/* Danh sách số trang */}
+                            {[...Array(totalPages)].map((_, index) => {
+                                const pageNum = index + 1;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setFilters((prev) => ({ ...prev, page: pageNum }))}
+                                        className={`px-3 py-1 rounded-lg border ${
+                                            filters.page === pageNum
+                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                : 'border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+
+                            {/* Nút Trang sau */}
+                            <button
+                                disabled={filters.page >= totalPages}
+                                onClick={() =>
+                                    setFilters((prev) => ({ ...prev, page: prev.page + 1 }))
+                                }
+                                className={`px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 ${
+                                    filters.page >= totalPages
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                            >
+                                Trang sau
+                            </button>
+                        </div>
                     </div>
                 )}
+
+
+                    </div>
+                )}
+                
             </div>
+            
 
             {/* Modal */}
             {showModal && (

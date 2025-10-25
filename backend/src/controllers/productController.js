@@ -6,6 +6,78 @@ const config = require('../config/app');
  * Get all products with pagination, search, filter
  * GET /api/v1/products
  */
+// const getAllProducts = async (req, res, next) => {
+//     try {
+//         const {
+//             page = 1,
+//             limit = config.pagination.default_limit,
+//             search = '',
+//             category_id,
+//             condition,
+//             min_price,
+//             max_price,
+//             is_featured,
+//             sort_by = 'created_at',
+//             order = 'DESC'
+//         } = req.query;
+
+//         // Build where clause
+//         const where = { is_active: true };
+
+//         if (search) {
+//             where[Op.or] = [
+//                 { name: { [Op.like]: `%${search}%` } },
+//                 { description: { [Op.like]: `%${search}%` } }
+//             ];
+//         }
+
+//         if (category_id) where.category_id = category_id;
+//         if (condition) where.condition = condition;
+//         if (is_featured !== undefined) where.is_featured = is_featured === 'true';
+
+//         if (min_price || max_price) {
+//             where.price = {};
+//             if (min_price) where.price[Op.gte] = min_price;
+//             if (max_price) where.price[Op.lte] = max_price;
+//         }
+
+//         // Calculate pagination
+//         const offset = (page - 1) * limit;
+//         const parsedLimit = Math.min(parseInt(limit), config.pagination.max_limit);
+
+//         // Fetch products
+//         const { count, rows: products } = await Product.findAndCountAll({
+//             where,
+//             include: [
+//                 {
+//                     model: Category,
+//                     as: 'category',
+//                     attributes: ['id', 'name', 'slug']
+//                 }
+//             ],
+//             limit: parsedLimit,
+//             offset,
+//             order: [[sort_by, order.toUpperCase()]],
+//             distinct: true
+//         });
+
+//         res.json({
+//             success: true,
+//             data: {
+//                 products,
+//                 pagination: {
+//                     total: count,
+//                     page: parseInt(page),
+//                     limit: parsedLimit,
+//                     total_pages: Math.ceil(count / parsedLimit)
+//                 }
+//             }
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
 const getAllProducts = async (req, res, next) => {
     try {
         const {
@@ -16,14 +88,14 @@ const getAllProducts = async (req, res, next) => {
             condition,
             min_price,
             max_price,
-            is_featured,
             sort_by = 'created_at',
             order = 'DESC'
         } = req.query;
 
-        // Build where clause
+        // Chỉ lọc sản phẩm đang hoạt động
         const where = { is_active: true };
 
+        // Tìm kiếm theo tên hoặc mô tả
         if (search) {
             where[Op.or] = [
                 { name: { [Op.like]: `%${search}%` } },
@@ -31,9 +103,9 @@ const getAllProducts = async (req, res, next) => {
             ];
         }
 
+        // Lọc theo danh mục, tình trạng, giá
         if (category_id) where.category_id = category_id;
         if (condition) where.condition = condition;
-        if (is_featured !== undefined) where.is_featured = is_featured === 'true';
 
         if (min_price || max_price) {
             where.price = {};
@@ -41,11 +113,11 @@ const getAllProducts = async (req, res, next) => {
             if (max_price) where.price[Op.lte] = max_price;
         }
 
-        // Calculate pagination
-        const offset = (page - 1) * limit;
+        // Tính phân trang
         const parsedLimit = Math.min(parseInt(limit), config.pagination.max_limit);
+        const offset = (page - 1) * parsedLimit;
 
-        // Fetch products
+        // Truy vấn sản phẩm
         const { count, rows: products } = await Product.findAndCountAll({
             where,
             include: [
@@ -61,6 +133,7 @@ const getAllProducts = async (req, res, next) => {
             distinct: true
         });
 
+        // Trả kết quả
         res.json({
             success: true,
             data: {
@@ -77,6 +150,7 @@ const getAllProducts = async (req, res, next) => {
         next(error);
     }
 };
+
 
 /**
  * Get product by ID or slug
