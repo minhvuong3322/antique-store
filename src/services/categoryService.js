@@ -2,7 +2,7 @@ import api from './api';
 
 export const categoryService = {
     // Lấy danh sách danh mục
-    getAll: async () => {
+    getCategories: async () => {
         return await api.get('/categories');
     },
 
