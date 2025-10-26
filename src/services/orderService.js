@@ -29,7 +29,7 @@ export const orderService = {
 
     // Admin: Lấy tất cả đơn hàng
     getAllOrders: async (params = {}) => {
-        return await api.get('/admin/orders', { params });
+        return await api.get('/orders/admin/orders', { params });
     },
 
     // Admin: Cập nhật trạng thái
