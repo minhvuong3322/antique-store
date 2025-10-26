@@ -165,7 +165,7 @@ const CheckoutPage = () => {
                                             onChange={handleChange}
                                             required
                                             className="w-full px-4 py-3 border border-vintage-gold/30 rounded-lg bg-white dark:bg-gray-700 text-vintage-darkwood dark:text-white focus:ring-2 focus:ring-vintage-gold transition"
-                                            placeholder="0987654321"
+                                            placeholder="0928 172 081"
                                         />
                                     </div>
 

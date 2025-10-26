@@ -148,7 +148,7 @@ const SupportChat = () => {
                                         value={formData.guest_phone}
                                         onChange={handleChange}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-vintage-gold dark:bg-gray-700 dark:text-white"
-                                        placeholder="0987654321"
+                                        placeholder="0928 172 081"
                                     />
                                 </div>
                             </>

@@ -59,7 +59,7 @@ const ContactPage = () => {
 
     const handleZaloContact = () => {
         // Replace with your actual Zalo number/link
-        window.open('https://zalo.me/0987654321', '_blank');
+        window.open('https://zalo.me/0706166053', '_blank');
     };
 
     return (
@@ -88,13 +88,13 @@ const ContactPage = () => {
                     </button>
 
                     <a
-                        href="tel:+84987654321"
+                        href="tel:+84928172081"
                         className="flex items-center justify-center space-x-3 bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg transition-colors shadow-md"
                     >
                         <Phone className="w-6 h-6" />
                         <div className="text-left">
                             <p className="font-semibold">Gọi điện ngay</p>
-                            <p className="text-sm opacity-90">Hotline: +84 987 654 321</p>
+                            <p className="text-sm opacity-90">Hotline: 0928 172 081</p>
                         </div>
                     </a>
                 </div>
@@ -237,8 +237,8 @@ const ContactPage = () => {
                                         Điện thoại
                                     </h3>
                                     <p className="text-vintage-wood dark:text-vintage-lightwood">
-                                        Hotline: +84 24 1234 5678<br />
-                                        Mobile: +84 912 345 678
+                                        Hotline: 0928 172 081<br />
+                                        Zalo: 0706 166 053
                                     </p>
                                 </div>
                             </div>
