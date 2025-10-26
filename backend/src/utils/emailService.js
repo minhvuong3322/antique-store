@@ -385,9 +385,20 @@ const sendOrderConfirmationEmail = async (email, orderData) => {
  */
 const sendInvoiceEmail = async (email, invoiceData, pdfBuffer = null) => {
     try {
+        // Debug: Check email configuration
+        console.log('📧 Sending invoice email to:', email);
+        console.log('📧 SMTP_USER:', process.env.SMTP_USER);
+        console.log('📧 SMTP configuration:', {
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            user: process.env.SMTP_USER ? 'configured' : 'missing'
+        });
+
         const transporter = initializeTransporter();
 
         const { invoice_number, order_number, total_amount } = invoiceData;
+        
+        console.log('📧 Invoice data:', { invoice_number, order_number, total_amount });
 
         const htmlContent = `
 <!DOCTYPE html>
@@ -456,11 +467,20 @@ const sendInvoiceEmail = async (email, invoiceData, pdfBuffer = null) => {
             }];
         }
 
-        await transporter.sendMail(mailOptions);
+        console.log('📧 Attempting to send email with mailOptions:', {
+            from: mailOptions.from,
+            to: mailOptions.to,
+            subject: mailOptions.subject
+        });
 
-        logger.info({ message: 'Invoice email sent', email, invoice_number });
-        return { success: true };
+        const info = await transporter.sendMail(mailOptions);
+
+        console.log('✅ Email sent successfully! Message ID:', info.messageId);
+        logger.info({ message: 'Invoice email sent', email, invoice_number, messageId: info.messageId });
+        return { success: true, messageId: info.messageId };
     } catch (error) {
+        console.error('❌ Email sending failed:', error.message);
+        console.error('❌ Error details:', error);
         logger.logError(error, { operation: 'sendInvoiceEmail', email });
         return { success: false, error: error.message };
     }

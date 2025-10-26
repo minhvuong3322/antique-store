@@ -1,7 +1,7 @@
 const { Invoice, Order, OrderDetail, User, Product } = require('../models');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
-// const emailService = require('../utils/emailService'); // TODO: Implement email sending
+const emailService = require('../utils/emailService');
 
 /**
  * @desc    Get all invoices
@@ -393,13 +393,32 @@ exports.sendInvoiceEmail = async (req, res, next) => {
             });
         }
 
-        // TODO: Implement email sending with PDF attachment
-        // await emailService.sendInvoiceEmail(invoice);
+        // Send email to customer
+        const emailResult = await emailService.sendInvoiceEmail(
+            invoice.customer_email,
+            {
+                invoice_number: invoice.invoice_number,
+                order_number: invoice.order_number,
+                total_amount: invoice.total_amount
+            }
+        );
 
-        // For now, just mark as sent
-        await invoice.markAsSent();
+        if (!emailResult.success) {
+            logger.error(`Failed to send invoice email: ${emailResult.error}`);
+            return res.status(500).json({
+                success: false,
+                message: `Không thể gửi email: ${emailResult.error}`,
+                data: invoice
+            });
+        }
 
-        logger.info(`Invoice email sent: ${invoice.invoice_number} to ${invoice.customer_email}`);
+        // Mark invoice as sent
+        await invoice.update({ 
+            email_sent: true,
+            email_sent_at: new Date()
+        });
+
+        logger.info(`Invoice email sent successfully: ${invoice.invoice_number} to ${invoice.customer_email}`);
 
         res.status(200).json({
             success: true,

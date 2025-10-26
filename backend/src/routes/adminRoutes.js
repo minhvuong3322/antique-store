@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const orderController = require('../controllers/orderController');
+const supportController = require('../controllers/supportController');
 const { protect, authorize } = require('../middlewares/auth');
 const { body } = require('express-validator');
 const { validate } = require('../middlewares/validate');
@@ -40,6 +41,11 @@ router.put('/orders/:id/status',
     validate,
     orderController.updateOrderStatus
 );
+
+// Support message management routes
+router.get('/support', supportController.getAllMessages);
+router.put('/support/:id/respond', supportController.respondToMessage);
+router.put('/support/:id/status', supportController.updateMessageStatus);
 
 module.exports = router;
 

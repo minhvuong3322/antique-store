@@ -51,5 +51,18 @@ export const adminService = {
 
     deleteUser: (id) => {
         return api.delete(`/admin/users/${id}`);
+    },
+
+    // Support Message Management
+    getAllSupportMessages: (params = {}) => {
+        return api.get('/admin/support', { params });
+    },
+
+    respondToMessage: (id, data) => {
+        return api.put(`/admin/support/${id}/respond`, data);
+    },
+
+    updateMessageStatus: (id, data) => {
+        return api.put(`/admin/support/${id}/status`, data);
     }
 };

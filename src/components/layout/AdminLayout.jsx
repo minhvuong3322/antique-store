@@ -14,7 +14,8 @@ import {
     Bars3Icon,
     XMarkIcon,
     ArrowRightOnRectangleIcon,
-    CogIcon
+    CogIcon,
+    ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
 const AdminLayout = () => {
@@ -57,6 +58,7 @@ const AdminLayout = () => {
         { name: 'Nhà cung cấp', href: '/admin/suppliers', icon: TruckIcon },
         { name: 'Kho hàng', href: '/admin/warehouse', icon: CogIcon },
         { name: 'Hóa đơn', href: '/admin/invoices', icon: DocumentTextIcon },
+        { name: 'Tin nhắn hỗ trợ', href: '/admin/support', icon: ChatBubbleLeftRightIcon },
         { name: 'Thống kê', href: '/admin/analytics', icon: ChartBarIcon },
     ];
 

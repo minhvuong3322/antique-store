@@ -21,6 +21,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import MyOrders from './pages/MyOrders'
+import MySupport from './pages/MySupport'
 import OrderDetail from './pages/OrderDetail'
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard'
@@ -30,6 +31,7 @@ import Users from './pages/admin/Users'
 import Suppliers from './pages/admin/Suppliers'
 import Warehouse from './pages/admin/Warehouse'
 import Invoices from './pages/admin/Invoices'
+import Support from './pages/admin/Support'
 import Analytics from './pages/admin/Analytics'
 import TestAPI from './components/TestAPI'
 
@@ -125,6 +127,13 @@ function App() {
                                         </ProtectedRoute>
                                     </Layout>
                                 } />
+                                <Route path="/my-support" element={
+                                    <Layout>
+                                        <ProtectedRoute requireAuth={true}>
+                                            <MySupport />
+                                        </ProtectedRoute>
+                                    </Layout>
+                                } />
                                 <Route path="/orders/:id" element={
                                     <Layout>
                                         <ProtectedRoute requireAuth={true}>
@@ -146,6 +155,7 @@ function App() {
                                     <Route path="suppliers" element={<Suppliers />} />
                                     <Route path="warehouse" element={<Warehouse />} />
                                     <Route path="invoices" element={<Invoices />} />
+                                    <Route path="support" element={<Support />} />
                                     <Route path="analytics" element={<Analytics />} />
                                 </Route>
                             </Routes>
