@@ -38,6 +38,7 @@ const Users = () => {
         try {
             setLoading(true);
             const response = await adminService.getAllUsers(filters);
+            console.log("User API response:", response); 
             setUsers(response.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);

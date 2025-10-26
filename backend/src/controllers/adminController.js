@@ -259,7 +259,7 @@ exports.getAllUsers = async (req, res, next) => {
         const where = {};
 
         if (role) where.role = role;
-        if (is_active !== undefined) where.is_active = is_active === 'true';
+        // if (is_active !== undefined) where.is_active = is_active === 'true';
 
         if (search) {
             where[Op.or] = [
