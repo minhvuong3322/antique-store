@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { warehouseService } from '../../services/warehouseService';
+import api from '../../services/api';
 import {
     PlusIcon,
     ArrowDownTrayIcon,
@@ -57,7 +58,7 @@ const Warehouse = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get('/products');
+            const response = await api.get('/products');
             setProducts(response.data.data || []);
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -66,7 +67,7 @@ const Warehouse = () => {
 
     const fetchSuppliers = async () => {
         try {
-            const response = await axios.get('/suppliers');
+            const response = await api.get('/suppliers');
             setSuppliers(response.data.data || []);
         } catch (error) {
             console.error('Error fetching suppliers:', error);

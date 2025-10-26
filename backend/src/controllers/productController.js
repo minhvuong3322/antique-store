@@ -202,6 +202,23 @@ const createProduct = async (req, res, next) => {
     try {
         const productData = req.body;
 
+        // Clean SKU - empty string should be null for unique constraint
+        if (productData.sku === '' || productData.sku === undefined) {
+            productData.sku = null;
+        }
+
+        // Convert empty strings to null for numeric fields
+        // This prevents database errors when trying to insert '' into numeric columns
+        if (productData.sale_price === '') {
+            productData.sale_price = null;
+        }
+        if (productData.weight === '') {
+            productData.weight = null;
+        }
+        if (productData.year_manufactured === '') {
+            productData.year_manufactured = null;
+        }
+
         // Validate category exists
         const category = await Category.findByPk(productData.category_id);
         if (!category) {
@@ -239,6 +256,23 @@ const updateProduct = async (req, res, next) => {
                 success: false,
                 message: 'Không tìm thấy sản phẩm'
             });
+        }
+
+        // Clean SKU - empty string should be null for unique constraint
+        if (updateData.sku === '' || updateData.sku === undefined) {
+            updateData.sku = null;
+        }
+
+        // Convert empty strings to null for numeric fields
+        // This prevents database errors when trying to insert '' into numeric columns
+        if (updateData.sale_price === '') {
+            updateData.sale_price = null;
+        }
+        if (updateData.weight === '') {
+            updateData.weight = null;
+        }
+        if (updateData.year_manufactured === '') {
+            updateData.year_manufactured = null;
         }
 
         // Validate category if changing

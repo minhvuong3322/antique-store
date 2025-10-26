@@ -66,11 +66,12 @@ const Orders = () => {
 
     const handleCreateInvoice = async (orderId) => {
         try {
-            await invoiceService.create({ order_id: orderId });
+            await invoiceService.createInvoice({ order_id: orderId });
             toast.success('Tạo hóa đơn thành công');
+            fetchOrders(); // Refresh list
         } catch (error) {
             console.error('Error creating invoice:', error);
-            toast.error(error.message || 'Không thể tạo hóa đơn');
+            toast.error(error.response?.data?.message || 'Không thể tạo hóa đơn');
         }
     };
 

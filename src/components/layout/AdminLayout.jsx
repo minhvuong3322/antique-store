@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 import {
     HomeIcon,
     ShoppingBagIcon,
@@ -18,9 +19,29 @@ import {
 
 const AdminLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [newOrdersCount, setNewOrdersCount] = useState(0);
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Fetch new orders count
+    useEffect(() => {
+        const fetchNewOrdersCount = async () => {
+            try {
+                const response = await api.get('/admin/orders/new-count');
+                if (response.data.success) {
+                    setNewOrdersCount(response.data.data.count);
+                }
+            } catch (error) {
+                console.error('Error fetching new orders count:', error);
+            }
+        };
+
+        fetchNewOrdersCount();
+        // Refresh every 30 seconds
+        const interval = setInterval(fetchNewOrdersCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -31,7 +52,7 @@ const AdminLayout = () => {
     const navigation = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
         { name: 'Sản phẩm', href: '/admin/products', icon: ShoppingBagIcon },
-        { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCartIcon },
+        { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCartIcon, badge: newOrdersCount },
         { name: 'Người dùng', href: '/admin/users', icon: UserGroupIcon },
         { name: 'Nhà cung cấp', href: '/admin/suppliers', icon: TruckIcon },
         { name: 'Kho hàng', href: '/admin/warehouse', icon: CogIcon },
@@ -71,13 +92,20 @@ const AdminLayout = () => {
                                 key={item.name}
                                 to={item.href}
                                 onClick={() => setSidebarOpen(false)}
-                                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
+                                className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
                                     ? 'bg-primary-50 text-primary-600 dark:bg-primary-900 dark:text-primary-200'
                                     : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
                                     }`}
                             >
-                                <Icon className="w-5 h-5 mr-3" />
-                                {item.name}
+                                <span className="flex items-center">
+                                    <Icon className="w-5 h-5 mr-3" />
+                                    {item.name}
+                                </span>
+                                {item.badge > 0 && (
+                                    <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                        {item.badge}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}
@@ -97,13 +125,20 @@ const AdminLayout = () => {
                                 <Link
                                     key={item.name}
                                     to={item.href}
-                                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
+                                    className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
                                         ? 'bg-primary-50 text-primary-600 dark:bg-primary-900 dark:text-primary-200'
                                         : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
                                         }`}
                                 >
-                                    <Icon className="w-5 h-5 mr-3" />
-                                    {item.name}
+                                    <span className="flex items-center">
+                                        <Icon className="w-5 h-5 mr-3" />
+                                        {item.name}
+                                    </span>
+                                    {item.badge > 0 && (
+                                        <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full animate-pulse">
+                                            {item.badge}
+                                        </span>
+                                    )}
                                 </Link>
                             );
                         })}

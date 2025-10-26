@@ -3,6 +3,7 @@
  * Manages shopping cart state and operations
  */
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
@@ -15,16 +16,31 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState(() => {
-        // Load from localStorage
-        const saved = localStorage.getItem('cart');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const { user } = useAuth();
+    const [cartItems, setCartItems] = useState([]);
+
+    // Load cart from localStorage based on user
+    useEffect(() => {
+        if (user) {
+            const cartKey = `cart_${user.id}`;
+            const saved = localStorage.getItem(cartKey);
+            setCartItems(saved ? JSON.parse(saved) : []);
+        } else {
+            // Guest cart
+            const saved = localStorage.getItem('cart_guest');
+            setCartItems(saved ? JSON.parse(saved) : []);
+        }
+    }, [user]);
 
     // Save to localStorage whenever cart changes
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartItems));
-    }, [cartItems]);
+        if (user) {
+            const cartKey = `cart_${user.id}`;
+            localStorage.setItem(cartKey, JSON.stringify(cartItems));
+        } else {
+            localStorage.setItem('cart_guest', JSON.stringify(cartItems));
+        }
+    }, [cartItems, user]);
 
     // Add item to cart
     const addToCart = (product, quantity = 1) => {

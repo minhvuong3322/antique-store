@@ -23,6 +23,8 @@ const setupAssociations = () => {
     const SocialAuth = require('./SocialAuth');
     const Review = require('./Review');
     const Voucher = require('./Voucher');
+    const Wishlist = require('./Wishlist');
+    const SupportMessage = require('./SupportMessage');
 
     // =====================================================
     // 1. USER RELATIONSHIPS
@@ -105,6 +107,39 @@ const setupAssociations = () => {
         as: 'user'
     });
 
+    // User - Wishlist (1:N)
+    User.hasMany(Wishlist, {
+        foreignKey: 'user_id',
+        as: 'wishlists',
+        onDelete: 'CASCADE'
+    });
+    Wishlist.belongsTo(User, {
+        foreignKey: 'user_id',
+        as: 'user'
+    });
+
+    // User - SupportMessage (1:N) - as submitter
+    User.hasMany(SupportMessage, {
+        foreignKey: 'user_id',
+        as: 'support_messages',
+        onDelete: 'SET NULL'
+    });
+    SupportMessage.belongsTo(User, {
+        foreignKey: 'user_id',
+        as: 'user'
+    });
+
+    // User - SupportMessage (1:N) - as responder
+    User.hasMany(SupportMessage, {
+        foreignKey: 'responded_by',
+        as: 'responded_messages',
+        onDelete: 'SET NULL'
+    });
+    SupportMessage.belongsTo(User, {
+        foreignKey: 'responded_by',
+        as: 'responder'
+    });
+
     // =====================================================
     // 2. CATEGORY RELATIONSHIPS
     // =====================================================
@@ -178,6 +213,17 @@ const setupAssociations = () => {
         onDelete: 'CASCADE'
     });
     Review.belongsTo(Product, {
+        foreignKey: 'product_id',
+        as: 'product'
+    });
+
+    // Product - Wishlist (1:N)
+    Product.hasMany(Wishlist, {
+        foreignKey: 'product_id',
+        as: 'wishlists',
+        onDelete: 'CASCADE'
+    });
+    Wishlist.belongsTo(Product, {
         foreignKey: 'product_id',
         as: 'product'
     });

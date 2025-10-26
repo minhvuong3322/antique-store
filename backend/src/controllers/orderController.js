@@ -10,21 +10,43 @@ const createOrder = async (req, res, next) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const { shipping_address, notes, payment_method = 'COD' } = req.body;
+        const { shipping_address, notes, payment_method = 'COD', cart_items } = req.body;
         const user_id = req.user.id;
 
-        // Get cart items
-        const cartItems = await CartItem.findAll({
-            where: { user_id },
-            include: [
-                {
-                    model: Product,
-                    as: 'product',
-                    where: { is_active: true }
+        let cartItems = [];
+
+        // Option 1: Get cart items from request body (for frontend localStorage cart)
+        if (cart_items && Array.isArray(cart_items) && cart_items.length > 0) {
+            // Fetch product details for each cart item
+            for (const item of cart_items) {
+                const product = await Product.findOne({
+                    where: { id: item.id || item.product_id, is_active: true },
+                    transaction
+                });
+
+                if (product) {
+                    cartItems.push({
+                        product,
+                        quantity: item.quantity,
+                        product_id: product.id
+                    });
                 }
-            ],
-            transaction
-        });
+            }
+        } else {
+            // Option 2: Get cart items from database (fallback)
+            const dbCartItems = await CartItem.findAll({
+                where: { user_id },
+                include: [
+                    {
+                        model: Product,
+                        as: 'product',
+                        where: { is_active: true }
+                    }
+                ],
+                transaction
+            });
+            cartItems = dbCartItems;
+        }
 
         if (cartItems.length === 0) {
             await transaction.rollback();
@@ -79,8 +101,9 @@ const createOrder = async (req, res, next) => {
         for (const item of cartItems) {
             const price = item.product.sale_price || item.product.price;
 
-            await order.createOrderDetail(
+            await OrderDetail.create(
                 {
+                    order_id: order.id,
                     product_id: item.product_id,
                     quantity: item.quantity,
                     unit_price: price,
@@ -97,8 +120,9 @@ const createOrder = async (req, res, next) => {
         }
 
         // Create payment record
-        await order.createPayment(
+        await Payment.create(
             {
+                order_id: order.id,
                 amount: total_amount,
                 payment_method,
                 payment_status: payment_method === 'COD' ? 'pending' : 'pending'
@@ -423,12 +447,32 @@ const getAllOrders = async (req, res, next) => {
     }
 };
 
+/**
+ * Get new orders count (for admin notification)
+ * GET /api/v1/admin/orders/new-count
+ */
+const getNewOrdersCount = async (req, res, next) => {
+    try {
+        const count = await Order.count({
+            where: { status: 'pending' }
+        });
+
+        res.json({
+            success: true,
+            data: { count }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createOrder,
     getUserOrders,
     getOrderById,
     updateOrderStatus,
     cancelOrder,
-    getAllOrders
+    getAllOrders,
+    getNewOrdersCount
 };
 

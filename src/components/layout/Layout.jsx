@@ -1,5 +1,6 @@
 import Navbar from './Navbar'
 import Footer from './Footer'
+import SupportChat from '../SupportChat'
 
 const Layout = ({ children }) => {
     return (
@@ -9,6 +10,7 @@ const Layout = ({ children }) => {
                 {children}
             </main>
             <Footer />
+            <SupportChat />
         </div>
     )
 }

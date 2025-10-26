@@ -107,7 +107,7 @@ const Products = () => {
             category_id: product.category_id,
             description: product.description || '',
             price: product.price,
-            sale_price: product.sale_price || null,
+            sale_price: product.sale_price || '',
             stock_quantity: product.stock_quantity,
             sku: product.sku || '',
             condition: product.condition || 'excellent',
@@ -115,7 +115,7 @@ const Products = () => {
             year_manufactured: product.year_manufactured || '',
             material: product.material || '',
             dimensions: product.dimensions || '',
-            weight: product.weight || null,
+            weight: product.weight || '',
             is_featured: product.is_featured,
             is_active: product.is_active
         });

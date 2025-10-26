@@ -19,6 +19,8 @@ const Invoice = require('./Invoice');
 const SocialAuth = require('./SocialAuth');
 const Review = require('./Review');
 const Voucher = require('./Voucher');
+const Wishlist = require('./Wishlist');
+const SupportMessage = require('./SupportMessage');
 
 // =====================================================
 // SETUP ASSOCIATIONS
@@ -59,6 +61,8 @@ module.exports = {
     SocialAuth,
     Review,
     Voucher,
+    Wishlist,
+    SupportMessage,
     syncDatabase
 };
 

@@ -55,8 +55,12 @@ export const AuthProvider = ({ children }) => {
             const response = await authService.login(credentials)
 
             if (response.success) {
+                // Clear guest cart when logging in
+                localStorage.removeItem('cart_guest');
+                
                 setUser(response.data.user)
                 setIsAuthenticated(true)
+                
                 return { success: true, message: response.message }
             } else {
                 return { success: false, message: response.message }
@@ -75,9 +79,17 @@ export const AuthProvider = ({ children }) => {
             setIsLoading(true)
             await authService.logout()
 
-            // Xóa trạng thái
+            // Xóa trạng thái user TRƯỚC khi clear localStorage
+            // Để CartContext và WishlistContext tự động clear UI qua useEffect dependency [user]
             setUser(null)
             setIsAuthenticated(false)
+
+            // Clear only session data, KEEP user-specific carts for next login
+            localStorage.removeItem('cart'); // Old generic cart
+            localStorage.removeItem('wishlist'); // Not used
+            localStorage.removeItem('user'); // Session info
+            
+            // ✅ KHÔNG xóa cart_${userId} để giữ cart khi login lại
 
             return { success: true, message: 'Đăng xuất thành công' }
         } catch (error) {
@@ -95,8 +107,12 @@ export const AuthProvider = ({ children }) => {
             const response = await authService.loginWithGoogle(idToken)
 
             if (response.success) {
+                // Clear guest cart when logging in
+                localStorage.removeItem('cart_guest');
+                
                 setUser(response.data.user)
                 setIsAuthenticated(true)
+                
                 return { success: true, message: response.message }
             } else {
                 throw new Error(response.message)
@@ -116,8 +132,12 @@ export const AuthProvider = ({ children }) => {
             const response = await authService.loginWithFacebook(accessToken, userID)
 
             if (response.success) {
+                // Clear guest cart when logging in
+                localStorage.removeItem('cart_guest');
+                
                 setUser(response.data.user)
                 setIsAuthenticated(true)
+                
                 return { success: true, message: response.message }
             } else {
                 throw new Error(response.message)

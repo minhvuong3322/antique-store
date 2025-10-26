@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/format';
 import { toast } from 'react-hot-toast';
 import { CreditCard, Wallet, Building, CheckCircle } from 'lucide-react';
+import { orderService } from '../services/orderService';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
+    const { user, isAuthenticated } = useAuth();
     const { cartItems, getCartTotal, clearCart } = useCart();
 
     const [formData, setFormData] = useState({
-        full_name: '',
-        email: '',
-        phone: '',
+        full_name: user?.full_name || '',
+        email: user?.email || '',
+        phone: user?.phone || '',
         address: '',
         city: '',
         district: '',
@@ -21,6 +24,13 @@ const CheckoutPage = () => {
     });
 
     const [loading, setLoading] = useState(false);
+
+    // Redirect if cart is empty
+    useEffect(() => {
+        if (cartItems.length === 0) {
+            navigate('/cart');
+        }
+    }, [cartItems.length, navigate]);
 
     const handleChange = (e) => {
         setFormData({
@@ -32,6 +42,13 @@ const CheckoutPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Check authentication
+        if (!isAuthenticated) {
+            toast.error('Vui lòng đăng nhập để đặt hàng');
+            navigate('/login', { state: { from: '/checkout' } });
+            return;
+        }
+
         if (cartItems.length === 0) {
             toast.error('Giỏ hàng trống!');
             return;
@@ -40,41 +57,54 @@ const CheckoutPage = () => {
         setLoading(true);
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Mock order data
+            // Prepare order data for API
+            const shippingAddress = `${formData.address}, ${formData.district}, ${formData.city}`;
+            
             const orderData = {
-                ...formData,
-                items: cartItems,
-                total: getCartTotal(),
-                order_date: new Date().toISOString(),
+                shipping_address: shippingAddress,
+                notes: formData.note,
+                payment_method: formData.payment_method,
+                cart_items: cartItems.map(item => ({
+                    id: item.id,
+                    product_id: item.id,
+                    quantity: item.quantity
+                }))
             };
 
-            console.log('Order placed:', orderData);
+            console.log('Creating order with data:', orderData);
 
-            // Clear cart and show success
-            clearCart();
-            toast.success('Đặt hàng thành công! 🎉');
+            // Call API to create order
+            const response = await orderService.createOrder(orderData);
+            console.log('Order response:', response);
 
-            // Redirect to success page (you can create this later)
-            setTimeout(() => {
-                navigate('/', {
-                    state: { message: 'Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ sớm.' }
-                });
-            }, 1500);
+            // Handle different response structures
+            const order = response?.data?.data?.order || response?.data?.order;
+            
+            if (order && order.id) {
+                // Clear cart after successful order
+                clearCart();
+                
+                toast.success('Đặt hàng thành công! 🎉');
+
+                // Redirect to order detail page
+                setTimeout(() => {
+                    navigate(`/orders/${order.id}`, {
+                        state: { message: 'Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ sớm.' }
+                    });
+                }, 1000);
+            } else {
+                throw new Error('Invalid order response');
+            }
 
         } catch (error) {
-            toast.error('Có lỗi xảy ra. Vui lòng thử lại!');
+            console.error('Order error:', error);
+            console.error('Error details:', error.response);
+            const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra. Vui lòng thử lại!';
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
-
-    if (cartItems.length === 0) {
-        navigate('/cart');
-        return null;
-    }
 
     return (
         <div className="min-h-screen bg-vintage-cream dark:bg-dark-bg py-8">
@@ -231,8 +261,8 @@ const CheckoutPage = () => {
                                         <input
                                             type="radio"
                                             name="payment_method"
-                                            value="BANK"
-                                            checked={formData.payment_method === 'BANK'}
+                                            value="BankTransfer"
+                                            checked={formData.payment_method === 'BankTransfer'}
                                             onChange={handleChange}
                                             className="mr-3"
                                         />
@@ -247,21 +277,22 @@ const CheckoutPage = () => {
                                         </div>
                                     </label>
 
-                                    <label className="flex items-center p-4 border-2 border-vintage-gold/30 rounded-lg cursor-pointer hover:bg-vintage-gold/5 transition opacity-50">
+                                    <label className="flex items-center p-4 border-2 border-vintage-gold/30 rounded-lg cursor-pointer hover:bg-vintage-gold/5 transition">
                                         <input
                                             type="radio"
                                             name="payment_method"
-                                            value="CARD"
-                                            disabled
+                                            value="VNPay"
+                                            checked={formData.payment_method === 'VNPay'}
+                                            onChange={handleChange}
                                             className="mr-3"
                                         />
                                         <CreditCard className="w-5 h-5 mr-3 text-vintage-gold" />
                                         <div className="flex-1">
                                             <p className="font-semibold text-vintage-darkwood dark:text-vintage-cream">
-                                                Thẻ tín dụng/ghi nợ
+                                                Thanh toán VNPay
                                             </p>
                                             <p className="text-sm text-vintage-wood dark:text-vintage-lightwood">
-                                                Đang phát triển...
+                                                ATM, Thẻ tín dụng, QR Code
                                             </p>
                                         </div>
                                     </label>

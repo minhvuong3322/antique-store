@@ -1,8 +1,11 @@
 /**
  * Wishlist Context
- * Manages wishlist/favorites state
+ * Manages wishlist/favorites state with backend API
  */
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import wishlistService from '../services/wishlistService';
+import { toast } from 'react-hot-toast';
 
 const WishlistContext = createContext();
 
@@ -15,42 +18,103 @@ export const useWishlist = () => {
 };
 
 export const WishlistProvider = ({ children }) => {
-    const [wishlistItems, setWishlistItems] = useState(() => {
-        // Load from localStorage
-        const saved = localStorage.getItem('wishlist');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const { user } = useAuth();
+    const [wishlistItems, setWishlistItems] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // Save to localStorage whenever wishlist changes
+    // Fetch wishlist from backend when user logs in
     useEffect(() => {
-        localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
-    }, [wishlistItems]);
+        if (user) {
+            fetchWishlist();
+        } else {
+            setWishlistItems([]);
+        }
+    }, [user]);
 
-    // Add item to wishlist
-    const addToWishlist = (product) => {
-        setWishlistItems(prev => {
-            const exists = prev.find(item => item.id === product.id);
-            if (exists) {
-                return prev; // Already in wishlist
+    const fetchWishlist = async () => {
+        try {
+            setLoading(true);
+            const response = await wishlistService.getWishlist();
+            
+            console.log('Wishlist response:', response); // Debug
+            
+            // Handle different response structures
+            // Backend returns: {success: true, data: {wishlist: [...]}}
+            // Service returns: response.data = {success: true, data: {wishlist: [...]}}
+            let items = [];
+            
+            if (response?.data?.wishlist) {
+                // Structure: {success: true, data: {wishlist: [...]}}
+                items = response.data.wishlist;
+            } else if (response?.wishlist) {
+                // Structure: {wishlist: [...]}
+                items = response.wishlist;
+            } else if (Array.isArray(response?.data)) {
+                // Structure: {data: [...]}
+                items = response.data;
+            } else if (Array.isArray(response)) {
+                // Structure: [...]
+                items = response;
             }
-            return [...prev, product];
-        });
+            
+            console.log('Wishlist items:', items); // Debug
+            setWishlistItems(items);
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
+            console.error('Error details:', error.response); // Debug
+            // Don't show error toast on initial load
+            setWishlistItems([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Add item to wishlist (or toggle if exists)
+    const addToWishlist = async (product) => {
+        if (!user) {
+            toast.error('Vui lòng đăng nhập để thêm vào yêu thích');
+            return;
+        }
+
+        try {
+            const response = await wishlistService.addToWishlist(product.id);
+            
+            // Check if it was added or removed (toggle behavior)
+            if (response?.data?.action === 'removed') {
+                // Remove from state
+                setWishlistItems(prev => prev.filter(item => item.id !== product.id));
+                toast.success('Đã xóa khỏi yêu thích');
+            } else {
+                // Refetch from backend to ensure correct data structure
+                await fetchWishlist();
+                toast.success('Đã thêm vào yêu thích');
+            }
+        } catch (error) {
+            console.error('Error adding to wishlist:', error);
+            toast.error(error.response?.data?.message || 'Không thể thực hiện');
+        }
     };
 
     // Remove item from wishlist
-    const removeFromWishlist = (productId) => {
-        setWishlistItems(prev => prev.filter(item => item.id !== productId));
+    const removeFromWishlist = async (productId) => {
+        if (!user) {
+            return;
+        }
+
+        try {
+            await wishlistService.removeFromWishlist(productId);
+            setWishlistItems(prev => prev.filter(item => item.id !== productId));
+            toast.success('Đã xóa khỏi yêu thích');
+        } catch (error) {
+            console.error('Error removing from wishlist:', error);
+            toast.error('Không thể xóa khỏi yêu thích');
+        }
     };
 
     // Toggle wishlist (add if not exists, remove if exists)
-    const toggleWishlist = (product) => {
-        setWishlistItems(prev => {
-            const exists = prev.find(item => item.id === product.id);
-            if (exists) {
-                return prev.filter(item => item.id !== product.id);
-            }
-            return [...prev, product];
-        });
+    // Now just calls addToWishlist which handles toggle on backend
+    const toggleWishlist = async (product) => {
+        await addToWishlist(product);
     };
 
     // Check if item is in wishlist
@@ -59,8 +123,19 @@ export const WishlistProvider = ({ children }) => {
     };
 
     // Clear wishlist
-    const clearWishlist = () => {
-        setWishlistItems([]);
+    const clearWishlist = async () => {
+        if (!user) {
+            return;
+        }
+
+        try {
+            await wishlistService.clearWishlist();
+            setWishlistItems([]);
+            toast.success('Đã xóa toàn bộ yêu thích');
+        } catch (error) {
+            console.error('Error clearing wishlist:', error);
+            toast.error('Không thể xóa danh sách yêu thích');
+        }
     };
 
     // Get wishlist count
@@ -76,6 +151,8 @@ export const WishlistProvider = ({ children }) => {
         isInWishlist,
         clearWishlist,
         getWishlistCount,
+        loading,
+        fetchWishlist
     };
 
     return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;

@@ -143,6 +143,44 @@ const authorize = (...roles) => {
 };
 
 /**
+ * Optional authentication - attaches user if token exists, but doesn't fail if not
+ */
+const optionalAuth = async (req, res, next) => {
+    try {
+        let token = req.headers.authorization;
+
+        if (!token) {
+            // No token, continue without user
+            req.user = null;
+            return next();
+        }
+
+        // Extract token from "Bearer <token>"
+        if (token.startsWith('Bearer ')) {
+            token = token.slice(7, token.length);
+        }
+
+        // Verify token
+        const decoded = jwt.verify(token, config.jwt.secret);
+
+        // Find user
+        const user = await User.findByPk(decoded.id);
+
+        if (user && user.is_active) {
+            req.user = user;
+        } else {
+            req.user = null;
+        }
+
+        next();
+    } catch (error) {
+        // Token invalid or expired, continue without user
+        req.user = null;
+        next();
+    }
+};
+
+/**
  * Tạo JWT token
  */
 const generateToken = (user) => {
@@ -176,6 +214,7 @@ const generateRefreshToken = (user) => {
 
 module.exports = {
     authenticate,
+    optionalAuth,
     protect: authenticate, // Alias for authenticate
     isAdmin,
     isCustomerOrAdmin,

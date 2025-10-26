@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const orderController = require('../controllers/orderController');
 const { protect, authorize } = require('../middlewares/auth');
 const { body } = require('express-validator');
 const { validate } = require('../middlewares/validate');
@@ -29,6 +30,16 @@ router.get('/dashboard/analytics', adminController.getComprehensiveAnalytics);
 router.get('/users', adminController.getAllUsers);
 router.put('/users/:id', updateUserValidation, adminController.updateUser);
 router.delete('/users/:id', adminController.deleteUser);
+
+// Order management routes
+router.get('/orders/new-count', orderController.getNewOrdersCount);
+router.get('/orders', orderController.getAllOrders);
+router.put('/orders/:id/status', 
+    body('status').isIn(['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'])
+        .withMessage('Trạng thái không hợp lệ'),
+    validate,
+    orderController.updateOrderStatus
+);
 
 module.exports = router;
 

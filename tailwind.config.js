@@ -8,6 +8,19 @@ export default {
     theme: {
         extend: {
             colors: {
+                // Primary color palette
+                primary: {
+                    50: '#FDF4E8',
+                    100: '#F9E7CC',
+                    200: '#F3D3A8',
+                    300: '#EDBF84',
+                    400: '#E7AB60',
+                    500: '#E1973C',
+                    600: '#D48328',  // Main primary color
+                    700: '#B87024',
+                    800: '#9C5D20',
+                    900: '#804A1C',
+                },
                 // Vintage Antique Color Palette
                 vintage: {
                     gold: '#D4A574',

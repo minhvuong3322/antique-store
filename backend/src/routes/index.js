@@ -15,6 +15,8 @@ const supplierRoutes = require('./supplierRoutes');
 const warehouseRoutes = require('./warehouseRoutes');
 const invoiceRoutes = require('./invoiceRoutes');
 const adminRoutes = require('./adminRoutes');
+const wishlistRoutes = require('./wishlistRoutes');
+const supportRoutes = require('./supportRoutes');
 
 // Health check
 router.get('/health', (req, res) => {
@@ -39,6 +41,8 @@ router.use('/suppliers', supplierRoutes);
 router.use('/warehouse', warehouseRoutes);
 router.use('/invoices', invoiceRoutes);
 router.use('/admin', adminRoutes);
+router.use('/wishlist', wishlistRoutes);
+router.use('/support', supportRoutes);
 
 module.exports = router;
 
