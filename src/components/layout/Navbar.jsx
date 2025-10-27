@@ -249,8 +249,8 @@ const Navbar = () => {
                                                 </span>
                                             </Link>
 
-                                            {/* Admin Panel - Only show for admin users */}
-                                            {user?.role === 'admin' && (
+                                            {/* Admin Panel - Show for admin and staff users */}
+                                            {(user?.role === 'admin' || user?.role === 'staff') && (
                                                 <Link
                                                     to="/admin/dashboard"
                                                     onClick={() => setIsUserMenuOpen(false)}
@@ -258,7 +258,7 @@ const Navbar = () => {
                                                 >
                                                     <Shield className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
                                                     <span className="text-sm text-vintage-darkwood dark:text-vintage-cream">
-                                                        Admin Panel
+                                                        {user?.role === 'admin' ? 'Admin Panel' : 'Quản lý'}
                                                     </span>
                                                 </Link>
                                             )}
@@ -368,15 +368,15 @@ const Navbar = () => {
                                         <Package className="w-4 h-4" />
                                         <span>Đơn hàng của tôi</span>
                                     </Link>
-                                    {/* Admin Panel Button for Mobile - Only show for admin users */}
-                                    {user?.role === 'admin' && (
+                                    {/* Admin Panel Button for Mobile - Show for admin and staff users */}
+                                    {(user?.role === 'admin' || user?.role === 'staff') && (
                                         <Link
                                             to="/admin/dashboard"
                                             onClick={() => setIsMenuOpen(false)}
                                             className="w-full text-vintage-bronze dark:text-vintage-gold hover:text-vintage-gold transition-colors font-serif flex items-center space-x-2 px-3 py-2 bg-vintage-gold/20 rounded-lg mb-2"
                                         >
                                             <Shield className="w-4 h-4" />
-                                            <span>Admin Panel - Quản lý</span>
+                                            <span>{user?.role === 'admin' ? 'Admin Panel - Quản lý' : 'Quản lý'}</span>
                                         </Link>
                                     )}
                                     <button

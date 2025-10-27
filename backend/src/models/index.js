@@ -12,9 +12,6 @@ const Otp = require('./Otp');
 // =====================================================
 // NEW MODELS - Extended Features
 // =====================================================
-const Supplier = require('./Supplier');
-const ProductSupplier = require('./ProductSupplier');
-const WarehouseLog = require('./WarehouseLog');
 const Invoice = require('./Invoice');
 const SocialAuth = require('./SocialAuth');
 const Review = require('./Review');
@@ -54,9 +51,6 @@ module.exports = {
     Payment,
     Otp,
     // New models
-    Supplier,
-    ProductSupplier,
-    WarehouseLog,
     Invoice,
     SocialAuth,
     Review,

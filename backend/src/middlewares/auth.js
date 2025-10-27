@@ -37,14 +37,6 @@ const authenticate = async (req, res, next) => {
             });
         }
 
-        if (!user.is_active) {
-            return res.status(401).json({
-                success: false,
-                message: 'Tài khoản đã bị vô hiệu hóa',
-                code: 'ACCOUNT_DISABLED'
-            });
-        }
-
         // Gắn người dùng vào request
         req.user = user;
         next();
@@ -96,6 +88,27 @@ const isAdmin = (req, res, next) => {
 };
 
 /**
+ * Middleware để kiểm tra người dùng có phải admin hoặc staff không
+ */
+const isAdminOrStaff = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            message: 'Chưa xác thực'
+        });
+    }
+
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+        return res.status(403).json({
+            success: false,
+            message: 'Không có quyền truy cập. Chỉ dành cho admin hoặc staff.'
+        });
+    }
+
+    next();
+};
+
+/**
  * Middleware để kiểm tra người dùng có phải customer hoặc admin không
  */
 const isCustomerOrAdmin = (req, res, next) => {
@@ -118,7 +131,7 @@ const isCustomerOrAdmin = (req, res, next) => {
 
 /**
  * Middleware nâng cao để kiểm tra role
- * Sử dụng: authorize('admin', 'supplier')
+ * Sử dụng: authorize('admin', 'staff')
  */
 const authorize = (...roles) => {
     return (req, res, next) => {
@@ -166,7 +179,7 @@ const optionalAuth = async (req, res, next) => {
         // Find user
         const user = await User.findByPk(decoded.id);
 
-        if (user && user.is_active) {
+        if (user) {
             req.user = user;
         } else {
             req.user = null;
@@ -217,6 +230,7 @@ module.exports = {
     optionalAuth,
     protect: authenticate, // Alias for authenticate
     isAdmin,
+    isAdminOrStaff,
     isCustomerOrAdmin,
     authorize, // New: flexible role-based authorization
     generateToken,

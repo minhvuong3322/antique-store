@@ -6,8 +6,7 @@ import {
     ArrowTrendingDownIcon,
     CurrencyDollarIcon,
     ShoppingCartIcon,
-    UserGroupIcon,
-    TruckIcon
+    UserGroupIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 
@@ -119,14 +118,6 @@ const Analytics = () => {
             icon: UserGroupIcon,
             color: 'bg-purple-500',
             trend: '+15.3%',
-            trendUp: true
-        },
-        {
-            name: 'Nhà cung cấp',
-            value: formatNumber(analytics.overview.total_suppliers),
-            icon: TruckIcon,
-            color: 'bg-orange-500',
-            trend: '+2',
             trendUp: true
         }
     ] : [];
@@ -348,27 +339,6 @@ const Analytics = () => {
                                 <span className="text-sm text-gray-600 dark:text-gray-400">Chưa thanh toán:</span>
                                 <span className="text-sm font-medium text-yellow-600">
                                     {analytics.invoices.unpaid}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Warehouse */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                            Kho hàng
-                        </h3>
-                        <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Sắp hết hàng:</span>
-                                <span className="text-sm font-medium text-yellow-600">
-                                    {analytics.warehouse.low_stock_count}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Hết hàng:</span>
-                                <span className="text-sm font-medium text-red-600">
-                                    {analytics.warehouse.out_of_stock_count}
                                 </span>
                             </div>
                         </div>

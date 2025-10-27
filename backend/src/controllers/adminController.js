@@ -1,4 +1,4 @@
-const { User, Product, Order, OrderDetail, Payment, Category, Supplier, Invoice, WarehouseLog, sequelize } = require('../models');
+const { User, Product, Order, OrderDetail, Payment, Category, Invoice, sequelize } = require('../models');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 
@@ -253,13 +253,12 @@ exports.getRecentActivities = async (req, res, next) => {
  */
 exports.getAllUsers = async (req, res, next) => {
     try {
-        const { role, is_active, search, page = 1, limit = 10 } = req.query;
+        const { role, search, page = 1, limit = 10 } = req.query;
 
         const offset = (page - 1) * limit;
         const where = {};
 
         if (role) where.role = role;
-        if (is_active !== undefined) where.is_active = is_active === 'true';
 
         if (search) {
             where[Op.or] = [
@@ -309,13 +308,12 @@ exports.updateUser = async (req, res, next) => {
             });
         }
 
-        const { full_name, phone, address, role, is_active } = req.body;
+        const { full_name, phone, address, role } = req.body;
 
         if (full_name) user.full_name = full_name;
         if (phone !== undefined) user.phone = phone;
         if (address !== undefined) user.address = address;
         if (role) user.role = role;
-        if (is_active !== undefined) user.is_active = is_active;
 
         await user.save();
 
@@ -434,7 +432,6 @@ exports.getComprehensiveAnalytics = async (req, res, next) => {
         const totalUsers = await User.count({ where: { role: 'customer' } });
         const totalProducts = await Product.count({ where: { is_active: true } });
         const totalOrders = await Order.count();
-        const totalSuppliers = await Supplier.count({ where: { is_active: true } });
 
         // Revenue
         const totalRevenue = await Payment.sum('amount', {
@@ -477,7 +474,6 @@ exports.getComprehensiveAnalytics = async (req, res, next) => {
                     total_users: totalUsers,
                     total_products: totalProducts,
                     total_orders: totalOrders,
-                    total_suppliers: totalSuppliers,
                     total_revenue: parseFloat(totalRevenue).toFixed(2)
                 },
                 orders: {

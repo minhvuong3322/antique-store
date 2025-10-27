@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import {
     UserGroupIcon,
@@ -12,10 +13,16 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Dashboard = () => {
+    const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [overview, setOverview] = useState(null);
     const [recentOrders, setRecentOrders] = useState([]);
     const [topProducts, setTopProducts] = useState([]);
+
+    // Redirect staff to products page
+    if (user?.role === 'staff') {
+        return <Navigate to="/admin/products" replace />;
+    }
 
     useEffect(() => {
         fetchDashboardData();
@@ -165,10 +172,7 @@ const Dashboard = () => {
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                                Có <span className="font-semibold">{overview.low_stock_products}</span> sản phẩm sắp hết hàng.{' '}
-                                <Link to="/admin/warehouse" className="font-medium underline hover:text-yellow-600">
-                                    Xem chi tiết
-                                </Link>
+                                Có <span className="font-semibold">{overview.low_stock_products}</span> sản phẩm sắp hết hàng.
                             </p>
                         </div>
                     </div>
@@ -280,18 +284,6 @@ const Dashboard = () => {
                     </h4>
                     <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">
                         {overview?.pending_orders || 0}
-                    </p>
-                </Link>
-
-                <Link
-                    to="/admin/warehouse/low-stock"
-                    className="relative block p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                >
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                        Sản phẩm sắp hết
-                    </h4>
-                    <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-                        {overview?.low_stock_products || 0}
                     </p>
                 </Link>
 

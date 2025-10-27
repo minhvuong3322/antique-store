@@ -7,14 +7,12 @@ import {
     ShoppingBagIcon,
     ShoppingCartIcon,
     UserGroupIcon,
-    TruckIcon,
     DocumentTextIcon,
     ShieldCheckIcon,
     ChartBarIcon,
     Bars3Icon,
     XMarkIcon,
     ArrowRightOnRectangleIcon,
-    CogIcon,
     ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
@@ -49,18 +47,19 @@ const AdminLayout = () => {
         navigate('/login');
     };
 
-    // Navigation items
-    const navigation = [
-        { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
-        { name: 'Sản phẩm', href: '/admin/products', icon: ShoppingBagIcon },
-        { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCartIcon, badge: newOrdersCount },
-        { name: 'Người dùng', href: '/admin/users', icon: UserGroupIcon },
-        { name: 'Nhà cung cấp', href: '/admin/suppliers', icon: TruckIcon },
-        { name: 'Kho hàng', href: '/admin/warehouse', icon: CogIcon },
-        { name: 'Hóa đơn', href: '/admin/invoices', icon: DocumentTextIcon },
-        { name: 'Tin nhắn hỗ trợ', href: '/admin/support', icon: ChatBubbleLeftRightIcon },
-        { name: 'Thống kê', href: '/admin/analytics', icon: ChartBarIcon },
+    // Navigation items - filtered by role
+    const allNavigation = [
+        { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon, roles: ['admin'] },
+        { name: 'Sản phẩm', href: '/admin/products', icon: ShoppingBagIcon, roles: ['admin', 'staff'] },
+        { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCartIcon, badge: newOrdersCount, roles: ['admin', 'staff'] },
+        { name: 'Nhân viên', href: '/admin/users', icon: UserGroupIcon, roles: ['admin'] },
+        { name: 'Hóa đơn', href: '/admin/invoices', icon: DocumentTextIcon, roles: ['admin'] },
+        { name: 'Tin nhắn hỗ trợ', href: '/admin/support', icon: ChatBubbleLeftRightIcon, roles: ['admin', 'staff'] },
+        { name: 'Thống kê', href: '/admin/analytics', icon: ChartBarIcon, roles: ['admin'] },
     ];
+
+    // Filter navigation based on user role
+    const navigation = allNavigation.filter(item => item.roles.includes(user?.role || 'customer'));
 
     const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 

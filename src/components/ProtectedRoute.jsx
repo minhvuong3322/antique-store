@@ -36,7 +36,14 @@ const ProtectedRoute = ({ children, requireAuth = true, requireRole = null }) =>
 
     // Kiểm tra role nếu được yêu cầu
     if (requireAuth && isAuthenticated && requireRole) {
-        if (!user || user.role !== requireRole) {
+        if (!user) {
+            toast.error('Bạn không có quyền truy cập trang này')
+            return <Navigate to="/" replace />
+        }
+        
+        // Support both single role string and array of roles
+        const allowedRoles = Array.isArray(requireRole) ? requireRole : [requireRole]
+        if (!allowedRoles.includes(user.role)) {
             toast.error('Bạn không có quyền truy cập trang này')
             return <Navigate to="/" replace />
         }

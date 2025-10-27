@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { orderService } from '../../services/orderService';
 import { invoiceService } from '../../services/invoiceService';
+import { useAuth } from '../../context/AuthContext';
 import {
     MagnifyingGlassIcon,
     EyeIcon,
@@ -10,6 +11,7 @@ import {
 import { toast } from 'react-hot-toast';
 
 const Orders = () => {
+    const { user } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -248,7 +250,8 @@ const Orders = () => {
                                                 >
                                                     <EyeIcon className="h-5 w-5" />
                                                 </button>
-                                                {order.status === 'confirmed' && (
+                                                {/* Only show invoice button for admin users */}
+                                                {order.status === 'confirmed' && user?.role === 'admin' && (
                                                     <button
                                                         onClick={() => handleCreateInvoice(order.id)}
                                                         className="text-green-600 hover:text-green-900"

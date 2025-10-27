@@ -65,14 +65,6 @@ const login = async (req, res, next) => {
             });
         }
 
-        // Kiểm tra tài khoản có hoạt động không
-        if (!user.is_active) {
-            return res.status(401).json({
-                success: false,
-                message: 'Tài khoản đã bị vô hiệu hóa'
-            });
-        }
-
         // So sánh mật khẩu
         const isPasswordValid = await user.comparePassword(password);
 

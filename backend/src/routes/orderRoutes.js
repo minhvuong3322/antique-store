@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const orderController = require('../controllers/orderController');
-const { authenticate, isAdmin } = require('../middlewares/auth');
+const { authenticate, isAdmin, authorize } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validate');
 
 // Validation rules
@@ -24,9 +24,9 @@ router.get('/', orderController.getUserOrders);
 router.get('/:id', orderController.getOrderById);
 router.put('/:id/cancel', orderController.cancelOrder);
 
-// Admin routes
-router.get('/admin/all', isAdmin, orderController.getAllOrders);
-router.put('/:id/status', isAdmin, updateStatusValidation, orderController.updateOrderStatus);
+// Admin routes (Admin and Staff can access)
+router.get('/admin/all', authorize('admin', 'staff'), orderController.getAllOrders);
+router.put('/:id/status', authorize('admin', 'staff'), updateStatusValidation, orderController.updateOrderStatus);
 
 module.exports = router;
 

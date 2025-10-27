@@ -28,8 +28,6 @@ import Dashboard from './pages/admin/Dashboard'
 import Products from './pages/admin/Products'
 import Orders from './pages/admin/Orders'
 import Users from './pages/admin/Users'
-import Suppliers from './pages/admin/Suppliers'
-import Warehouse from './pages/admin/Warehouse'
 import Invoices from './pages/admin/Invoices'
 import Support from './pages/admin/Support'
 import Analytics from './pages/admin/Analytics'
@@ -144,7 +142,7 @@ function App() {
 
                                 {/* Admin Routes - Separate Layout */}
                                 <Route path="/admin" element={
-                                    <ProtectedRoute requireAuth={true} requireRole="admin">
+                                    <ProtectedRoute requireAuth={true} requireRole={['admin', 'staff']}>
                                         <AdminLayout />
                                     </ProtectedRoute>
                                 }>
@@ -152,8 +150,6 @@ function App() {
                                     <Route path="products" element={<Products />} />
                                     <Route path="orders" element={<Orders />} />
                                     <Route path="users" element={<Users />} />
-                                    <Route path="suppliers" element={<Suppliers />} />
-                                    <Route path="warehouse" element={<Warehouse />} />
                                     <Route path="invoices" element={<Invoices />} />
                                     <Route path="support" element={<Support />} />
                                     <Route path="analytics" element={<Analytics />} />

@@ -17,7 +17,6 @@ const Users = () => {
     const [filters, setFilters] = useState({
         search: '',
         role: '',
-        is_active: '',
         page: 1,
         limit: 10
     });
@@ -26,8 +25,7 @@ const Users = () => {
         full_name: '',
         phone: '',
         address: '',
-        role: 'customer',
-        is_active: true
+        role: 'customer'
     });
 
     useEffect(() => {
@@ -41,7 +39,7 @@ const Users = () => {
             setUsers(response.data || []);
         } catch (error) {
             console.error('Error fetching users:', error);
-            toast.error('Không thể tải danh sách người dùng');
+            toast.error('Không thể tải danh sách nhân viên');
         } finally {
             setLoading(false);
         }
@@ -53,8 +51,7 @@ const Users = () => {
             full_name: user.full_name,
             phone: user.phone || '',
             address: user.address || '',
-            role: user.role,
-            is_active: user.is_active
+            role: user.role
         });
         setShowModal(true);
     };
@@ -63,7 +60,7 @@ const Users = () => {
         e.preventDefault();
         try {
             await adminService.updateUser(editingUser.id, formData);
-            toast.success('Cập nhật người dùng thành công');
+            toast.success('Cập nhật nhân viên thành công');
             setShowModal(false);
             fetchUsers();
         } catch (error) {
@@ -73,15 +70,15 @@ const Users = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Bạn có chắc muốn xóa người dùng này?')) return;
+        if (!window.confirm('Bạn có chắc muốn xóa nhân viên này?')) return;
 
         try {
             await adminService.deleteUser(id);
-            toast.success('Xóa người dùng thành công');
+            toast.success('Xóa nhân viên thành công');
             fetchUsers();
         } catch (error) {
             console.error('Error deleting user:', error);
-            toast.error(error.response?.data?.message || 'Không thể xóa người dùng');
+            toast.error(error.response?.data?.message || 'Không thể xóa nhân viên');
         }
     };
 
@@ -89,7 +86,7 @@ const Users = () => {
         const badges = {
             admin: { label: 'Admin', class: 'bg-purple-100 text-purple-800' },
             customer: { label: 'Khách hàng', class: 'bg-blue-100 text-blue-800' },
-            supplier: { label: 'Nhà cung cấp', class: 'bg-green-100 text-green-800' }
+            staff: { label: 'Nhân viên', class: 'bg-green-100 text-green-800' }
         };
         return badges[role] || badges.customer;
     };
@@ -103,7 +100,7 @@ const Users = () => {
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Quản lý Người dùng
+                    Quản lý Nhân viên
                 </h1>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Tổng số: {users.length} người dùng
@@ -112,7 +109,7 @@ const Users = () => {
 
             {/* Filters */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Tìm kiếm
@@ -141,28 +138,13 @@ const Users = () => {
                             <option value="">Tất cả</option>
                             <option value="admin">Admin</option>
                             <option value="customer">Khách hàng</option>
-                            <option value="supplier">Nhà cung cấp</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Trạng thái
-                        </label>
-                        <select
-                            value={filters.is_active}
-                            onChange={(e) => setFilters({ ...filters, is_active: e.target.value, page: 1 })}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                        >
-                            <option value="">Tất cả</option>
-                            <option value="true">Hoạt động</option>
-                            <option value="false">Không hoạt động</option>
+                            <option value="staff">Nhân viên</option>
                         </select>
                     </div>
 
                     <div className="flex items-end">
                         <button
-                            onClick={() => setFilters({ search: '', role: '', is_active: '', page: 1, limit: 10 })}
+                            onClick={() => setFilters({ search: '', role: '', page: 1, limit: 10 })}
                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                             Reset
@@ -181,7 +163,7 @@ const Users = () => {
                     <div className="text-center py-12">
                         <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
                         <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Không có người dùng
+                            Không có nhân viên
                         </h3>
                     </div>
                 ) : (
@@ -197,9 +179,6 @@ const Users = () => {
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         Vai trò
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                        Trạng thái
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         Ngày tạo
@@ -244,14 +223,6 @@ const Users = () => {
                                                     {roleBadge.label}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
-                                                    }`}>
-                                                    {user.is_active ? 'Hoạt động' : 'Không hoạt động'}
-                                                </span>
-                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {formatDate(user.created_at)}
                                             </td>
@@ -290,7 +261,7 @@ const Users = () => {
                             <form onSubmit={handleSubmit}>
                                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                                        Cập nhật người dùng
+                                        Cập nhật nhân viên
                                     </h3>
                                 </div>
 
@@ -342,20 +313,8 @@ const Users = () => {
                                         >
                                             <option value="customer">Khách hàng</option>
                                             <option value="admin">Admin</option>
-                                            <option value="supplier">Nhà cung cấp</option>
+                                            <option value="staff">Nhân viên</option>
                                         </select>
-                                    </div>
-
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_active}
-                                            onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                                            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                                        />
-                                        <label className="ml-2 block text-sm text-gray-900 dark:text-white">
-                                            Hoạt động
-                                        </label>
                                     </div>
                                 </div>
 

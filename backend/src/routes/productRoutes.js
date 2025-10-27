@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const productController = require('../controllers/productController');
-const { authenticate, isAdmin } = require('../middlewares/auth');
+const { authenticate, authorize } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validate');
 
 // Validation rules
@@ -18,10 +18,10 @@ router.get('/featured', productController.getFeaturedProducts);
 router.get('/', productController.getAllProducts);
 router.get('/:identifier', productController.getProductById);
 
-// Protected routes (Admin only)
-router.post('/', authenticate, isAdmin, productValidation, productController.createProduct);
-router.put('/:id', authenticate, isAdmin, productController.updateProduct);
-router.delete('/:id', authenticate, isAdmin, productController.deleteProduct);
+// Protected routes (Admin and Staff)
+router.post('/', authenticate, authorize('admin', 'staff'), productValidation, productController.createProduct);
+router.put('/:id', authenticate, authorize('admin', 'staff'), productController.updateProduct);
+router.delete('/:id', authenticate, authorize('admin', 'staff'), productController.deleteProduct);
 
 module.exports = router;
 

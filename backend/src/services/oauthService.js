@@ -92,8 +92,7 @@ const googleLogin = async (idToken) => {
                     full_name: googleUser.name,
                     password: Math.random().toString(36).slice(-12), // Random password (không dùng)
                     avatar: googleUser.picture,
-                    role: 'customer',
-                    is_active: true
+                    role: 'customer'
                 });
             }
 
@@ -182,8 +181,7 @@ const facebookLogin = async (accessToken, userID) => {
                     full_name: fbUser.name,
                     password: Math.random().toString(36).slice(-12), // Random password
                     avatar: fbUser.picture?.data?.url,
-                    role: 'customer',
-                    is_active: true
+                    role: 'customer'
                 });
             }
 
