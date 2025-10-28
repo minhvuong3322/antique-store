@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 26, 2025 at 09:37 AM
+-- Generation Time: Oct 28, 2025 at 06:39 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -109,8 +109,11 @@ CREATE TABLE `invoices` (
 --
 
 INSERT INTO `invoices` (`id`, `order_id`, `invoice_number`, `invoice_date`, `customer_name`, `customer_email`, `customer_phone`, `customer_address`, `subtotal`, `shipping_fee`, `tax`, `discount`, `total_amount`, `payment_method`, `payment_status`, `notes`, `pdf_url`, `sent_to_email`, `created_by`, `created_at`, `updated_at`, `customer_tax_code`, `sent_at`) VALUES
-(1, 17, 'INV-20251026-5822', '2025-10-26', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '110000000.00', '0.00', '11000000.00', '0.00', '121000000.00', 'COD', 'unpaid', NULL, NULL, 0, 1, '2025-10-26 08:18:35', '2025-10-26 08:18:35', NULL, NULL),
-(2, 16, 'INV-20251026-1997', '2025-10-26', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '22000000.00', '0.00', '2200000.00', '0.00', '24200000.00', 'COD', 'unpaid', NULL, NULL, 0, 1, '2025-10-26 08:21:11', '2025-10-26 08:21:11', NULL, NULL);
+(1, 17, 'INV-20251026-5822', '2025-10-26', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '110000000.00', '0.00', '11000000.00', '0.00', '121000000.00', 'COD', 'unpaid', NULL, NULL, 1, 1, '2025-10-26 08:18:35', '2025-10-26 10:52:37', NULL, '2025-10-26 10:52:37'),
+(2, 16, 'INV-20251026-1997', '2025-10-26', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '22000000.00', '0.00', '2200000.00', '0.00', '24200000.00', 'COD', 'unpaid', NULL, NULL, 1, 1, '2025-10-26 08:21:11', '2025-10-26 10:52:39', NULL, '2025-10-26 10:52:39'),
+(4, 15, 'INV-20251026-6658', '2025-10-26', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '38000000.00', '0.00', '3800000.00', '0.00', '41800000.00', 'COD', 'unpaid', NULL, NULL, 0, 1, '2025-10-26 11:05:06', '2025-10-26 11:05:06', NULL, NULL),
+(5, 14, 'INV-20251026-6375', '2025-10-26', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '38000000.00', '0.00', '3800000.00', '0.00', '41800000.00', 'COD', 'unpaid', NULL, NULL, 0, 1, '2025-10-26 11:11:36', '2025-10-26 11:11:36', NULL, NULL),
+(6, 18, 'INV-20251027-9334', '2025-10-27', 'Vương Trương Hồ Minh', 'vminh3321@gmail.com', '0706166053', '2 Võ Oanh Quận Bình Thạnh TPHCM, thủ đức, TPHCM', '22000000.00', '0.00', '2200000.00', '0.00', '24200000.00', 'COD', 'unpaid', NULL, NULL, 0, 1, '2025-10-27 16:03:49', '2025-10-27 16:03:49', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -147,10 +150,11 @@ INSERT INTO `orders` (`id`, `user_id`, `order_number`, `total_amount`, `shipping
 (10, 7, 'ORD1761459189831607', '49500000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '4500000.00', 'cancelled', '', '2025-10-26 06:13:09', '2025-10-26 06:13:26'),
 (12, 7, 'ORD1761459733796612', '49500000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '4500000.00', 'cancelled', '', '2025-10-26 06:22:13', '2025-10-26 06:22:26'),
 (13, 7, 'ORD1761459767433765', '13200000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '1200000.00', 'cancelled', '', '2025-10-26 06:22:47', '2025-10-26 06:27:47'),
-(14, 7, 'ORD1761460077541663', '41800000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '3800000.00', 'delivered', '', '2025-10-26 06:27:57', '2025-10-26 08:21:45'),
-(15, 7, 'ORD1761460093026688', '41800000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '3800000.00', 'delivered', '', '2025-10-26 06:28:13', '2025-10-26 08:21:37'),
-(16, 7, 'ORD1761460579088631', '24200000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '2200000.00', 'confirmed', '', '2025-10-26 06:36:19', '2025-10-26 08:12:43'),
-(17, 7, 'ORD1761466248787320', '121000000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '11000000.00', 'confirmed', '', '2025-10-26 08:10:48', '2025-10-26 08:13:09');
+(14, 7, 'ORD1761460077541663', '41800000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '3800000.00', 'cancelled', '', '2025-10-26 06:27:57', '2025-10-27 15:09:47'),
+(15, 7, 'ORD1761460093026688', '41800000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '3800000.00', 'cancelled', '', '2025-10-26 06:28:13', '2025-10-27 15:09:44'),
+(16, 7, 'ORD1761460579088631', '24200000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '2200000.00', 'confirmed', '', '2025-10-26 06:36:19', '2025-10-27 15:53:53'),
+(17, 7, 'ORD1761466248787320', '121000000.00', '02 Võ Oanh, Phường 25, Bình Thạnh, Thủ Đức, Hồ Chí Minh', '0.00', '0.00', '11000000.00', 'confirmed', '', '2025-10-26 08:10:48', '2025-10-27 15:42:11'),
+(18, 7, 'ORD1761580741781210', '24200000.00', '2 Võ Oanh Quận Bình Thạnh TPHCM, thủ đức, TPHCM', '0.00', '0.00', '2200000.00', 'cancelled', '', '2025-10-27 15:59:01', '2025-10-28 06:22:47');
 
 -- --------------------------------------------------------
 
@@ -186,7 +190,8 @@ INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `quantity`, `unit_p
 (13, 15, 19, 1, '38000000.00', '38000000.00', '2025-10-26 06:28:13'),
 (14, 16, 20, 1, '22000000.00', '22000000.00', '2025-10-26 06:36:19'),
 (15, 17, 15, 1, '45000000.00', '45000000.00', '2025-10-26 08:10:48'),
-(16, 17, 17, 1, '65000000.00', '65000000.00', '2025-10-26 08:10:48');
+(16, 17, 17, 1, '65000000.00', '65000000.00', '2025-10-26 08:10:48'),
+(17, 18, 20, 1, '22000000.00', '22000000.00', '2025-10-27 15:59:01');
 
 -- --------------------------------------------------------
 
@@ -250,7 +255,8 @@ INSERT INTO `payments` (`id`, `order_id`, `amount`, `payment_method`, `payment_s
 (10, 14, '41800000.00', 'BankTransfer', 'completed', NULL, '2025-10-26 08:21:45', '2025-10-26 06:27:57', '2025-10-26 08:21:45'),
 (11, 15, '41800000.00', 'VNPay', 'completed', NULL, '2025-10-26 08:21:37', '2025-10-26 06:28:13', '2025-10-26 08:21:37'),
 (12, 16, '24200000.00', 'BankTransfer', 'pending', NULL, NULL, '2025-10-26 06:36:19', '2025-10-26 06:36:19'),
-(13, 17, '121000000.00', 'VNPay', 'pending', NULL, NULL, '2025-10-26 08:10:48', '2025-10-26 08:10:48');
+(13, 17, '121000000.00', 'VNPay', 'completed', NULL, '2025-10-27 15:38:50', '2025-10-26 08:10:48', '2025-10-27 15:38:50'),
+(14, 18, '24200000.00', 'COD', 'completed', NULL, '2025-10-28 06:22:40', '2025-10-27 15:59:01', '2025-10-28 06:22:40');
 
 -- --------------------------------------------------------
 
@@ -290,8 +296,8 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `slug`, `description`, `pri
 (1, 1, 'Tủ thờ gỗ Hương', 'tu-tho-go-huong', 'Tủ thờ gỗ hương 3 cấp, chạm trổ tinh xảo', '25000000.00', '22000000.00', 2, 'TGH001', '[\"https://banthotamviet.vn/wp-content/uploads/2023/05/tu-tho-go-ep-3.jpg\"]', 'excellent', 'Việt Nam', 1920, 'Gỗ hương', NULL, NULL, 1, 1, 26, '2025-10-03 03:01:23', '2025-10-04 02:30:07'),
 (2, 2, 'Bình hoa sứ Bát Tràng', 'binh-hoa-su-bat-trang', 'Bình hoa sứ men xanh, cao 35cm', '3500000.00', NULL, 5, 'BSB001', '[\"https://quatangbansac.vn/wp-content/uploads/2023/03/6.jpg\"]', 'good', 'Việt Nam', 1950, 'Sứ', NULL, NULL, 1, 1, 111, '2025-10-03 03:01:23', '2025-10-22 12:01:55'),
 (3, 3, 'Tượng Phật bằng đồng', 'tuong-phat-bang-dong', 'Tượng Phật Thích Ca cao 40cm', '8000000.00', '7500000.00', 1, 'TPD001', '[\"https://tse1.mm.bing.net/th/id/OIP.jHJaCauxkmGTn6qLJBiBSgHaJ4?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'excellent', 'Việt Nam', 1930, 'Đồng', NULL, NULL, 1, 1, 16, '2025-10-03 03:01:23', '2025-10-03 14:28:23'),
-(4, 4, 'Tranh sơn dầu phong cảnh', 'tranh-son-dau-phong-canh', 'Tranh sơn dầu cảnh làng quê Việt Nam', '15000000.00', NULL, 1, 'TSD001', '[\"https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400\"]', 'good', 'Việt Nam', 1960, 'Sơn dầu trên canvas', NULL, NULL, 1, 1, 2, '2025-10-03 03:01:23', '2025-10-03 04:45:17'),
-(5, 1, 'Bàn ghế salon gỗ Trắc', 'ban-ghe-salon-go-trac', 'Bộ bàn ghế salon gỗ trắc 6 món', '45000000.00', '42000000.00', 1, 'BGT001', '[\"https://tse3.mm.bing.net/th/id/OIP._IZDGt-nyYdfhYO9yjKYaQHaFi?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'excellent', 'Việt Nam', 1940, 'Gỗ trắc', NULL, NULL, 1, 1, 30, '2025-10-03 03:01:23', '2025-10-03 16:46:52'),
+(4, 4, 'Tranh sơn dầu phong cảnh', 'tranh-son-dau-phong-canh', 'Tranh sơn dầu cảnh làng quê Việt Nam', '15000000.00', NULL, 6, 'TSD001', '[\"https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400\"]', 'good', 'Việt Nam', 1960, 'Sơn dầu trên canvas', '', NULL, 1, 1, 2, '2025-10-03 03:01:23', '2025-10-28 06:16:47'),
+(5, 1, 'Bàn ghế salon gỗ Trắc', 'ban-ghe-salon-go-trac', 'Bộ bàn ghế salon gỗ trắc 6 món', '45000000.00', '42000000.00', 6, 'BGT001', '[\"https://tse3.mm.bing.net/th/id/OIP._IZDGt-nyYdfhYO9yjKYaQHaFi?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'excellent', 'Việt Nam', 1940, 'Gỗ trắc', '', NULL, 1, 1, 30, '2025-10-03 03:01:23', '2025-10-28 06:16:54'),
 (6, 5, 'Đèn chùm pha lê cổ', 'den-chum-pha-le-co', 'Đèn chùm pha lê 8 nhánh, phong cách Pháp', '12000000.00', NULL, 1, 'DPL001', '[\"https://noithatdepgiare.vn/upload/images/29den-chum-pha-le-nen-kieu-dang-nghe-thuat-chau-au-029-423-0.jpg\"]', 'good', 'Pháp', 1945, 'Pha lê, đồng', NULL, NULL, 1, 1, 12, '2025-10-03 03:01:23', '2025-10-03 15:10:24'),
 (7, 2, 'Đĩa Gốm Chu Đậu', 'dia-com-chu-dau', 'Đĩa cảnh gốm chu đậu', '2000000.00', '1500000.00', 1, 'DPL002', '[\"https://dytbw3ui6vsu6.cloudfront.net/media/catalog/product/resize/914x914/BND/2488-121_1.webp\"]', 'good', 'Việt Nam', 1400, 'Đất sét', NULL, NULL, NULL, 1, 36, '2025-10-03 03:01:23', '2025-10-22 12:20:04'),
 (8, 4, 'Tranh Thờ Hàng Trống', 'tranh-tho-hang-trong', 'Những bản tranh in gỗ cổ, màu sắc tự nhiên, thể hiện tín ngưỡng dân gian.', '14000000.00', '12500000.00', 3, 'DPL003', '[\"https://thethaovanhoa.mediacdn.vn/Upload/3uPkfvAxvuOpUQrmKeiDaA/files/2022/01/C/tet6/Duchoa_Fotor.jpg\"]', 'good', 'Việt Nam', 1945, '', NULL, NULL, NULL, 1, 34, '2025-10-03 03:01:23', '2025-10-03 15:39:58'),
@@ -299,28 +305,12 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `slug`, `description`, `pri
 (10, 3, 'Trống Đồng Đông Sơn', 'trong-dong-dong-son', 'Là biểu tượng của văn hóa Việt Nam, cực kỳ quý hiếm và có giá trị lịch sử to lớn. Những chiếc trống nguyên bản gần như là vô giá và thuộc sở hữu quốc gia. Các phiên bản nhỏ hoặc mảnh vỡ cũng có giá trị sưu tầm cao.', '99000000.00', '85000000.00', 3, 'DPL005', '[\"https://dongtruyenthong.vn/upload/images/Tin-tuc/Trong-dong-dong-son/trong-dong-dong-son%20(4).jpg\"]', 'excellent', 'Việt Nam', 800, '', NULL, NULL, NULL, 1, 32, '2025-10-03 03:01:23', '2025-10-03 15:27:16'),
 (11, 3, 'Ấm bạc chạm khắc cung đình huế', 'am-bac-cham-khac', 'Đồ dùng của vua chúa, quý tộc, thể hiện sự xa hoa và quyền quý.', '85000000.00', '75000000.00', 1, 'DPL006', '[\"https://tse3.mm.bing.net/th/id/OIP.g7rnYc7UK8F_LVGGypAW2gHaI8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'excellent', 'Việt Nam', 1800, '', NULL, NULL, NULL, 1, 34, '2025-10-03 03:01:23', '2025-10-03 16:46:54'),
 (12, 3, 'Đèn dầu bằng đồng', 'den-dau-bang-dong', 'Mang phong cách châu Âu cổ điển, vừa có giá trị sử dụng vừa có giá trị trang trí cao.', '7500000.00', '5000000.00', 6, 'DPL008', '[\"https://product.hstatic.net/200000283705/product/2_c386f94cb8a04120a5c5fd4615889aae_master.jpg\"]', 'good', 'Pháp', 1800, '', NULL, NULL, NULL, 1, 32, '2025-10-03 03:01:23', '2025-10-03 15:33:20'),
-(15, 9, 'Bình Hoa Gốm Sứ Thanh Hoa', 'binh-hoa-gom-su-thanh-hoa', 'Bình hoa gốm sứ quý hiếm từ thời Thanh Hoa, được trang trí hoa văn rồng phượng tinh xảo.', '45000000.00', NULL, 3, NULL, '[\"https://th.bing.com/th/id/R.4073c43c2d40148e75ace0b5c002f320?rik=z8tr57riJi4rNQ&riu=http%3a%2f%2f2.bp.blogspot.com%2f-qDYFY4aBoYU%2fU2UBqPjn4yI%2fAAAAAAAAAO0%2fQDhfveO6jvg%2fs1600%2fcvth201307305f89e131-1892-4dac-89c9-6cc75cc64fb1.JPG&ehk=ztOGEmUWBnkbfu4GEC0cIMaFItpU0ToMFGahuP0QooQ%3d&risl=&pid=ImgRaw&r=0\"]', 'excellent', 'Trung Quốc', 1850, 'Gốm sứ', '35cm x 20cm', '2.50', 1, 1, 53, '2025-10-03 18:08:52', '2025-10-26 09:16:49'),
+(15, 9, 'Bình Hoa Gốm Sứ Thanh Hoa', 'binh-hoa-gom-su-thanh-hoa', 'Bình hoa gốm sứ quý hiếm từ thời Thanh Hoa, được trang trí hoa văn rồng phượng tinh xảo.', '45000000.00', NULL, 3, NULL, '[\"https://th.bing.com/th/id/R.4073c43c2d40148e75ace0b5c002f320?rik=z8tr57riJi4rNQ&riu=http%3a%2f%2f2.bp.blogspot.com%2f-qDYFY4aBoYU%2fU2UBqPjn4yI%2fAAAAAAAAAO0%2fQDhfveO6jvg%2fs1600%2fcvth201307305f89e131-1892-4dac-89c9-6cc75cc64fb1.JPG&ehk=ztOGEmUWBnkbfu4GEC0cIMaFItpU0ToMFGahuP0QooQ%3d&risl=&pid=ImgRaw&r=0\"]', 'excellent', 'Trung Quốc', 1850, 'Gốm sứ', '35cm x 20cm', '2.50', 1, 1, 53, '2025-10-03 18:08:52', '2025-10-28 06:16:40'),
 (16, 11, 'Đồng Hồ Quả Lắc Pháp Cổ', 'dong-ho-qua-lac-phap-co', 'Đồng hồ quả lắc cơ học Pháp từ thập niên 1920, vỏ gỗ sồi nguyên bản.', '28000000.00', NULL, 1, NULL, '[\"https://tse2.mm.bing.net/th/id/OIP.ET24O2RnzG64XNb9sjhANQHaNK?cb=12&w=576&h=1024&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'good', 'Pháp', 1920, 'Gỗ sồi, Đồng', '80cm x 35cm x 18cm', '15.00', 1, 0, 42, '2025-10-03 18:08:52', '2025-10-25 11:51:51'),
-(17, 10, 'Tủ Thuốc Gỗ Xưa', 'tu-thuoc-go-xua', 'Tủ thuốc cổ bằng gỗ lim với 48 ngăn kéo nhỏ, từng được sử dụng trong nhà thuốc Đông y.', '65000000.00', NULL, 3, '', '[\"https://dogotruongnhung.com/wp-content/uploads/2022/08/IMG_6281-1536x1536.jpg\"]', 'good', 'Việt Nam', 1900, 'Gỗ lim', '120cm x 90cm x 40cm', '80.00', 1, 1, 6, '2025-10-03 18:08:52', '2025-10-26 08:22:36'),
+(17, 10, 'Tủ Thuốc Gỗ Xưa', 'tu-thuoc-go-xua', 'Tủ thuốc cổ bằng gỗ lim với 48 ngăn kéo nhỏ, từng được sử dụng trong nhà thuốc Đông y.', '65000000.00', NULL, 4, NULL, '[\"https://dogotruongnhung.com/wp-content/uploads/2022/08/IMG_6281-1536x1536.jpg\"]', 'good', 'Việt Nam', 1900, 'Gỗ lim', '120cm x 90cm x 40cm', '80.00', 1, 1, 6, '2025-10-03 18:08:52', '2025-10-28 06:24:32'),
 (18, 12, 'Đèn Dầu Đồng Thời Pháp', 'den-dau-dong-thoi-phap', 'Đèn dầu bằng đồng từ thời Pháp thuộc, thiết kế tinh xảo với hoa văn chạm khắc thủ công.', '12000000.00', NULL, 4, NULL, '[\"https://tse3.mm.bing.net/th/id/OIP.yEciLQRLfW7NkarjCyL5nwHaFj?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'good', 'Pháp - Đông Dương', 1920, 'Đồng', '45cm x 15cm', '3.00', 0, 1, 0, '2025-10-03 18:08:52', '2025-10-26 09:16:55'),
 (19, 10, 'Bàn Trà Gỗ Hương', 'ban-tra-go-huong', 'Bàn trà gỗ hương nguyên khối với họa tiết rồng chạm nổi tinh xảo.', '38000000.00', NULL, 5, NULL, '[\"https://tse2.mm.bing.net/th/id/OIP.JsuIdqufpwn3KfMoarPVfAHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3\"]', 'excellent', 'Việt Nam', 1960, 'Gỗ hương', '45cm x 80cm x 50cm', '25.00', 1, 1, 2, '2025-10-03 18:08:52', '2025-10-26 06:28:13'),
-(20, 13, 'Ấm Trà Bạc Hoàng Gia', 'am-tra-bac-hoang-gia', 'Ấm trà bạc nguyên chất với dấu ấn hoàng gia Anh, thiết kế Victorian cổ điển.', '22000000.00', NULL, 3, NULL, '[\"https://hungmoctra.vn/wp-content/uploads/2024/04/bo-an-tra-bac-999.jpg\"]', 'good', 'Anh', 1900, 'Bạc 925', '18cm x 15cm', '0.85', 0, 1, 10, '2025-10-03 18:08:52', '2025-10-26 06:36:19');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `product_suppliers`
---
-
-CREATE TABLE `product_suppliers` (
-  `id` int NOT NULL,
-  `product_id` int NOT NULL,
-  `supplier_id` int NOT NULL,
-  `created_at` datetime NOT NULL,
-  `supply_price` decimal(10,2) NOT NULL COMMENT 'Giá nhập từ nhà cung cấp',
-  `is_primary` tinyint(1) DEFAULT '0' COMMENT 'Nhà cung cấp chính',
-  `updated_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+(20, 13, 'Ấm Trà Bạc Hoàng Gia', 'am-tra-bac-hoang-gia', 'Ấm trà bạc nguyên chất với dấu ấn hoàng gia Anh, thiết kế Victorian cổ điển.', '22000000.00', NULL, 2, NULL, '[\"https://hungmoctra.vn/wp-content/uploads/2024/04/bo-an-tra-bac-999.jpg\"]', 'good', 'Anh', 1900, 'Bạc 925', '18cm x 15cm', '0.85', 0, 1, 10, '2025-10-03 18:08:52', '2025-10-27 15:59:01');
 
 -- --------------------------------------------------------
 
@@ -389,27 +379,6 @@ INSERT INTO `social_auths` (`id`, `user_id`, `provider`, `provider_id`, `profile
 -- --------------------------------------------------------
 
 --
--- Table structure for table `suppliers`
---
-
-CREATE TABLE `suppliers` (
-  `id` int NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_person` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
-  `tax_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mã số thuế',
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `is_active` tinyint(1) DEFAULT '1',
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `support_messages`
 --
 
@@ -435,7 +404,9 @@ CREATE TABLE `support_messages` (
 --
 
 INSERT INTO `support_messages` (`id`, `user_id`, `guest_name`, `guest_email`, `guest_phone`, `subject`, `message`, `status`, `priority`, `admin_response`, `responded_at`, `responded_by`, `created_at`, `updated_at`) VALUES
-(1, 7, NULL, NULL, NULL, 'aaa', 'chào', 'pending', 'normal', NULL, NULL, NULL, '2025-10-26 08:20:38', '2025-10-26 08:20:38');
+(1, 7, NULL, NULL, NULL, 'aaa', 'chào', 'resolved', 'normal', 'chào\n', '2025-10-26 10:52:24', 1, '2025-10-26 08:20:38', '2025-10-26 10:52:24'),
+(18, 7, NULL, NULL, NULL, 'hi', 'blabla\n', 'resolved', 'normal', 'chào', '2025-10-27 15:27:52', 7, '2025-10-26 10:51:34', '2025-10-27 15:27:52'),
+(19, 7, NULL, NULL, NULL, 'hihi', 'hui', 'resolved', 'normal', 'chào\n', '2025-10-28 06:17:12', 7, '2025-10-27 15:31:08', '2025-10-28 06:17:12');
 
 -- --------------------------------------------------------
 
@@ -450,9 +421,8 @@ CREATE TABLE `users` (
   `full_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address` text COLLATE utf8mb4_unicode_ci,
-  `role` enum('admin','customer','supplier') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'customer',
+  `role` enum('admin','customer','staff') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'customer',
   `avatar` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_active` tinyint(1) DEFAULT '1',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -461,13 +431,13 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `full_name`, `phone`, `address`, `role`, `avatar`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'admin@antiquestore.com', '$2a$10$NixWeQ3wZok33MqvcUiV1OBClKJa0Hlz54ZMcjhrC16wNNM/P0bza', 'Admin User', NULL, NULL, 'admin', NULL, 1, '2025-10-03 03:01:23', '2025-10-03 03:01:23'),
-(3, 'test@example.com', '$2a$10$dCQVXrqm5xD1nRze5Y6.COL2FGf88fyFTajglgH8SvwheptQe4H1O', 'Test User', NULL, NULL, 'customer', NULL, 1, '2025-10-04 03:08:36', '2025-10-04 03:08:36'),
-(7, 'vminh3321@gmail.com', '$2a$10$8aMSg7IkU4XjJTaQM.yEPuSTRV.KJ/pjIDlyCXbCHBJKI36IvmScW', 'Vương Trương Hồ Minh', '0706166053', 'vminh3321@gmail.com', 'customer', NULL, 1, '2025-10-05 05:37:50', '2025-10-05 05:37:50'),
-(8, 'test@customer.com', '$2a$10$ARMyXEpFrxLhbR14y8qz.umnsMhV4AiCYrFNYcafvXE8JJvfyaAUm', 'Khách Hàng Test', '0987654321', '123 Test St, HCMC', 'customer', NULL, 1, '2025-10-19 03:28:29', '2025-10-19 03:28:29'),
-(11, 'kienthuckenh583@gmail.com', '$2a$10$qcEKA4kqldTfU3jyWRvp/ukPTrQexRt5tpUOGVHWUKX49XuBgheUK', 'Kien thuc Kenh', NULL, NULL, 'customer', 'https://lh3.googleusercontent.com/a/ACg8ocKdbGUPlqxCUVxmHxh9rlSqBIWZkM6YlYkOQyYLQG7_l0GHVg=s96-c', 1, '2025-10-19 08:41:21', '2025-10-19 08:41:21'),
-(12, 'vuongthm4994@ut.edu.vn', '$2a$10$8KhjICASEEdVL3VZUWHq4.HmxF3o1SIwFOziiZg.1.r/p2lj5fpgi', 'Vương Trương Hồ Minh', NULL, NULL, 'customer', 'https://lh3.googleusercontent.com/a/ACg8ocKeReaM8vpOmhNm9ngmfLDamUr5ulNLD-Pv2XkK8eCmz3Qytw=s96-c', 1, '2025-10-19 10:48:34', '2025-10-19 10:48:34');
+INSERT INTO `users` (`id`, `email`, `password`, `full_name`, `phone`, `address`, `role`, `avatar`, `created_at`, `updated_at`) VALUES
+(1, 'admin@antiquestore.com', '$2a$10$NixWeQ3wZok33MqvcUiV1OBClKJa0Hlz54ZMcjhrC16wNNM/P0bza', 'Admin User', NULL, NULL, 'admin', NULL, '2025-10-03 03:01:23', '2025-10-03 03:01:23'),
+(3, 'test@example.com', '$2a$10$dCQVXrqm5xD1nRze5Y6.COL2FGf88fyFTajglgH8SvwheptQe4H1O', 'Test User', NULL, NULL, 'customer', NULL, '2025-10-04 03:08:36', '2025-10-04 03:08:36'),
+(7, 'vminh3321@gmail.com', '$2a$10$8aMSg7IkU4XjJTaQM.yEPuSTRV.KJ/pjIDlyCXbCHBJKI36IvmScW', 'Vương Trương Hồ Minh', '0706166053', 'vminh3321@gmail.com', 'staff', NULL, '2025-10-05 05:37:50', '2025-10-28 06:24:25'),
+(8, 'test@customer.com', '$2a$10$ARMyXEpFrxLhbR14y8qz.umnsMhV4AiCYrFNYcafvXE8JJvfyaAUm', 'Khách Hàng Test', '0987654321', '123 Test St, HCMC', 'customer', NULL, '2025-10-19 03:28:29', '2025-10-19 03:28:29'),
+(11, 'kienthuckenh583@gmail.com', '$2a$10$qcEKA4kqldTfU3jyWRvp/ukPTrQexRt5tpUOGVHWUKX49XuBgheUK', 'Kien thuc Kenh', NULL, NULL, 'customer', 'https://lh3.googleusercontent.com/a/ACg8ocKdbGUPlqxCUVxmHxh9rlSqBIWZkM6YlYkOQyYLQG7_l0GHVg=s96-c', '2025-10-19 08:41:21', '2025-10-19 08:41:21'),
+(12, 'vuongthm4994@ut.edu.vn', '$2a$10$8KhjICASEEdVL3VZUWHq4.HmxF3o1SIwFOziiZg.1.r/p2lj5fpgi', 'Vương Trương Hồ Minh', NULL, NULL, 'customer', 'https://lh3.googleusercontent.com/a/ACg8ocKeReaM8vpOmhNm9ngmfLDamUr5ulNLD-Pv2XkK8eCmz3Qytw=s96-c', '2025-10-19 10:48:34', '2025-10-19 10:48:34');
 
 -- --------------------------------------------------------
 
@@ -514,29 +484,6 @@ CREATE TABLE `voucher_usage` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `warehouse_logs`
---
-
-CREATE TABLE `warehouse_logs` (
-  `id` int NOT NULL,
-  `product_id` int NOT NULL,
-  `supplier_id` int DEFAULT NULL,
-  `type` enum('import','export','adjustment') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Loại: nhập/xuất/điều chỉnh',
-  `quantity` int NOT NULL COMMENT 'Số lượng thay đổi (dương = nhập, âm = xuất)',
-  `quantity_before` int NOT NULL COMMENT 'Tồn kho trước khi thay đổi',
-  `quantity_after` int NOT NULL COMMENT 'Tồn kho sau khi thay đổi',
-  `unit_price` decimal(10,2) DEFAULT NULL COMMENT 'Đơn giá nhập/xuất',
-  `reference_type` enum('order','purchase','manual') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Tham chiếu: đơn hàng/mua hàng/thủ công',
-  `reference_id` int DEFAULT NULL COMMENT 'ID tham chiếu (order_id nếu reference_type = order)',
-  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Ghi chú',
-  `created_by` int DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  `total_amount` decimal(10,2) DEFAULT NULL COMMENT 'Tổng giá trị'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `wishlists`
 --
 
@@ -552,12 +499,8 @@ CREATE TABLE `wishlists` (
 --
 
 INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`) VALUES
-(29, 7, 15, '2025-10-26 08:50:38'),
-(30, 7, 17, '2025-10-26 08:50:39'),
-(31, 7, 20, '2025-10-26 08:50:40'),
-(32, 7, 3, '2025-10-26 08:50:42'),
-(33, 7, 2, '2025-10-26 08:50:42'),
-(34, 7, 4, '2025-10-26 08:50:43');
+(35, 1, 2, '2025-10-27 14:20:37'),
+(36, 1, 3, '2025-10-27 14:20:37');
 
 --
 -- Indexes for dumped tables
@@ -656,18 +599,6 @@ ALTER TABLE `products`
   ADD KEY `idx_products_active` (`is_active`);
 
 --
--- Indexes for table `product_suppliers`
---
-ALTER TABLE `product_suppliers`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_supply` (`product_id`,`supplier_id`),
-  ADD UNIQUE KEY `unique_product_supplier` (`product_id`,`supplier_id`),
-  ADD KEY `idx_product_suppliers_product` (`product_id`),
-  ADD KEY `idx_product_suppliers_supplier` (`supplier_id`),
-  ADD KEY `product_suppliers_product_id` (`product_id`),
-  ADD KEY `product_suppliers_supplier_id` (`supplier_id`);
-
---
 -- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
@@ -698,19 +629,6 @@ ALTER TABLE `social_auths`
   ADD UNIQUE KEY `social_auths_user_id_provider` (`user_id`,`provider`),
   ADD UNIQUE KEY `provider_id_2` (`provider_id`),
   ADD KEY `social_auths_user_id` (`user_id`);
-
---
--- Indexes for table `suppliers`
---
-ALTER TABLE `suppliers`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `idx_suppliers_email` (`email`),
-  ADD KEY `idx_suppliers_user_id` (`user_id`),
-  ADD KEY `idx_suppliers_is_active` (`is_active`),
-  ADD KEY `suppliers_email` (`email`),
-  ADD KEY `suppliers_user_id` (`user_id`),
-  ADD KEY `suppliers_is_active` (`is_active`);
 
 --
 -- Indexes for table `support_messages`
@@ -753,20 +671,6 @@ ALTER TABLE `voucher_usage`
   ADD KEY `idx_voucher_usage_order_id` (`order_id`);
 
 --
--- Indexes for table `warehouse_logs`
---
-ALTER TABLE `warehouse_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_warehouse_logs_product` (`product_id`),
-  ADD KEY `idx_warehouse_logs_type` (`type`),
-  ADD KEY `idx_warehouse_logs_created_at` (`created_at`),
-  ADD KEY `warehouse_logs_product_id` (`product_id`),
-  ADD KEY `warehouse_logs_type` (`type`),
-  ADD KEY `warehouse_logs_created_at` (`created_at`),
-  ADD KEY `warehouse_logs_supplier_id` (`supplier_id`),
-  ADD KEY `created_by` (`created_by`);
-
---
 -- Indexes for table `wishlists`
 --
 ALTER TABLE `wishlists`
@@ -796,19 +700,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `otps`
@@ -820,19 +724,13 @@ ALTER TABLE `otps`
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT for table `product_suppliers`
---
-ALTER TABLE `product_suppliers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reviews`
@@ -853,16 +751,10 @@ ALTER TABLE `social_auths`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `suppliers`
---
-ALTER TABLE `suppliers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `support_messages`
 --
 ALTER TABLE `support_messages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -883,16 +775,10 @@ ALTER TABLE `voucher_usage`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `warehouse_logs`
---
-ALTER TABLE `warehouse_logs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- Constraints for dumped tables
@@ -944,13 +830,6 @@ ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `product_suppliers`
---
-ALTER TABLE `product_suppliers`
-  ADD CONSTRAINT `product_suppliers_ibfk_77` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `product_suppliers_ibfk_78` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
@@ -972,12 +851,6 @@ ALTER TABLE `social_auths`
   ADD CONSTRAINT `social_auths_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `suppliers`
---
-ALTER TABLE `suppliers`
-  ADD CONSTRAINT `suppliers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
 -- Constraints for table `support_messages`
 --
 ALTER TABLE `support_messages`
@@ -991,14 +864,6 @@ ALTER TABLE `voucher_usage`
   ADD CONSTRAINT `voucher_usage_ibfk_1` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `voucher_usage_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `voucher_usage_ibfk_3` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `warehouse_logs`
---
-ALTER TABLE `warehouse_logs`
-  ADD CONSTRAINT `warehouse_logs_ibfk_115` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `warehouse_logs_ibfk_116` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `warehouse_logs_ibfk_117` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `wishlists`
