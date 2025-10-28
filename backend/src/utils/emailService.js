@@ -381,112 +381,6 @@ const sendOrderConfirmationEmail = async (email, orderData) => {
 };
 
 /**
- * Send Invoice Email with PDF attachment
- */
-const sendInvoiceEmail = async (email, invoiceData, pdfBuffer = null) => {
-    try {
-        // Debug: Check email configuration
-        console.log('📧 Sending invoice email to:', email);
-        console.log('📧 SMTP_USER:', process.env.SMTP_USER);
-        console.log('📧 SMTP configuration:', {
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
-            user: process.env.SMTP_USER ? 'configured' : 'missing'
-        });
-
-        const transporter = initializeTransporter();
-
-        const { invoice_number, order_number, total_amount } = invoiceData;
-        
-        console.log('📧 Invoice data:', { invoice_number, order_number, total_amount });
-
-        const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Invoice</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
-        <tr>
-            <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px;">
-                    <tr>
-                        <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 8px 8px 0 0;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">
-                                📄 Hóa Đơn Điện Tử
-                            </h1>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 40px;">
-                            <h2 style="margin: 0 0 20px; color: #333333;">
-                                Hóa Đơn #${invoice_number}
-                            </h2>
-                            <p style="color: #666666; font-size: 16px; line-height: 1.6;">
-                                Cảm ơn bạn đã mua hàng tại Antique Store!
-                            </p>
-                            <p style="color: #666666; font-size: 16px;">
-                                Đơn hàng: <strong>#${order_number}</strong><br>
-                                Tổng tiền: <strong style="color: #3b82f6; font-size: 20px;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total_amount)}</strong>
-                            </p>
-                            <p style="color: #666666; font-size: 14px; margin-top: 20px;">
-                                ${pdfBuffer ? 'Hóa đơn chi tiết được đính kèm dưới dạng file PDF.' : 'Hóa đơn chi tiết sẽ được gửi trong email tiếp theo.'}
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 20px 40px; text-align: center; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
-                            <p style="margin: 0; color: #999999; font-size: 12px;">
-                                © 2025 Antique Store. All rights reserved.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-        `;
-
-        const mailOptions = {
-            from: `"Antique Store" <${process.env.SMTP_USER}>`,
-            to: email,
-            subject: `📄 Hóa Đơn #${invoice_number} - Đơn Hàng #${order_number}`,
-            html: htmlContent,
-        };
-
-        // Attach PDF if provided
-        if (pdfBuffer) {
-            mailOptions.attachments = [{
-                filename: `invoice-${invoice_number}.pdf`,
-                content: pdfBuffer,
-                contentType: 'application/pdf'
-            }];
-        }
-
-        console.log('📧 Attempting to send email with mailOptions:', {
-            from: mailOptions.from,
-            to: mailOptions.to,
-            subject: mailOptions.subject
-        });
-
-        const info = await transporter.sendMail(mailOptions);
-
-        console.log('✅ Email sent successfully! Message ID:', info.messageId);
-        logger.info({ message: 'Invoice email sent', email, invoice_number, messageId: info.messageId });
-        return { success: true, messageId: info.messageId };
-    } catch (error) {
-        console.error('❌ Email sending failed:', error.message);
-        console.error('❌ Error details:', error);
-        logger.logError(error, { operation: 'sendInvoiceEmail', email });
-        return { success: false, error: error.message };
-    }
-};
-
-/**
  * Send Order Status Update Email
  */
 const sendOrderStatusUpdateEmail = async (email, orderData) => {
@@ -607,7 +501,6 @@ module.exports = {
     sendOTPEmail,
     sendWelcomeEmail,
     sendOrderConfirmationEmail,
-    sendInvoiceEmail,
     sendOrderStatusUpdateEmail,
     verifyEmailConfig,
 };

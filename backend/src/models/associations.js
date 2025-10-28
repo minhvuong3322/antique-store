@@ -16,7 +16,6 @@ const setupAssociations = () => {
     const OrderDetail = require('./OrderDetail');
     const Payment = require('./Payment');
     const Otp = require('./Otp');
-    const Invoice = require('./Invoice');
     const SocialAuth = require('./SocialAuth');
     const Review = require('./Review');
     const Voucher = require('./Voucher');
@@ -47,17 +46,6 @@ const setupAssociations = () => {
     Order.belongsTo(User, {
         foreignKey: 'user_id',
         as: 'user'
-    });
-
-    // User - Invoice (1:N) - created_by
-    User.hasMany(Invoice, {
-        foreignKey: 'created_by',
-        as: 'invoices',
-        onDelete: 'RESTRICT'
-    });
-    Invoice.belongsTo(User, {
-        foreignKey: 'created_by',
-        as: 'creator'
     });
 
     // User - SocialAuth (1:N)
@@ -203,17 +191,6 @@ const setupAssociations = () => {
         onDelete: 'CASCADE'
     });
     Payment.belongsTo(Order, {
-        foreignKey: 'order_id',
-        as: 'order'
-    });
-
-    // Order - Invoice (1:1)
-    Order.hasOne(Invoice, {
-        foreignKey: 'order_id',
-        as: 'invoice',
-        onDelete: 'CASCADE'
-    });
-    Invoice.belongsTo(Order, {
         foreignKey: 'order_id',
         as: 'order'
     });

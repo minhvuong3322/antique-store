@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { orderService } from '../../services/orderService';
-import { invoiceService } from '../../services/invoiceService';
 import { useAuth } from '../../context/AuthContext';
 import {
     MagnifyingGlassIcon,
     EyeIcon,
-    DocumentTextIcon,
     TruckIcon
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
@@ -66,16 +64,6 @@ const Orders = () => {
         }
     };
 
-    const handleCreateInvoice = async (orderId) => {
-        try {
-            await invoiceService.createInvoice({ order_id: orderId });
-            toast.success('Tạo hóa đơn thành công');
-            fetchOrders(); // Refresh list
-        } catch (error) {
-            console.error('Error creating invoice:', error);
-            toast.error(error.response?.data?.message || 'Không thể tạo hóa đơn');
-        }
-    };
 
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -250,16 +238,6 @@ const Orders = () => {
                                                 >
                                                     <EyeIcon className="h-5 w-5" />
                                                 </button>
-                                                {/* Only show invoice button for admin users */}
-                                                {order.status === 'confirmed' && user?.role === 'admin' && (
-                                                    <button
-                                                        onClick={() => handleCreateInvoice(order.id)}
-                                                        className="text-green-600 hover:text-green-900"
-                                                        title="Tạo hóa đơn"
-                                                    >
-                                                        <DocumentTextIcon className="h-5 w-5" />
-                                                    </button>
-                                                )}
                                             </td>
                                         </tr>
                                     );

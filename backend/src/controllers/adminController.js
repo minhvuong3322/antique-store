@@ -1,4 +1,4 @@
-const { User, Product, Order, OrderDetail, Payment, Category, Invoice, sequelize } = require('../models');
+const { User, Product, Order, OrderDetail, Payment, Category, sequelize } = require('../models');
 const logger = require('../utils/logger');
 const { Op } = require('sequelize');
 
@@ -448,10 +448,6 @@ exports.getComprehensiveAnalytics = async (req, res, next) => {
             raw: true
         });
 
-        // Invoice statistics
-        const totalInvoices = await Invoice.count();
-        const paidInvoices = await Invoice.count({ where: { payment_status: 'paid' } });
-
         // Warehouse statistics
         const lowStockCount = await Product.count({
             where: {
@@ -478,11 +474,6 @@ exports.getComprehensiveAnalytics = async (req, res, next) => {
                 },
                 orders: {
                     by_status: ordersByStatus
-                },
-                invoices: {
-                    total: totalInvoices,
-                    paid: paidInvoices,
-                    unpaid: totalInvoices - paidInvoices
                 },
                 warehouse: {
                     low_stock_count: lowStockCount,

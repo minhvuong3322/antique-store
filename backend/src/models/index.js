@@ -12,7 +12,6 @@ const Otp = require('./Otp');
 // =====================================================
 // NEW MODELS - Extended Features
 // =====================================================
-const Invoice = require('./Invoice');
 const SocialAuth = require('./SocialAuth');
 const Review = require('./Review');
 const Voucher = require('./Voucher');
@@ -51,7 +50,6 @@ module.exports = {
     Payment,
     Otp,
     // New models
-    Invoice,
     SocialAuth,
     Review,
     Voucher,

@@ -7,8 +7,6 @@ import {
     ShoppingBagIcon,
     ShoppingCartIcon,
     UserGroupIcon,
-    DocumentTextIcon,
-    ShieldCheckIcon,
     ChartBarIcon,
     Bars3Icon,
     XMarkIcon,
@@ -53,7 +51,6 @@ const AdminLayout = () => {
         { name: 'Sản phẩm', href: '/admin/products', icon: ShoppingBagIcon, roles: ['admin', 'staff'] },
         { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCartIcon, badge: newOrdersCount, roles: ['admin', 'staff'] },
         { name: 'Nhân viên', href: '/admin/users', icon: UserGroupIcon, roles: ['admin'] },
-        { name: 'Hóa đơn', href: '/admin/invoices', icon: DocumentTextIcon, roles: ['admin'] },
         { name: 'Tin nhắn hỗ trợ', href: '/admin/support', icon: ChatBubbleLeftRightIcon, roles: ['admin', 'staff'] },
         { name: 'Thống kê', href: '/admin/analytics', icon: ChartBarIcon, roles: ['admin'] },
     ];

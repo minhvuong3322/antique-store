@@ -35,12 +35,8 @@ const ProductCard = ({ product }) => {
     const handleToggleWishlist = (e) => {
         e.preventDefault()
         e.stopPropagation()
+        // Toast notification is handled in WishlistContext
         toggleWishlist(product)
-        if (inWishlist) {
-            toast.success('Đã xóa khỏi yêu thích')
-        } else {
-            toast.success('Đã thêm vào yêu thích! ❤️')
-        }
     }
 
     // Handle share

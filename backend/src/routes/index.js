@@ -11,7 +11,6 @@ const orderRoutes = require('./orderRoutes');
 const paymentRoutes = require('./paymentRoutes');
 
 // New routes - Extended features
-const invoiceRoutes = require('./invoiceRoutes');
 const adminRoutes = require('./adminRoutes');
 const wishlistRoutes = require('./wishlistRoutes');
 const supportRoutes = require('./supportRoutes');
@@ -35,7 +34,6 @@ router.use('/orders', orderRoutes);
 router.use('/payments', paymentRoutes);
 
 // New API routes - Extended features
-router.use('/invoices', invoiceRoutes);
 router.use('/admin', adminRoutes);
 router.use('/wishlist', wishlistRoutes);
 router.use('/support', supportRoutes);

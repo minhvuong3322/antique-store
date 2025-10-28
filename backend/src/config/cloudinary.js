@@ -56,22 +56,6 @@ const avatarStorage = new CloudinaryStorage({
 });
 
 /**
- * Cloudinary Storage for Invoices (PDF)
- */
-const invoiceStorage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'antique-store/invoices',
-        allowed_formats: ['pdf'],
-        resource_type: 'raw',
-        public_id: (req, file) => {
-            const uniqueSuffix = Date.now();
-            return `invoice-${uniqueSuffix}`;
-        }
-    }
-});
-
-/**
  * Delete file from Cloudinary
  */
 const deleteFile = async (publicId) => {
@@ -130,7 +114,6 @@ module.exports = {
     cloudinary,
     productStorage,
     avatarStorage,
-    invoiceStorage,
     deleteFile,
     deleteFiles,
     getFileInfo,

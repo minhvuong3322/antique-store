@@ -19,14 +19,16 @@ const updateStatusValidation = [
 
 // Customer routes
 router.use(authenticate);
+
+// Admin routes (must be defined before parameterized routes to avoid conflicts)
+router.get('/admin/orders', authorize('admin', 'staff'), orderController.getAllOrders);
+router.put('/:id/status', authorize('admin', 'staff'), updateStatusValidation, orderController.updateOrderStatus);
+
+// Customer-specific routes
 router.post('/', createOrderValidation, orderController.createOrder);
 router.get('/', orderController.getUserOrders);
 router.get('/:id', orderController.getOrderById);
 router.put('/:id/cancel', orderController.cancelOrder);
-
-// Admin routes (Admin and Staff can access)
-router.get('/admin/all', authorize('admin', 'staff'), orderController.getAllOrders);
-router.put('/:id/status', authorize('admin', 'staff'), updateStatusValidation, orderController.updateOrderStatus);
 
 module.exports = router;
 

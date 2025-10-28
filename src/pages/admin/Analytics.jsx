@@ -288,57 +288,24 @@ const Analytics = () => {
             </div>
 
             {/* Additional Statistics */}
-            {analytics && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Warranties */}
+            {analytics && analytics.warehouse && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Warehouse Status */}
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                            Bảo hành
+                            Kho hàng
                         </h3>
                         <div className="space-y-2">
                             <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Tổng số:</span>
-                                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {analytics.warranties.total}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Đang hoạt động:</span>
-                                <span className="text-sm font-medium text-green-600">
-                                    {analytics.warranties.active}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Đã yêu cầu:</span>
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Sắp hết hàng:</span>
                                 <span className="text-sm font-medium text-yellow-600">
-                                    {analytics.warranties.claimed}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Invoices */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                            Hóa đơn
-                        </h3>
-                        <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Tổng số:</span>
-                                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {analytics.invoices.total}
+                                    {analytics.warehouse.low_stock_count || 0}
                                 </span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Đã thanh toán:</span>
-                                <span className="text-sm font-medium text-green-600">
-                                    {analytics.invoices.paid}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">Chưa thanh toán:</span>
-                                <span className="text-sm font-medium text-yellow-600">
-                                    {analytics.invoices.unpaid}
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Hết hàng:</span>
+                                <span className="text-sm font-medium text-red-600">
+                                    {analytics.warehouse.out_of_stock_count || 0}
                                 </span>
                             </div>
                         </div>
