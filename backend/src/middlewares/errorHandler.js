@@ -85,6 +85,33 @@ const getErrorInfo = (err) => {
         };
     }
 
+    // Sequelize database connection errors
+    if (err.name === 'SequelizeConnectionError' || err.name === 'SequelizeConnectionRefusedError') {
+        return {
+            statusCode: 503,
+            errorCode: ERROR_CODES.DATABASE_ERROR,
+            message: 'Không thể kết nối đến database. Vui lòng thử lại sau.',
+        };
+    }
+
+    // Sequelize timeout errors
+    if (err.name === 'SequelizeTimeoutError') {
+        return {
+            statusCode: 504,
+            errorCode: ERROR_CODES.DATABASE_ERROR,
+            message: 'Database query timeout. Vui lòng thử lại.',
+        };
+    }
+
+    // Generic Sequelize errors
+    if (err.name && err.name.startsWith('Sequelize')) {
+        return {
+            statusCode: 500,
+            errorCode: ERROR_CODES.DATABASE_ERROR,
+            message: err.message || 'Database error occurred',
+        };
+    }
+
     // JWT errors
     if (err.name === 'JsonWebTokenError') {
         return {

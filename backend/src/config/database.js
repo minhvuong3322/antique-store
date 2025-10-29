@@ -31,7 +31,13 @@ const config = {
         host: process.env.DB_HOST || 'localhost',
         port: process.env.DB_PORT || 3306,
         dialect: process.env.DB_DIALECT || 'mysql',
-        logging: false
+        logging: false,
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at'
+        }
     },
     production: {
         username: process.env.DB_USER,
@@ -46,6 +52,12 @@ const config = {
             min: 2,
             acquire: 30000,
             idle: 10000
+        },
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at'
         },
         dialectOptions: {
             ssl: process.env.DB_SSL === 'true' ? {
