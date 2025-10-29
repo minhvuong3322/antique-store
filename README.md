@@ -183,7 +183,7 @@ npm run dev                    # Frontend: http://localhost:5173
 - **Authentication**: JWT Decode
 - **Social Login**: 
   - Google OAuth (@react-oauth/google)
-  - Facebook Login (react-facebook-login)
+  - Facebook Login (Facebook SDK)
 - **HTTP Client**: Axios
 - **Utilities**: clsx, tailwind-merge
 
