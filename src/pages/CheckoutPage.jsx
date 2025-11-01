@@ -6,6 +6,7 @@ import { formatCurrency } from '../utils/format';
 import { toast } from 'react-hot-toast';
 import { CreditCard, Wallet, Building, CheckCircle } from 'lucide-react';
 import { orderService } from '../services/orderService';
+import { paymentService } from '../services/paymentService';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
@@ -81,9 +82,81 @@ const CheckoutPage = () => {
             const order = response?.data?.data?.order || response?.data?.order;
             
             if (order && order.id) {
-                // Clear cart after successful order
+                // Nếu là thanh toán online (VNPay, Momo), tạo payment URL
+                if (formData.payment_method === 'VNPay' || formData.payment_method === 'Momo') {
+                    try {
+                        // Tạo payment URL
+                        const paymentResponse = formData.payment_method === 'VNPay'
+                            ? await paymentService.createVNPayPayment(order.id)
+                            : await paymentService.createMomoPayment(order.id);
+                        
+                        const paymentUrl = paymentResponse?.data?.data?.payment_url;
+                        
+                        if (paymentUrl) {
+                            // Mở cửa sổ thanh toán
+                            const paymentWindow = window.open(
+                                paymentUrl,
+                                'payment',
+                                'width=800,height=600,scrollbars=yes,resizable=yes'
+                            );
+
+                            // Bắt đầu polling để check payment status
+                            toast.success('Đang chuyển đến trang thanh toán...', { duration: 2000 });
+                            
+                            // Poll payment status
+                            paymentService.pollPaymentStatus(order.order_number || order.id, {
+                                maxAttempts: 120, // 4 phút (120 * 2s)
+                                interval: 2000,
+                                onUpdate: (status) => {
+                                    if (status === 'completed' || status === 'failed') {
+                                        // Đóng cửa sổ thanh toán nếu đã mở
+                                        if (paymentWindow && !paymentWindow.closed) {
+                                            paymentWindow.close();
+                                        }
+                                    }
+                                },
+                                onComplete: (data) => {
+                                    clearCart();
+                                    toast.success('Thanh toán thành công! 🎉', { duration: 5000 });
+                                    setTimeout(() => {
+                                        navigate(`/orders/${order.id}`, {
+                                            state: { 
+                                                message: 'Cảm ơn bạn đã thanh toán! Đơn hàng của bạn đã được xác nhận.',
+                                                paymentSuccess: true
+                                            }
+                                        });
+                                    }, 1500);
+                                },
+                                onError: (error) => {
+                                    if (error?.error === 'Payment failed') {
+                                        toast.error('Thanh toán thất bại. Vui lòng thử lại.', { duration: 5000 });
+                                        setTimeout(() => {
+                                            navigate(`/orders/${order.id}`, {
+                                                state: { 
+                                                    message: 'Thanh toán thất bại. Vui lòng thử lại hoặc chọn phương thức khác.',
+                                                    paymentFailed: true
+                                                }
+                                            });
+                                        }, 1500);
+                                    } else if (error?.error !== 'Timeout') {
+                                        // Không hiển thị lỗi nếu chỉ là timeout (có thể user đang thanh toán)
+                                        console.error('Payment status check error:', error);
+                                    }
+                                }
+                            });
+                            
+                            // Không clear cart và redirect ngay, chờ thanh toán
+                            return;
+                        }
+                    } catch (paymentError) {
+                        console.error('Payment URL creation error:', paymentError);
+                        toast.error('Không thể tạo link thanh toán. Vui lòng thử lại.');
+                        // Fallback: vẫn tạo order thành công, user có thể thanh toán sau
+                    }
+                }
+
+                // COD hoặc BankTransfer - không cần redirect thanh toán
                 clearCart();
-                
                 toast.success('Đặt hàng thành công! 🎉');
 
                 // Redirect to order detail page

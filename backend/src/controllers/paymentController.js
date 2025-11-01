@@ -1,4 +1,5 @@
 const { Payment, Order } = require('../models');
+const { Op } = require('sequelize');
 const crypto = require('crypto');
 
 /**
@@ -241,6 +242,166 @@ const paymentCallback = async (req, res, next) => {
 };
 
 /**
+ * Webhook endpoint để nhận thông báo từ app thanh toán (VNPay, Momo, etc.)
+ * POST /api/v1/payments/webhook
+ * 
+ * Đây là endpoint để app thanh toán gọi khi đã nhận được tiền
+ * Body format:
+ * {
+ *   order_number: string,
+ *   transaction_id: string,
+ *   amount: number,
+ *   payment_method: 'VNPay' | 'Momo' | 'BankTransfer',
+ *   status: 'success' | 'failed',
+ *   signature?: string (để verify)
+ * }
+ */
+const paymentWebhook = async (req, res, next) => {
+    try {
+        const { 
+            order_number, 
+            transaction_id, 
+            amount,
+            payment_method,
+            status,
+            signature 
+        } = req.body;
+
+        if (!order_number || !transaction_id || !payment_method) {
+            return res.status(400).json({
+                success: false,
+                message: 'Thiếu thông tin bắt buộc'
+            });
+        }
+
+        const order = await Order.findOne({
+            where: { order_number },
+            include: [
+                {
+                    model: Payment,
+                    as: 'payment'
+                }
+            ]
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy đơn hàng'
+            });
+        }
+
+        // Verify amount (optional - để đảm bảo số tiền khớp)
+        if (amount && parseFloat(amount) !== parseFloat(order.total_amount)) {
+            console.warn(`⚠️ Amount mismatch for order ${order_number}: received ${amount}, expected ${order.total_amount}`);
+        }
+
+        // Verify signature (nếu có) - thực tế cần verify với secret key từ app thanh toán
+        // if (signature) {
+        //     const expectedSignature = crypto
+        //         .createHash('sha256')
+        //         .update(`${order_number}${transaction_id}${amount}${process.env.PAYMENT_SECRET_KEY}`)
+        //         .digest('hex');
+        //     
+        //     if (signature !== expectedSignature) {
+        //         return res.status(401).json({
+        //             success: false,
+        //             message: 'Invalid signature'
+        //         });
+        //     }
+        // }
+
+        // Cập nhật payment status
+        if (status === 'success' || status === 'completed') {
+            // Chỉ cập nhật nếu chưa completed (tránh duplicate processing)
+            if (order.payment.payment_status !== 'completed') {
+                await order.payment.update({
+                    payment_status: 'completed',
+                    transaction_id,
+                    payment_method,
+                    paid_at: new Date()
+                });
+
+                // Cập nhật order status nếu chưa confirmed
+                if (order.status !== 'confirmed' && order.status !== 'processing') {
+                    await order.update({ status: 'confirmed' });
+                }
+
+                console.log(`✅ Payment webhook processed: Order ${order_number} - ${transaction_id}`);
+            }
+        } else if (status === 'failed' || status === 'error') {
+            await order.payment.update({
+                payment_status: 'failed'
+            });
+            console.log(`❌ Payment webhook failed: Order ${order_number}`);
+        }
+
+        // Trả về success ngay để app thanh toán biết đã nhận được
+        res.json({
+            success: true,
+            message: 'Webhook processed successfully',
+            data: {
+                order_number,
+                payment_status: order.payment.payment_status
+            }
+        });
+    } catch (error) {
+        console.error('Payment webhook error:', error);
+        next(error);
+    }
+};
+
+/**
+ * Check payment status by order ID or order number
+ * GET /api/v1/payments/status/:identifier
+ */
+const checkPaymentStatus = async (req, res, next) => {
+    try {
+        const { identifier } = req.params;
+
+        // Tìm order theo ID hoặc order_number
+        const order = await Order.findOne({
+            where: {
+                [Op.or]: [
+                    { id: identifier },
+                    { order_number: identifier }
+                ]
+            },
+            include: [
+                {
+                    model: Payment,
+                    as: 'payment'
+                }
+            ]
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy đơn hàng'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                order_id: order.id,
+                order_number: order.order_number,
+                order_status: order.status,
+                payment: {
+                    payment_status: order.payment?.payment_status || 'pending',
+                    payment_method: order.payment?.payment_method || null,
+                    transaction_id: order.payment?.transaction_id || null,
+                    paid_at: order.payment?.paid_at || null
+                }
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Get payment statistics (Admin only)
  * GET /api/v1/admin/payments/stats
  */
@@ -273,6 +434,8 @@ module.exports = {
     createVNPayPayment,
     createMomoPayment,
     paymentCallback,
+    paymentWebhook,
+    checkPaymentStatus,
     getPaymentStats
 };
 

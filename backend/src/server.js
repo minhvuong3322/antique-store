@@ -12,30 +12,6 @@ const { syncDatabase } = require('./models');
 // KHỞI ĐỘNG SERVER
 // =====================================================
 
-// =====================================================
-// ERROR HANDLERS - Xử lý unhandled errors
-// =====================================================
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Unhandled Rejection tại:', promise);
-    console.error('Lý do:', reason);
-    // Log chi tiết error để debug
-    if (reason instanceof Error) {
-        console.error('Stack:', reason.stack);
-    }
-    // Không exit trong development để có thể debug
-    if (config.node_env === 'production') {
-        // Trong production, có thể exit để container restart
-        // process.exit(1);
-    }
-});
-
-process.on('uncaughtException', (error) => {
-    console.error('❌ Uncaught Exception:', error);
-    console.error('Stack:', error.stack);
-    // Exit trong mọi trường hợp vì app không còn an toàn
-    process.exit(1);
-});
-
 const startServer = async () => {
     try {
         // Kiểm tra kết nối database

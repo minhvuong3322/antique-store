@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { orderService } from '../services/orderService';
 import { toast } from 'react-hot-toast';
 import {
@@ -17,12 +17,52 @@ import {
 const OrderDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const hasProcessedMessage = useRef(false); // Để đảm bảo chỉ xử lý message 1 lần
 
     useEffect(() => {
         fetchOrderDetail();
+        // Reset flag khi order ID thay đổi
+        hasProcessedMessage.current = false;
     }, [id]);
+
+    useEffect(() => {
+        // Hiển thị thông báo từ state (khi redirect từ checkout sau thanh toán)
+        // Chỉ xử lý 1 lần bằng useRef để tránh duplicate trong StrictMode
+        const currentMessage = location.state?.message;
+        const toastId = 'order-success-message'; // ID cố định để tránh duplicate
+        
+        if (currentMessage && !hasProcessedMessage.current) {
+            hasProcessedMessage.current = true; // Đánh dấu đã xử lý
+            
+            // Dismiss toast cũ nếu có (với cùng id) để đảm bảo chỉ có 1 toast
+            toast.dismiss(toastId);
+            
+            // Hiển thị toast mới với id cố định (react-hot-toast sẽ tự động replace toast cùng id)
+            if (location.state.paymentSuccess) {
+                toast.success(currentMessage, { 
+                    duration: 5000,
+                    id: toastId
+                });
+            } else if (location.state.paymentFailed) {
+                toast.error(currentMessage, { 
+                    duration: 5000,
+                    id: toastId
+                });
+            } else {
+                toast.success(currentMessage, { 
+                    duration: 3000,
+                    id: toastId
+                });
+            }
+            
+            // Clear state ngay sau khi hiển thị
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state?.message]);
 
     const fetchOrderDetail = async () => {
         try {

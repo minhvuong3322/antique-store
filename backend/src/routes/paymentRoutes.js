@@ -15,10 +15,12 @@ const processPaymentValidation = [
 
 // Public routes (for payment gateway callbacks)
 router.get('/callback', paymentController.paymentCallback);
+router.post('/webhook', paymentController.paymentWebhook); // Webhook từ app thanh toán
 
 // Protected routes
 router.use(authenticate);
 router.get('/order/:orderId', paymentController.getPaymentByOrderId);
+router.get('/status/:identifier', paymentController.checkPaymentStatus); // Check payment status
 router.post('/process', processPaymentValidation, paymentController.processPayment);
 router.post('/vnpay/create', paymentController.createVNPayPayment);
 router.post('/momo/create', paymentController.createMomoPayment);
