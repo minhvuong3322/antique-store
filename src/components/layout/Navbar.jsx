@@ -7,6 +7,7 @@ import { useWishlist } from '../../context/WishlistContext'
 import { useAuth } from '../../context/AuthContext'
 import LanguageSwitcher from '../LanguageSwitcher'
 import Avatar from '../Avatar'
+import Logo from '../Logo'
 import {
     ShoppingCart,
     User,
@@ -89,16 +90,8 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center space-x-2 group">
-                        <div className="text-3xl">🏺</div>
-                        <div className="flex flex-col">
-                            <span className="font-elegant text-xl text-vintage-darkwood dark:text-vintage-gold group-hover:text-vintage-bronze transition-colors">
-                                Shop Đồ Cổ
-                            </span>
-                            <span className="text-xs text-vintage-gold font-serif italic">
-                                Antique Store
-                            </span>
-                        </div>
+                    <Link to="/" className="group">
+                        <Logo size="md" className="group-hover:opacity-80 transition-opacity" />
                     </Link>
 
                     {/* Desktop Navigation */}

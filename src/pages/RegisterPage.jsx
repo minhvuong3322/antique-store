@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 import { getErrorMessage } from '../utils/errorHandler';
 import SocialLogin from '../components/auth/SocialLogin';
+import Logo from '../components/Logo';
 
 const RegisterPage = () => {
     const { t } = useTranslation();
@@ -72,15 +73,15 @@ const RegisterPage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
                     {/* Logo */}
                     <div className="text-center mb-8">
-                        <Link to="/" className="inline-block">
-                            <div className="text-5xl mb-2">🏛️</div>
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                                Đăng Ký
-                            </h2>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Tạo tài khoản mới
-                            </p>
+                        <Link to="/" className="inline-block mb-4">
+                            <Logo size="lg" className="justify-center" />
                         </Link>
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                            Đăng Ký
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            Tạo tài khoản mới
+                        </p>
                     </div>
 
                     {/* Error Message */}

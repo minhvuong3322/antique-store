@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../utils/errorHandler';
 import SocialLogin from '../components/auth/SocialLogin';
+import Logo from '../components/Logo';
 
 const LoginPage = () => {
     const { t } = useTranslation();
@@ -56,15 +57,12 @@ const LoginPage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-vintage border border-vintage-gold/20 p-8">
                     {/* Logo */}
                     <div className="text-center mb-8">
-                        <Link to="/" className="inline-block">
-                            <div className="text-5xl mb-2">🏛️</div>
-                            <h2 className="text-3xl font-bold text-vintage-darkwood dark:text-vintage-cream mb-2" style={{ fontFamily: 'Arial, sans-serif', fontWeight: '700' }}>
-                                Đăng Nhập
-                            </h2>
-                            <p className="text-vintage-gold dark:text-vintage-gold" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
-                                Antique Store
-                            </p>
+                        <Link to="/" className="inline-block mb-4">
+                            <Logo size="lg" className="justify-center" />
                         </Link>
+                        <h2 className="text-3xl font-bold text-vintage-darkwood dark:text-vintage-cream mb-2" style={{ fontFamily: 'Arial, sans-serif', fontWeight: '700' }}>
+                            Đăng Nhập
+                        </h2>
                     </div>
 
                     {/* Success Message */}
