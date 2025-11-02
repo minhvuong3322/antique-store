@@ -100,63 +100,28 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    // Hàm đăng nhập Google
-    const loginWithGoogle = async (idToken) => {
+    // Hàm đăng nhập Google/ Facebook
+    const loginWithSocial = async (idToken) => {
         try {
             if (!idToken) {
                 throw new Error('Token xác thực không hợp lệ')
             }
             
             setIsLoading(true)
-            const response = await authService.loginWithGoogle(idToken)
+            // Gọi hàm mới trong service
+            const response = await authService.loginWithSocial(idToken) 
 
             if (response.success) {
-                // Clear guest cart when logging in
                 localStorage.removeItem('cart_guest');
-                
                 setUser(response.data.user)
                 setIsAuthenticated(true)
-                
                 return { success: true, message: response.message }
             } else {
                 throw new Error(response.message || 'Đăng nhập Google thất bại')
             }
         } catch (error) {
-            console.error('Google login error:', error)
-            // Đảm bảo luôn throw error với message
-            const errorMessage = error?.message || error?.response?.message || 'Đăng nhập Google thất bại'
-            throw new Error(errorMessage)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    // Hàm đăng nhập Facebook
-    const loginWithFacebook = async (accessToken, userID) => {
-        try {
-            if (!accessToken || !userID) {
-                throw new Error('Thông tin xác thực Facebook không hợp lệ')
-            }
-            
-            setIsLoading(true)
-            const response = await authService.loginWithFacebook(accessToken, userID)
-
-            if (response.success) {
-                // Clear guest cart when logging in
-                localStorage.removeItem('cart_guest');
-                
-                setUser(response.data.user)
-                setIsAuthenticated(true)
-                
-                return { success: true, message: response.message }
-            } else {
-                throw new Error(response.message || 'Đăng nhập Facebook thất bại')
-            }
-        } catch (error) {
-            console.error('Facebook login error:', error)
-            // Đảm bảo luôn throw error với message
-            const errorMessage = error?.message || error?.response?.message || 'Đăng nhập Facebook thất bại'
-            throw new Error(errorMessage)
+            console.error('Social login error:', error)
+            throw error
         } finally {
             setIsLoading(false)
         }
@@ -168,8 +133,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         login,
         logout,
-        loginWithGoogle,
-        loginWithFacebook
+        loginWithSocial
     }
 
     return (

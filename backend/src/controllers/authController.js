@@ -1,50 +1,51 @@
-const { User } = require('../models');
-const { generateToken, generateRefreshToken } = require('../middlewares/auth');
-const oauthService = require('../services/oauthService');
+const { User, SocialAuth } = require("../models");
+const { generateToken, generateRefreshToken } = require("../middlewares/auth");
+
+const admin = require("../config/firebaseAdmin");
 
 /**
  * Đăng ký người dùng mới
  * POST /api/v1/auth/register
  */
 const register = async (req, res, next) => {
-    try {
-        const { email, password, full_name, phone, address } = req.body;
+  try {
+    const { email, password, full_name, phone, address } = req.body;
 
-        // Kiểm tra người dùng đã tồn tại chưa
-        const existingUser = await User.findByEmail(email);
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email đã được đăng ký'
-            });
-        }
-
-        // Tạo người dùng mới
-        const user = await User.create({
-            email,
-            password,
-            full_name,
-            phone,
-            address,
-            role: 'customer'
-        });
-
-        // Tạo token
-        const token = generateToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        res.status(201).json({
-            success: true,
-            message: 'Đăng ký thành công',
-            data: {
-                user: user.toJSON(),
-                token,
-                refreshToken
-            }
-        });
-    } catch (error) {
-        next(error);
+    // Kiểm tra người dùng đã tồn tại chưa
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email đã được đăng ký",
+      });
     }
+
+    // Tạo người dùng mới
+    const user = await User.create({
+      email,
+      password,
+      full_name,
+      phone,
+      address,
+      role: "customer",
+    });
+
+    // Tạo token
+    const token = generateToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.status(201).json({
+      success: true,
+      message: "Đăng ký thành công",
+      data: {
+        user: user.toJSON(),
+        token,
+        refreshToken,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -52,45 +53,45 @@ const register = async (req, res, next) => {
  * POST /api/v1/auth/login
  */
 const login = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        // Tìm người dùng theo email
-        const user = await User.scope('withPassword').findByEmail(email);
+    // Tìm người dùng theo email
+    const user = await User.scope("withPassword").findByEmail(email);
 
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Email hoặc mật khẩu không chính xác'
-            });
-        }
-
-        // So sánh mật khẩu
-        const isPasswordValid = await user.comparePassword(password);
-
-        if (!isPasswordValid) {
-            return res.status(401).json({
-                success: false,
-                message: 'Email hoặc mật khẩu không chính xác'
-            });
-        }
-
-        // Tạo token
-        const token = generateToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        res.json({
-            success: true,
-            message: 'Đăng nhập thành công',
-            data: {
-                user: user.toJSON(),
-                token,
-                refreshToken
-            }
-        });
-    } catch (error) {
-        next(error);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Email hoặc mật khẩu không chính xác",
+      });
     }
+
+    // So sánh mật khẩu
+    const isPasswordValid = await user.comparePassword(password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Email hoặc mật khẩu không chính xác",
+      });
+    }
+
+    // Tạo token
+    const token = generateToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.json({
+      success: true,
+      message: "Đăng nhập thành công",
+      data: {
+        user: user.toJSON(),
+        token,
+        refreshToken,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -98,25 +99,25 @@ const login = async (req, res, next) => {
  * GET /api/v1/auth/profile
  */
 const getProfile = async (req, res, next) => {
-    try {
-        const user = await User.findByPk(req.user.id);
+  try {
+    const user = await User.findByPk(req.user.id);
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy người dùng'
-            });
-        }
-
-        res.json({
-            success: true,
-            data: {
-                user: user.toJSON()
-            }
-        });
-    } catch (error) {
-        next(error);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
     }
+
+    res.json({
+      success: true,
+      data: {
+        user: user.toJSON(),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -124,35 +125,35 @@ const getProfile = async (req, res, next) => {
  * PUT /api/v1/auth/profile
  */
 const updateProfile = async (req, res, next) => {
-    try {
-        const { full_name, phone, address, avatar } = req.body;
-        const user = await User.findByPk(req.user.id);
+  try {
+    const { full_name, phone, address, avatar } = req.body;
+    const user = await User.findByPk(req.user.id);
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy người dùng'
-            });
-        }
-
-        // Cập nhật thông tin người dùng
-        await user.update({
-            full_name: full_name || user.full_name,
-            phone: phone || user.phone,
-            address: address || user.address,
-            avatar: avatar || user.avatar
-        });
-
-        res.json({
-            success: true,
-            message: 'Cập nhật thông tin thành công',
-            data: {
-                user: user.toJSON()
-            }
-        });
-    } catch (error) {
-        next(error);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
     }
+
+    // Cập nhật thông tin người dùng
+    await user.update({
+      full_name: full_name || user.full_name,
+      phone: phone || user.phone,
+      address: address || user.address,
+      avatar: avatar || user.avatar,
+    });
+
+    res.json({
+      success: true,
+      message: "Cập nhật thông tin thành công",
+      data: {
+        user: user.toJSON(),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -160,117 +161,107 @@ const updateProfile = async (req, res, next) => {
  * PUT /api/v1/auth/change-password
  */
 const changePassword = async (req, res, next) => {
-    try {
-        const { current_password, new_password } = req.body;
+  try {
+    const { current_password, new_password } = req.body;
 
-        // Lấy người dùng kèm mật khẩu
-        const user = await User.scope('withPassword').findByPk(req.user.id);
+    // Lấy người dùng kèm mật khẩu
+    const user = await User.scope("withPassword").findByPk(req.user.id);
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không tìm thấy người dùng'
-            });
-        }
-
-        // Xác thực mật khẩu hiện tại
-        const isPasswordValid = await user.comparePassword(current_password);
-
-        if (!isPasswordValid) {
-            return res.status(400).json({
-                success: false,
-                message: 'Mật khẩu hiện tại không chính xác'
-            });
-        }
-
-        // Cập nhật mật khẩu
-        user.password = new_password;
-        await user.save();
-
-        res.json({
-            success: true,
-            message: 'Đổi mật khẩu thành công'
-        });
-    } catch (error) {
-        next(error);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
     }
+
+    // Xác thực mật khẩu hiện tại
+    const isPasswordValid = await user.comparePassword(current_password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Mật khẩu hiện tại không chính xác",
+      });
+    }
+
+    // Cập nhật mật khẩu
+    user.password = new_password;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Đổi mật khẩu thành công",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
+// === GOOGLE VÀ FACEBOOK ===
 /**
- * Đăng nhập bằng Google
- * POST /api/v1/auth/google
+ * Đăng nhập bằng Social (Google, Facebook, v.v.) qua Firebase
+ * POST /api/v1/auth/social-login
  */
-const googleLogin = async (req, res, next) => {
-    try {
-        const { idToken } = req.body;
+const handleSocialLogin = async (req, res, next) => {
+  const { idToken } = req.body;
 
-        if (!idToken) {
-            return res.status(400).json({
-                success: false,
-                message: 'Google ID Token là bắt buộc'
-            });
-        }
+  try {
+    // 1. Xác thực idToken từ Firebase
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
 
-        const result = await oauthService.googleLogin(idToken);
+    const { email, name, picture, uid } = decodedToken;
+    const provider = decodedToken.firebase.sign_in_provider;
 
-        res.json({
-            success: true,
-            message: 'Đăng nhập Google thành công',
-            data: result
-        });
-    } catch (error) {
-        if (error.message === 'Invalid Google token') {
-            return res.status(401).json({
-                success: false,
-                message: 'Google token không hợp lệ'
-            });
-        }
-        next(error);
-    }
-};
+    //===== Nếu không có email, tạo một email giả, duy nhất ( Email ở trạng thái chỉ mình tôi ) Ịt mọe :))))
+    const userEmail = email ? email : `${uid}@gmail.com`;
 
-/**
- * Đăng nhập bằng Facebook
- * POST /api/v1/auth/facebook
- */
-const facebookLogin = async (req, res, next) => {
-    try {
-        const { accessToken, userID } = req.body;
+    // 2. Tìm hoặc Tạo người dùng trong database MySQL
+    const [user, created] = await User.findOrCreate({
+      where: { email: userEmail },
+      defaults: {
+        full_name: name,
+        avatar: picture,
+        password: `firebase_uid_${uid}`,
+        role: "customer",
+      },
+    });
 
-        if (!accessToken || !userID) {
-            return res.status(400).json({
-                success: false,
-                message: 'Facebook access token và userID là bắt buộc'
-            });
-        }
+    // 3. Liên kết tài khoản xã hội trong bảng `social_auths`
+    await SocialAuth.findOrCreate({
+      where: {
+        provider: provider,
+        provider_id: uid,
+      },
+      defaults: {
+        user_id: user.id,
+      },
+    });
 
-        const result = await oauthService.facebookLogin(accessToken, userID);
+    // 4. Tạo JWT Token
+    const token = generateToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-        res.json({
-            success: true,
-            message: 'Đăng nhập Facebook thành công',
-            data: result
-        });
-    } catch (error) {
-        if (error.message === 'Invalid Facebook token') {
-            return res.status(401).json({
-                success: false,
-                message: 'Facebook token không hợp lệ'
-            });
-        }
-        next(error);
-    }
+    // 5. Trả token và thông tin user về cho frontend
+    res.status(200).json({
+      success: true,
+      message: "Đăng nhập thành công",
+      data: {
+        user: user.toJSON(),
+        token,
+        refreshToken,
+      },
+    });
+  } catch (error) {
+    console.error("Lỗi social login:", error);
+    next(error); // Gửi lỗi đến error handler
+  }
 };
 
 module.exports = {
-    register,
-    login,
-    getProfile,
-    updateProfile,
-    changePassword,
-    googleLogin,
-    facebookLogin
+  register,
+  login,
+  getProfile,
+  updateProfile,
+  changePassword,
+  handleSocialLogin,
 };
-
-
-

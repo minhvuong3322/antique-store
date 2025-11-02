@@ -168,3 +168,6 @@ package-lock.json
 *.temp
 .temp/
 .tmp/
+
+# Firebase Admin SDK key
+backend/serviceAccountKey.json
