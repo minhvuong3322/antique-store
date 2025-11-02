@@ -5,6 +5,7 @@ import { formatCurrency } from '../../utils/format'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { toast } from 'react-hot-toast'
+import { useState } from 'react'
 
 const ProductCard = ({ product }) => {
     const { i18n, t } = useTranslation()
@@ -17,7 +18,19 @@ const ProductCard = ({ product }) => {
     const productOrigin = product.origin || product.originEn || 'Việt Nam'
     const productImages = product.images || []
     const productImage = Array.isArray(productImages) ? productImages[0] : productImages
-    const defaultImage = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400'
+    
+    // Multiple fallback images for better reliability
+    const fallbackImages = [
+        'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400',
+        'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
+        'https://images.unsplash.com/photo-1548509927-9466e27c8b7c?w=400'
+    ]
+    const defaultImage = fallbackImages[0]
+
+    // State for image loading and error handling
+    const [imageError, setImageError] = useState(false)
+    const [fallbackIndex, setFallbackIndex] = useState(0)
+    const [isLoading, setIsLoading] = useState(true)
 
     // Check if already in cart/wishlist
     const inCart = isInCart(product.id)
@@ -67,18 +80,56 @@ const ProductCard = ({ product }) => {
         toast.success('Đã sao chép link sản phẩm! 📋')
     }
 
+    // Handle image error with fallback rotation
+    const handleImageError = (e) => {
+        setIsLoading(false)
+        setImageError(true)
+        
+        // Try next fallback image
+        if (fallbackIndex < fallbackImages.length - 1) {
+            const nextIndex = fallbackIndex + 1
+            setFallbackIndex(nextIndex)
+            e.target.src = fallbackImages[nextIndex]
+        } else {
+            // All fallbacks failed, use solid color placeholder
+            e.target.style.display = 'none'
+        }
+    }
+
+    // Handle image load success
+    const handleImageLoad = () => {
+        setIsLoading(false)
+        setImageError(false)
+    }
+
     return (
         <div className="card-vintage group overflow-hidden">
             {/* Image Container */}
             <div className="relative aspect-square overflow-hidden bg-vintage-ivory dark:bg-dark-bg">
+                {/* Loading skeleton */}
+                {isLoading && !imageError && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+                )}
+                
+                {/* Product Image */}
                 <img
-                    src={productImage || defaultImage}
+                    src={productImage || fallbackImages[fallbackIndex]}
                     alt={productName}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => {
-                        e.target.src = defaultImage
-                    }}
+                    className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                    onError={handleImageError}
+                    onLoad={handleImageLoad}
                 />
+                
+                {/* Fallback placeholder when all images fail */}
+                {imageError && fallbackIndex >= fallbackImages.length - 1 && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-vintage-darkwood/20 to-vintage-wood/20">
+                        <div className="text-center p-8">
+                            <div className="text-6xl mb-4">🏺</div>
+                            <p className="text-vintage-darkwood dark:text-vintage-cream font-serif text-sm">Hình ảnh</p>
+                            <p className="text-vintage-wood dark:text-vintage-lightwood text-xs">Đang cập nhật</p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Overlay with actions - shown on hover */}
                 <div className="absolute inset-0 bg-vintage-darkwood/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
