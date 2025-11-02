@@ -100,50 +100,23 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    // Hàm đăng nhập Google
-    const loginWithGoogle = async (idToken) => {
+    // Hàm đăng nhập Google/ Facebook
+    const loginWithSocial = async (idToken) => {
         try {
             setIsLoading(true)
-            const response = await authService.loginWithGoogle(idToken)
+            // Gọi hàm mới trong service
+            const response = await authService.loginWithSocial(idToken) 
 
             if (response.success) {
-                // Clear guest cart when logging in
                 localStorage.removeItem('cart_guest');
-                
                 setUser(response.data.user)
                 setIsAuthenticated(true)
-                
                 return { success: true, message: response.message }
             } else {
                 throw new Error(response.message)
             }
         } catch (error) {
-            console.error('Google login error:', error)
-            throw error
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    // Hàm đăng nhập Facebook
-    const loginWithFacebook = async (accessToken, userID) => {
-        try {
-            setIsLoading(true)
-            const response = await authService.loginWithFacebook(accessToken, userID)
-
-            if (response.success) {
-                // Clear guest cart when logging in
-                localStorage.removeItem('cart_guest');
-                
-                setUser(response.data.user)
-                setIsAuthenticated(true)
-                
-                return { success: true, message: response.message }
-            } else {
-                throw new Error(response.message)
-            }
-        } catch (error) {
-            console.error('Facebook login error:', error)
+            console.error('Social login error:', error)
             throw error
         } finally {
             setIsLoading(false)
@@ -156,8 +129,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         login,
         logout,
-        loginWithGoogle,
-        loginWithFacebook
+        loginWithSocial
     }
 
     return (

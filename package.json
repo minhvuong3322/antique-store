@@ -18,6 +18,8 @@
         "@react-oauth/google": "^0.12.2",
         "axios": "^1.12.2",
         "clsx": "^2.1.1",
+        "firebase": "^12.5.0",
+        "firebase-admin": "^13.5.0",
         "i18next": "^23.7.0",
         "jwt-decode": "^4.0.0",
         "lucide-react": "^0.445.0",
@@ -25,6 +27,7 @@
         "react-dom": "^18.3.1",
         "react-hot-toast": "^2.6.0",
         "react-i18next": "^14.0.0",
+        "react-icons": "^5.5.0",
         "react-router-dom": "^6.26.0",
         "tailwind-merge": "^2.5.0"
     },
@@ -43,4 +46,3 @@
         "vite": "^5.4.1"
     }
 }
-
