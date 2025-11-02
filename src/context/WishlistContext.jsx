@@ -80,18 +80,20 @@ export const WishlistProvider = ({ children }) => {
             const response = await wishlistService.addToWishlist(product.id);
             
             // Check if it was added or removed (toggle behavior)
-            if (response?.data?.action === 'removed') {
+            // Service returns: { success, message, action }
+            if (response?.action === 'removed') {
                 // Remove from state
                 setWishlistItems(prev => prev.filter(item => item.id !== product.id));
-                toast.success('Đã xóa khỏi yêu thích');
+                toast.success('Đã bỏ yêu thích');
             } else {
+                // Added to wishlist
                 // Refetch from backend to ensure correct data structure
                 await fetchWishlist();
                 toast.success('Đã thêm vào yêu thích');
             }
         } catch (error) {
             console.error('Error adding to wishlist:', error);
-            toast.error(error.response?.data?.message || 'Không thể thực hiện');
+            toast.error(error?.message || error?.response?.data?.message || 'Không thể thực hiện');
         }
     };
 
@@ -157,4 +159,6 @@ export const WishlistProvider = ({ children }) => {
 
     return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
 };
+
+
 

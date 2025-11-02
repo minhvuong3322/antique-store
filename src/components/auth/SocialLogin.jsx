@@ -39,11 +39,17 @@ const SocialLogin = () => {
     // Handle Google Login Success
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
+            // Kiểm tra credential có tồn tại không
+            if (!credentialResponse?.credential) {
+                throw new Error('Không nhận được thông tin xác thực từ Google');
+            }
+            
             await loginWithGoogle(credentialResponse.credential);
             toast.success('Đăng nhập Google thành công!');
         } catch (error) {
             console.error('Google login error:', error);
-            toast.error(error.message || 'Đăng nhập Google thất bại');
+            const errorMessage = error?.message || error?.response?.message || 'Đăng nhập Google thất bại';
+            toast.error(errorMessage);
         }
     };
 
@@ -71,11 +77,15 @@ const SocialLogin = () => {
             if (response.authResponse) {
                 try {
                     const { accessToken, userID } = response.authResponse;
+                    if (!accessToken || !userID) {
+                        throw new Error('Không nhận được thông tin xác thực từ Facebook');
+                    }
                     await loginWithFacebook(accessToken, userID);
                     toast.success('Đăng nhập Facebook thành công!');
                 } catch (error) {
                     console.error('Facebook login error:', error);
-                    toast.error(error.message || 'Đăng nhập Facebook thất bại');
+                    const errorMessage = error?.message || error?.response?.message || 'Đăng nhập Facebook thất bại';
+                    toast.error(errorMessage);
                 }
             } else {
                 toast.error('Đăng nhập Facebook bị hủy');

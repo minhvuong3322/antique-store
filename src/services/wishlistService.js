@@ -12,8 +12,9 @@ const wishlistService = {
 
     // Add product to wishlist
     addToWishlist: async (productId) => {
+        // API interceptor already returns response.data
         const response = await api.post(`/wishlist/${productId}`);
-        return response.data;
+        return response;
     },
 
     // Remove product from wishlist

@@ -41,7 +41,19 @@ api.interceptors.response.use(
                 window.location.href = '/login';
             }
         }
-        return Promise.reject(error.response?.data || error.message);
+        
+        // Đảm bảo luôn reject với error object có message
+        const errorData = error.response?.data || {};
+        const errorMessage = errorData.message || error.message || 'Đã xảy ra lỗi không xác định';
+        
+        // Tạo error object với message đầy đủ
+        const rejectedError = {
+            ...errorData,
+            message: errorMessage,
+            status: error.response?.status,
+        };
+        
+        return Promise.reject(rejectedError);
     }
 );
 

@@ -103,6 +103,10 @@ export const AuthProvider = ({ children }) => {
     // Hàm đăng nhập Google
     const loginWithGoogle = async (idToken) => {
         try {
+            if (!idToken) {
+                throw new Error('Token xác thực không hợp lệ')
+            }
+            
             setIsLoading(true)
             const response = await authService.loginWithGoogle(idToken)
 
@@ -115,11 +119,13 @@ export const AuthProvider = ({ children }) => {
                 
                 return { success: true, message: response.message }
             } else {
-                throw new Error(response.message)
+                throw new Error(response.message || 'Đăng nhập Google thất bại')
             }
         } catch (error) {
             console.error('Google login error:', error)
-            throw error
+            // Đảm bảo luôn throw error với message
+            const errorMessage = error?.message || error?.response?.message || 'Đăng nhập Google thất bại'
+            throw new Error(errorMessage)
         } finally {
             setIsLoading(false)
         }
@@ -128,6 +134,10 @@ export const AuthProvider = ({ children }) => {
     // Hàm đăng nhập Facebook
     const loginWithFacebook = async (accessToken, userID) => {
         try {
+            if (!accessToken || !userID) {
+                throw new Error('Thông tin xác thực Facebook không hợp lệ')
+            }
+            
             setIsLoading(true)
             const response = await authService.loginWithFacebook(accessToken, userID)
 
@@ -140,11 +150,13 @@ export const AuthProvider = ({ children }) => {
                 
                 return { success: true, message: response.message }
             } else {
-                throw new Error(response.message)
+                throw new Error(response.message || 'Đăng nhập Facebook thất bại')
             }
         } catch (error) {
             console.error('Facebook login error:', error)
-            throw error
+            // Đảm bảo luôn throw error với message
+            const errorMessage = error?.message || error?.response?.message || 'Đăng nhập Facebook thất bại'
+            throw new Error(errorMessage)
         } finally {
             setIsLoading(false)
         }
