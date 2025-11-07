@@ -3,7 +3,7 @@
  * Business logic for reviews and ratings
  */
 const { Review, Product, User, Order, OrderDetail } = require('../models');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 
 /**
  * Create a review

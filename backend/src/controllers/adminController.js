@@ -1,5 +1,5 @@
 const { User, Product, Order, OrderDetail, Payment, Category, sequelize } = require('../models');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 const { Op } = require('sequelize');
 
 /**

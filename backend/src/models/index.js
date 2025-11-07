@@ -1,5 +1,5 @@
 const { sequelize } = require('../config/database');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 const User = require('./User');
 const Category = require('./Category');
 const Product = require('./Product');

@@ -2,7 +2,7 @@ const { User, SocialAuth } = require('../models');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const config = require('../config/app');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 
 // Google OAuth Client
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);

@@ -3,7 +3,7 @@
  * internationalization support, and Sentry integration
  */
 const Sentry = require('@sentry/node');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 
 // Initialize Sentry only in production
 if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {

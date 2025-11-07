@@ -4,8 +4,8 @@
  */
 const Otp = require('../models/Otp');
 const User = require('../models/User');
-const { sendOTPEmail } = require('../utils/emailService');
-const logger = require('../utils/logger');
+const { sendOTPEmail } = require('../../utils/emailService');
+const logger = require('../../utils/logger');
 const { AppError, ERROR_CODES } = require('../middlewares/errorHandler');
 
 // Rate limiting storage (in-memory, use Redis in production)

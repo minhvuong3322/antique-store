@@ -210,7 +210,40 @@ const handleSocialLogin = async (req, res, next) => {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
 
     const { email, name, picture, uid } = decodedToken;
-    const provider = decodedToken.firebase.sign_in_provider;
+    const firebaseProvider = decodedToken.firebase.sign_in_provider;
+
+    // Map Firebase provider values to database ENUM values
+    // Firebase returns: "google.com", "facebook.com", "apple.com", "github.com", etc.
+    // Database expects: "google", "facebook", "apple", "github"
+    const providerMap = {
+      'google.com': 'google',
+      'facebook.com': 'facebook',
+      'apple.com': 'apple',
+      'github.com': 'github',
+      'password': null, // Regular email/password login, not social
+      'phone': null // Phone auth, not social
+    };
+
+    let provider = providerMap[firebaseProvider];
+    
+    // If not found in map or is null, try to extract from firebaseProvider
+    if (!provider && firebaseProvider) {
+      // Fallback: remove .com if present
+      provider = firebaseProvider.replace('.com', '');
+    }
+    
+    // Final fallback
+    if (!provider || provider === null) {
+      provider = 'google'; // Default fallback
+    }
+    
+    // Nếu provider không hợp lệ, trả về lỗi
+    if (!['google', 'facebook', 'apple', 'github'].includes(provider)) {
+      return res.status(400).json({
+        success: false,
+        message: `Provider không được hỗ trợ: ${firebaseProvider}`
+      });
+    }
 
     //===== Nếu không có email, tạo một email giả, duy nhất ( Email ở trạng thái chỉ mình tôi ) Ịt mọe :))))
     const userEmail = email ? email : `${uid}@gmail.com`;
@@ -227,15 +260,80 @@ const handleSocialLogin = async (req, res, next) => {
     });
 
     // 3. Liên kết tài khoản xã hội trong bảng `social_auths`
-    await SocialAuth.findOrCreate({
-      where: {
-        provider: provider,
-        provider_id: uid,
-      },
-      defaults: {
-        user_id: user.id,
-      },
-    });
+    try {
+      // Tìm xem đã có SocialAuth với provider + provider_id chưa
+      let socialAuth = await SocialAuth.findOne({
+        where: {
+          provider: provider,
+          provider_id: uid,
+        },
+      });
+
+      if (socialAuth) {
+        // Đã tồn tại: cập nhật user_id nếu khác
+        if (socialAuth.user_id !== user.id) {
+          await socialAuth.update({
+            user_id: user.id,
+          });
+        }
+      } else {
+        // Chưa tồn tại: kiểm tra xem user đã có record với provider này chưa
+        const existingSocialAuth = await SocialAuth.findOne({
+          where: {
+            user_id: user.id,
+            provider: provider,
+          },
+        });
+
+        if (existingSocialAuth) {
+          // Update provider_id nếu khác
+          await existingSocialAuth.update({
+            provider_id: uid,
+          });
+        } else {
+          // Tạo mới
+          await SocialAuth.create({
+            user_id: user.id,
+            provider: provider,
+            provider_id: uid,
+          });
+        }
+      }
+    } catch (socialAuthError) {
+      // Nếu có lỗi unique constraint, thử tìm và update record hiện có
+      if (socialAuthError.name === 'SequelizeUniqueConstraintError') {
+        // Thử tìm lại record theo provider + provider_id
+        let existingAuth = await SocialAuth.findOne({
+          where: {
+            provider: provider,
+            provider_id: uid,
+          },
+        });
+
+        // Nếu không tìm thấy, tìm theo user_id + provider
+        if (!existingAuth) {
+          existingAuth = await SocialAuth.findOne({
+            where: {
+              user_id: user.id,
+              provider: provider,
+            },
+          });
+        }
+
+        if (existingAuth) {
+          // Update cả hai trường để đảm bảo sync
+          await existingAuth.update({
+            user_id: user.id,
+            provider_id: uid,
+          });
+        } else {
+          // Nếu vẫn không tìm thấy, log lỗi nhưng tiếp tục (user đã được tạo)
+          console.warn('Could not create/update SocialAuth, but user login will continue:', socialAuthError.message);
+        }
+      } else {
+        throw socialAuthError;
+      }
+    }
 
     // 4. Tạo JWT Token
     const token = generateToken(user);

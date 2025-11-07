@@ -4,7 +4,7 @@
  */
 const { Voucher, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 
 /**
  * Validate and apply voucher to cart

@@ -4,7 +4,7 @@
  */
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 
 // Configure Cloudinary
 cloudinary.config({
