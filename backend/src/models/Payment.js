@@ -31,7 +31,7 @@ const Payment = sequelize.define('Payment', {
         allowNull: false,
         validate: {
             isIn: {
-                args: [['COD', 'VNPay', 'Momo', 'PayPal', 'BankTransfer']],
+                args: [['COD', 'VNPay', 'Momo', 'PayPal', 'BankTransfer', 'QRCode']],
                 msg: 'Phương thức thanh toán không hợp lệ'
             }
         }

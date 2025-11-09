@@ -33,6 +33,13 @@ export const paymentService = {
         });
     },
 
+    // Tạo mã QR thanh toán
+    createQRCodePayment: async (orderId) => {
+        return await api.post('/payments/qrcode/create', {
+            order_id: orderId
+        });
+    },
+
     // Polling để check payment status (sử dụng khi chờ thanh toán)
     pollPaymentStatus: async (identifier, options = {}) => {
         const {

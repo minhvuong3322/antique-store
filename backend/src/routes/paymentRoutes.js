@@ -8,7 +8,7 @@ const { validate } = require('../middlewares/validate');
 // Validation rules
 const processPaymentValidation = [
     body('order_id').isInt().withMessage('ID đơn hàng không hợp lệ'),
-    body('payment_method').isIn(['COD', 'VNPay', 'Momo', 'PayPal', 'BankTransfer'])
+    body('payment_method').isIn(['COD', 'VNPay', 'Momo', 'PayPal', 'BankTransfer', 'QRCode'])
         .withMessage('Phương thức thanh toán không hợp lệ'),
     validate
 ];
@@ -24,6 +24,7 @@ router.get('/status/:identifier', paymentController.checkPaymentStatus); // Chec
 router.post('/process', processPaymentValidation, paymentController.processPayment);
 router.post('/vnpay/create', paymentController.createVNPayPayment);
 router.post('/momo/create', paymentController.createMomoPayment);
+router.post('/qrcode/create', paymentController.createQRCodePayment);
 
 // Admin routes
 router.get('/admin/stats', isAdmin, paymentController.getPaymentStats);

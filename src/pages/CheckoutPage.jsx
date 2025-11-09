@@ -4,9 +4,10 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/format';
 import { toast } from 'react-hot-toast';
-import { CreditCard, Wallet, Building, CheckCircle } from 'lucide-react';
+import { CreditCard, Wallet, Building, CheckCircle, QrCode } from 'lucide-react';
 import { orderService } from '../services/orderService';
 import { paymentService } from '../services/paymentService';
+import QRCodePayment from '../components/payments/QRCodePayment';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
@@ -25,6 +26,8 @@ const CheckoutPage = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [showQRPayment, setShowQRPayment] = useState(false);
+    const [currentOrder, setCurrentOrder] = useState(null);
 
     // Redirect if cart is empty
     useEffect(() => {
@@ -82,6 +85,43 @@ const CheckoutPage = () => {
             const order = response?.data?.data?.order || response?.data?.order;
             
             if (order && order.id) {
+                // Nếu là thanh toán QR Code, hiển thị QR code component
+                if (formData.payment_method === 'QRCode') {
+                    setCurrentOrder(order);
+                    setShowQRPayment(true);
+                    
+                    // Bắt đầu polling để check payment status
+                    paymentService.pollPaymentStatus(order.order_number || order.id, {
+                        maxAttempts: 300, // 10 phút (300 * 2s)
+                        interval: 2000,
+                        onUpdate: (status) => {
+                            // Có thể hiển thị thông báo nếu cần
+                        },
+                        onComplete: (data) => {
+                            clearCart();
+                            setShowQRPayment(false);
+                            toast.success('Thanh toán thành công! 🎉', { duration: 5000 });
+                            setTimeout(() => {
+                                navigate(`/orders/${order.id}`, {
+                                    state: { 
+                                        message: 'Cảm ơn bạn đã thanh toán! Đơn hàng của bạn đã được xác nhận.',
+                                        paymentSuccess: true
+                                    }
+                                });
+                            }, 1500);
+                        },
+                        onError: (error) => {
+                            if (error?.error === 'Payment failed') {
+                                toast.error('Thanh toán thất bại. Vui lòng thử lại.', { duration: 5000 });
+                            } else if (error?.error !== 'Timeout') {
+                                console.error('Payment status check error:', error);
+                            }
+                        }
+                    });
+                    
+                    return;
+                }
+                
                 // Nếu là thanh toán online (VNPay, Momo), tạo payment URL
                 if (formData.payment_method === 'VNPay' || formData.payment_method === 'Momo') {
                     try {
@@ -178,6 +218,44 @@ const CheckoutPage = () => {
             setLoading(false);
         }
     };
+
+    // Nếu đang hiển thị QR Payment, chỉ hiển thị QR component
+    if (showQRPayment && currentOrder) {
+        return (
+            <div className="min-h-screen bg-vintage-cream dark:bg-dark-bg py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <button
+                        onClick={() => {
+                            setShowQRPayment(false);
+                            setCurrentOrder(null);
+                        }}
+                        className="mb-6 flex items-center text-vintage-gold hover:text-vintage-bronze transition-colors"
+                    >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Quay lại
+                    </button>
+                    <QRCodePayment
+                        order={currentOrder}
+                        onPaymentComplete={() => {
+                            clearCart();
+                            setShowQRPayment(false);
+                            navigate(`/orders/${currentOrder.id}`, {
+                                state: { 
+                                    message: 'Cảm ơn bạn đã thanh toán! Đơn hàng của bạn đã được xác nhận.',
+                                    paymentSuccess: true
+                                }
+                            });
+                        }}
+                        onPaymentFailed={() => {
+                            toast.error('Thanh toán thất bại. Vui lòng thử lại.');
+                        }}
+                    />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-vintage-cream dark:bg-dark-bg py-8">
@@ -346,6 +424,26 @@ const CheckoutPage = () => {
                                             </p>
                                             <p className="text-sm text-vintage-wood dark:text-vintage-lightwood">
                                                 Chuyển khoản qua ngân hàng
+                                            </p>
+                                        </div>
+                                    </label>
+
+                                    <label className="flex items-center p-4 border-2 border-vintage-gold/30 rounded-lg cursor-pointer hover:bg-vintage-gold/5 transition">
+                                        <input
+                                            type="radio"
+                                            name="payment_method"
+                                            value="QRCode"
+                                            checked={formData.payment_method === 'QRCode'}
+                                            onChange={handleChange}
+                                            className="mr-3"
+                                        />
+                                        <QrCode className="w-5 h-5 mr-3 text-vintage-gold" />
+                                        <div className="flex-1">
+                                            <p className="font-semibold text-vintage-darkwood dark:text-vintage-cream">
+                                                Thanh toán bằng QR Code
+                                            </p>
+                                            <p className="text-sm text-vintage-wood dark:text-vintage-lightwood">
+                                                Quét mã QR để thanh toán nhanh chóng
                                             </p>
                                         </div>
                                     </label>

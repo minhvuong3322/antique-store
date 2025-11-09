@@ -428,11 +428,124 @@ const getPaymentStats = async (req, res, next) => {
     }
 };
 
+/**
+ * Create QR Code payment (VietQR)
+ * POST /api/v1/payments/qrcode/create
+ * 
+ * Tạo mã QR thanh toán sử dụng VietQR Quick Link (giả lập)
+ */
+const createQRCodePayment = async (req, res, next) => {
+    try {
+        const { order_id } = req.body;
+
+        if (!order_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Thiếu thông tin đơn hàng'
+            });
+        }
+
+        console.log(`Creating QR code for order ${order_id}, user ${req.user.id}`);
+
+        const order = await Order.findOne({
+            where: {
+                id: order_id,
+                user_id: req.user.id
+            }
+        });
+
+        if (!order) {
+            console.error(`Order not found: ${order_id} for user ${req.user.id}`);
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy đơn hàng'
+            });
+        }
+
+        console.log(`Order found: ${order.order_number}, total: ${order.total_amount}`);
+
+        // Thông tin ngân hàng giả lập (có thể cấu hình trong env)
+        const bankInfo = {
+            bank_id: process.env.QR_BANK_ID || 'BIDV', // Mã ngân hàng (BIDV = Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)
+            bank_name: process.env.QR_BANK_NAME || 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)',
+            account_number: process.env.QR_ACCOUNT_NUMBER || '6263828497',
+            account_name: process.env.QR_ACCOUNT_NAME || 'TRUONG HO MINH VUONG',
+            template: 'compact2' // Template QR code (compact2, print, circle)
+        };
+
+        // Số tiền (VNĐ) - không có phần thập phân
+        // Convert Decimal to Number if needed
+        const totalAmount = typeof order.total_amount === 'string' 
+            ? parseFloat(order.total_amount) 
+            : Number(order.total_amount);
+        const amount = Math.round(totalAmount);
+
+        if (!amount || amount <= 0) {
+            console.error(`Invalid amount: ${amount} for order ${order_id}`);
+            return res.status(400).json({
+                success: false,
+                message: 'Số tiền thanh toán không hợp lệ'
+            });
+        }
+
+        // Nội dung chuyển khoản (mã đơn hàng để đối soát)
+        // Giới hạn tối đa 25 ký tự theo chuẩn VietQR
+        const paymentMessage = `THANHTOAN_${order.order_number}`.substring(0, 25);
+
+        // Tạo QR Code URL sử dụng VietQR Quick Link
+        // Format: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<ACCOUNT_NAME>
+        const qrCodeUrl = `https://img.vietqr.io/image/${bankInfo.bank_id}-${bankInfo.account_number}-${bankInfo.template}.png?amount=${amount}&addInfo=${encodeURIComponent(paymentMessage)}&accountName=${encodeURIComponent(bankInfo.account_name)}`;
+
+        console.log(`QR Code URL generated: ${qrCodeUrl}`);
+
+        // Cập nhật payment method nếu chưa có
+        let payment = await Payment.findOne({
+            where: { order_id }
+        });
+
+        if (payment) {
+            // Cập nhật payment method nếu cần
+            if (!payment.payment_method || payment.payment_method === 'COD') {
+                await payment.update({
+                    payment_method: 'QRCode'
+                });
+                console.log(`Updated payment method to QRCode for order ${order_id}`);
+            }
+        } else {
+            console.warn(`Payment record not found for order ${order_id}, but continuing...`);
+        }
+
+        const responseData = {
+            success: true,
+            message: 'Tạo mã QR thanh toán thành công',
+            data: {
+                qr_code_url: qrCodeUrl,
+                bank_info: {
+                    bank_name: bankInfo.bank_name,
+                    account_number: bankInfo.account_number,
+                    account_name: bankInfo.account_name
+                },
+                payment_message: paymentMessage,
+                amount: amount,
+                order_number: order.order_number,
+                expires_at: new Date(Date.now() + 30 * 60 * 1000) // 30 phút
+            }
+        };
+
+        console.log('QR Code payment created successfully');
+        res.json(responseData);
+    } catch (error) {
+        console.error('Error creating QR code payment:', error);
+        next(error);
+    }
+};
+
 module.exports = {
     getPaymentByOrderId,
     processPayment,
     createVNPayPayment,
     createMomoPayment,
+    createQRCodePayment,
     paymentCallback,
     paymentWebhook,
     checkPaymentStatus,

@@ -11,7 +11,7 @@ Một website thương mại điện tử hoàn chỉnh với thiết kế hoài
 
 -  **Modern UI/UX**: Thiết kế vintage elegant với dark mode support
 -  **Full Authentication**: JWT + Social Login (Google, Facebook)
--  **Payment Integration**: VNPay & MoMo gateway
+-  **Payment Integration**: VNPay, MoMo, QR Code (VietQR), PayPal, Bank Transfer & COD
 -  **Admin Dashboard**: Comprehensive analytics & management
 -  **Multilingual**: Vietnamese & English support
 -  **Responsive**: Mobile-first design
@@ -120,12 +120,13 @@ npm run dev                    # Frontend: http://localhost:5173
 - **SEO-friendly URLs** (Slugified product URLs)
 - **Featured products** (Sản phẩm nổi bật)
 - **Product reviews** (Đánh giá sản phẩm với verified purchase)
+- **Wishlist** (Danh sách yêu thích với thêm/xóa sản phẩm)
 
 #### Shopping & Orders
 - **Giỏ hàng** (Add, update, remove items)
 - **Checkout** (Multi-step checkout process)
 - **Đơn hàng** (Order creation, tracking, status management)
-- **Thanh toán** (VNPay, MoMo integration)
+- **Thanh toán** (VNPay, MoMo, QR Code/VietQR, PayPal, Bank Transfer, COD)
 - **Order history** (Lịch sử đơn hàng chi tiết)
 
 #### Admin Dashboard (Hoàn chỉnh)
@@ -145,25 +146,27 @@ npm run dev                    # Frontend: http://localhost:5173
 - **Warehouse Management** (Quản lý kho hàng)
 - **Invoice Management** (Quản lý hóa đơn)
 - **Warranty Management** (Quản lý bảo hành)
+- **Support Management** (Quản lý tin nhắn hỗ trợ, phản hồi khách hàng)
 
 #### Advanced Features
 - **Hệ thống bảo hành** (Warranty tracking & claiming)
 - **Tra cứu bảo hành công khai** (Public warranty lookup)
 - **Hệ thống hóa đơn** (Invoice generation & email)
 - **Quản lý kho** (Stock levels, low stock alerts)
+- **Hỗ trợ khách hàng** (Support messages với chat widget)
 - **Logging system** (Winston với daily rotate files)
 - **Error tracking** (Sentry integration)
 
 ###  Đang Phát Triển
 - **Email notifications** (Order confirmation, shipping updates)
 - **PDF generation** (Invoices & warranty certificates)
-- **Payment webhooks** (VNPay, MoMo callback handlers)
 - **Advanced search** (Filters, sorting, pagination)
+- **Payment gateway integration** (Full VNPay, MoMo production setup)
+- **Auto payment verification** (Webhook integration)
 
 ###  Roadmap Tương Lai
 - **SEO optimization** (Meta tags, sitemap, structured data)
-- **Chat support** (Live chat với admin)
-- **Wishlist** (Danh sách yêu thích)
+- **Real-time chat** (WebSocket live chat với admin)
 - **Product comparison** (So sánh sản phẩm)
 - **Mobile app** (React Native)
 - **Multi-vendor** (Marketplace model)
@@ -456,11 +459,36 @@ DELETE /api/admin/users/:id                     // Xóa user
 
 ### Payments
 ```javascript
+POST   /api/payments/process          // Xử lý thanh toán (COD, online)
 POST   /api/payments/vnpay/create     // Tạo thanh toán VNPay
 GET    /api/payments/vnpay/callback   // VNPay callback
 POST   /api/payments/momo/create      // Tạo thanh toán MoMo
 POST   /api/payments/momo/callback    // MoMo callback
-GET    /api/payments/:orderId         // Thông tin thanh toán
+POST   /api/payments/qrcode/create    // Tạo mã QR thanh toán (VietQR)
+GET    /api/payments/order/:orderId   // Thông tin thanh toán theo order
+GET    /api/payments/status/:identifier // Kiểm tra trạng thái thanh toán
+GET    /api/payments/callback         // Callback từ payment gateway
+POST   /api/payments/webhook          // Webhook từ payment gateway
+GET    /api/payments/admin/stats      // Thống kê thanh toán (Admin)
+```
+
+### Wishlist
+```javascript
+GET    /api/wishlist                   // Lấy danh sách yêu thích (Auth)
+GET    /api/wishlist/check/:productId  // Kiểm tra sản phẩm trong wishlist (Auth)
+POST   /api/wishlist/:productId        // Thêm vào wishlist (Auth)
+DELETE /api/wishlist/:productId        // Xóa khỏi wishlist (Auth)
+DELETE /api/wishlist                   // Xóa toàn bộ wishlist (Auth)
+```
+
+### Support Messages
+```javascript
+POST   /api/support                    // Gửi tin nhắn hỗ trợ (Guest/Auth)
+GET    /api/support/my-messages        // Lấy tin nhắn của user (Auth)
+GET    /api/support/:id                // Chi tiết tin nhắn (Guest/Auth)
+GET    /api/admin/support              // Tất cả tin nhắn hỗ trợ (Admin)
+PUT    /api/admin/support/:id/respond  // Phản hồi tin nhắn (Admin)
+PUT    /api/admin/support/:id/status   // Cập nhật trạng thái (Admin)
 ```
 
 ## Design System
@@ -505,7 +533,7 @@ GET    /api/payments/:orderId         // Thông tin thanh toán
 - **order_details** - Chi tiết đơn hàng
   - id, order_id, product_id, quantity, unit_price, subtotal
 - **payments** - Thanh toán
-  - id, order_id, payment_method (VNPay/MoMo/COD), payment_status, transaction_id, amount
+  - id, order_id, payment_method (COD/VNPay/Momo/PayPal/BankTransfer/QRCode), payment_status (pending/completed/failed/refunded), transaction_id, amount, paid_at
 - **cart_items** - Giỏ hàng
   - id, user_id, product_id, quantity
 
@@ -522,6 +550,10 @@ GET    /api/payments/:orderId         // Thông tin thanh toán
   - id, product_id, user_id, order_id, rating, comment, images, is_verified_purchase, helpful_count, status, admin_reply
 - **vouchers** - Mã giảm giá
   - id, code, discount_type, discount_value, min_order_value, max_discount, usage_limit, valid_from, valid_to
+- **wishlists** - Danh sách yêu thích
+  - id, user_id, product_id, created_at
+- **support_messages** - Tin nhắn hỗ trợ
+  - id, user_id, guest_name, guest_email, guest_phone, subject, message, status (pending/in_progress/resolved/closed), priority (low/normal/high/urgent), admin_response, responded_at, responded_by
 
 ### Dữ Liệu Mẫu (Sample Data)
 - **14 danh mục** sản phẩm (Đồ gốm sứ, Tranh cổ, Đồ nội thất, ...)
@@ -633,6 +665,13 @@ MOMO_ACCESS_KEY=your-momo-access-key
 MOMO_SECRET_KEY=your-momo-secret-key
 MOMO_ENDPOINT=https://test-payment.momo.vn/v2/gateway/api/create
 MOMO_RETURN_URL=http://localhost:5000/api/payments/momo/callback
+
+# QR Code Payment (VietQR)
+QR_BANK_ID=BIDV
+QR_BANK_NAME=Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV)
+QR_ACCOUNT_NUMBER=your-bank-account-number
+QR_ACCOUNT_NAME=your-bank-account-name
+QR_TEMPLATE=compact2
 
 # Sentry (Error Tracking)
 SENTRY_DSN=your-sentry-dsn-url
@@ -798,18 +837,48 @@ server {
 1. Đăng ký merchant account tại [VNPay](https://vnpay.vn/)
 2. Lấy TMN Code và Hash Secret
 3. Cấu hình Return URL và IPN URL
+4. Thêm vào `.env`:
+   ```env
+   VNPAY_TMN_CODE=your-vnpay-tmn-code
+   VNPAY_HASH_SECRET=your-vnpay-hash-secret
+   VNPAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+   VNPAY_RETURN_URL=http://localhost:5000/api/payments/vnpay/callback
+   ```
 
 #### MoMo
 1. Đăng ký merchant tại [MoMo Business](https://business.momo.vn/)
 2. Lấy Partner Code, Access Key, Secret Key
 3. Cấu hình webhook URL
+4. Thêm vào `.env`:
+   ```env
+   MOMO_PARTNER_CODE=your-momo-partner-code
+   MOMO_ACCESS_KEY=your-momo-access-key
+   MOMO_SECRET_KEY=your-momo-secret-key
+   MOMO_ENDPOINT=https://test-payment.momo.vn/v2/gateway/api/create
+   MOMO_RETURN_URL=http://localhost:5000/api/payments/momo/callback
+   ```
+
+#### QR Code Payment (VietQR)
+1. QR Code payment sử dụng VietQR Quick Link API
+2. Cấu hình thông tin ngân hàng trong `.env`:
+   ```env
+   # QR Code Payment (VietQR)
+   QR_BANK_ID=970415
+   QR_ACCOUNT_NUMBER=your-bank-account-number
+   QR_ACCOUNT_NAME=your-bank-account-name
+   QR_TEMPLATE=compact2
+   ```
+3. QR Code sẽ tự động được tạo khi khách hàng chọn thanh toán QR
+4. Hệ thống hỗ trợ polling để kiểm tra trạng thái thanh toán tự động
 
 ##  Features Showcase
 
 ### Customer Features
 -  Browse & search antique products
 -  Add to cart & wishlist
--  Multiple payment methods
+-  Multiple payment methods (COD, VNPay, MoMo, QR Code, PayPal, Bank Transfer)
+-  QR Code payment with auto-detection
+-  Real-time payment status checking
 -  Order tracking
 -  Product reviews & ratings
 -  Social login (Google, Facebook)
@@ -817,6 +886,8 @@ server {
 -  Dark mode support
 -  Responsive design
 -  Public warranty lookup
+-  Customer support chat widget
+-  Support message tracking
 
 ### Admin Features
 -  Comprehensive dashboard & analytics
@@ -827,7 +898,8 @@ server {
 -  Warehouse & inventory tracking
 -  Invoice generation & email
 -  Warranty management
--  evenue statistics & reports
+-  Support message management & responses
+-  Revenue statistics & reports
 -  Low stock alerts
 
 ## Team & Contribution
