@@ -249,7 +249,7 @@ exports.getRecentActivities = async (req, res, next) => {
 /**
  * @desc    Get user management data
  * @route   GET /api/admin/users
- * @access  Private/Admin
+ * @access  Private/Admin, Staff
  */
 exports.getAllUsers = async (req, res, next) => {
     try {
@@ -293,13 +293,14 @@ exports.getAllUsers = async (req, res, next) => {
 };
 
 /**
- * @desc    Update user (Admin)
+ * @desc    Update user (Admin/Staff - Staff has restrictions)
  * @route   PUT /api/admin/users/:id
- * @access  Private/Admin
+ * @access  Private/Admin, Staff
  */
 exports.updateUser = async (req, res, next) => {
     try {
         const user = await User.findByPk(req.params.id);
+        const currentUser = req.user;
 
         if (!user) {
             return res.status(404).json({
@@ -308,12 +309,31 @@ exports.updateUser = async (req, res, next) => {
             });
         }
 
+        // Staff cannot modify admin users or change roles to/from admin
+        if (currentUser.role === 'staff') {
+            if (user.role === 'admin') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Nhân viên không thể chỉnh sửa tài khoản admin'
+                });
+            }
+            if (req.body.role === 'admin') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Nhân viên không thể thay đổi vai trò thành admin'
+                });
+            }
+        }
+
         const { full_name, phone, address, role } = req.body;
 
         if (full_name) user.full_name = full_name;
         if (phone !== undefined) user.phone = phone;
         if (address !== undefined) user.address = address;
-        if (role) user.role = role;
+        // Only admin can change role
+        if (role && currentUser.role === 'admin') {
+            user.role = role;
+        }
 
         await user.save();
 

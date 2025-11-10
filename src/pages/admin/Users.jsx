@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
+import { useAuth } from '../../context/AuthContext';
 import {
     MagnifyingGlassIcon,
     UserGroupIcon,
@@ -9,10 +10,12 @@ import {
 import { toast } from 'react-hot-toast';
 
 const Users = () => {
+    const { user: currentUser } = useAuth();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const isAdmin = currentUser?.role === 'admin';
 
     const [filters, setFilters] = useState({
         search: '',
@@ -228,13 +231,17 @@ const Users = () => {
                                                 {formatDate(user.created_at)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <button
-                                                    onClick={() => handleEdit(user)}
-                                                    className="text-primary-600 hover:text-primary-900 mr-3"
-                                                >
-                                                    <PencilIcon className="h-5 w-5" />
-                                                </button>
-                                                {user.role !== 'admin' && (
+                                                {/* Staff cannot edit admin users */}
+                                                {(!isAdmin && user.role === 'admin') ? null : (
+                                                    <button
+                                                        onClick={() => handleEdit(user)}
+                                                        className="text-primary-600 hover:text-primary-900 mr-3"
+                                                    >
+                                                        <PencilIcon className="h-5 w-5" />
+                                                    </button>
+                                                )}
+                                                {/* Only admin can delete users */}
+                                                {isAdmin && user.role !== 'admin' && (
                                                     <button
                                                         onClick={() => handleDelete(user.id)}
                                                         className="text-red-600 hover:text-red-900"
@@ -305,17 +312,23 @@ const Users = () => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Vai trò
+                                            Vai trò {!isAdmin && <span className="text-xs text-gray-500">(Chỉ admin mới có thể thay đổi)</span>}
                                         </label>
                                         <select
                                             value={formData.role}
                                             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                                            disabled={!isAdmin || editingUser?.role === 'admin'}
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             <option value="customer">Khách hàng</option>
-                                            <option value="admin">Admin</option>
+                                            {isAdmin && <option value="admin">Admin</option>}
                                             <option value="staff">Nhân viên</option>
                                         </select>
+                                        {!isAdmin && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Nhân viên không thể thay đổi vai trò
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 

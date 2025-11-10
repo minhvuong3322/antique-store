@@ -31,10 +31,10 @@ router.post('/products', authorize('admin', 'staff'), productController.createPr
 router.put('/products/:id', authorize('admin', 'staff'), productController.updateProduct);
 router.delete('/products/:id', authorize('admin', 'staff'), productController.deleteProduct);
 
-// User management routes - admin only
-router.get('/users', authorize('admin'), adminController.getAllUsers);
-router.put('/users/:id', authorize('admin'), updateUserValidation, adminController.updateUser);
-router.delete('/users/:id', authorize('admin'), adminController.deleteUser);
+// User management routes - admin and staff (staff can view, edit but with restrictions)
+router.get('/users', authorize('admin', 'staff'), adminController.getAllUsers);
+router.put('/users/:id', authorize('admin', 'staff'), updateUserValidation, adminController.updateUser);
+router.delete('/users/:id', authorize('admin'), adminController.deleteUser); // Only admin can delete
 
 // Order management routes - admin and staff
 router.get('/orders/new-count', authorize('admin', 'staff'), orderController.getNewOrdersCount);

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const SupportMessage = sequelize.define('SupportMessage', {
+const SupportConversation = sequelize.define('SupportConversation', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -34,10 +34,6 @@ const SupportMessage = sequelize.define('SupportMessage', {
         type: DataTypes.STRING(255),
         allowNull: false
     },
-    message: {
-        type: DataTypes.TEXT,
-        allowNull: false
-    },
     status: {
         type: DataTypes.ENUM('pending', 'in_progress', 'resolved', 'closed'),
         defaultValue: 'pending'
@@ -46,43 +42,8 @@ const SupportMessage = sequelize.define('SupportMessage', {
         type: DataTypes.ENUM('low', 'normal', 'high', 'urgent'),
         defaultValue: 'normal'
     },
-    admin_response: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    responded_at: {
+    last_message_at: {
         type: DataTypes.DATE,
-        allowNull: true
-    },
-    responded_by: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'users',
-            key: 'id'
-        },
-        onDelete: 'SET NULL'
-    },
-    parent_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'support_messages',
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
-    },
-    conversation_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'support_messages',
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
-    },
-    sender_type: {
-        type: DataTypes.ENUM('customer', 'admin', 'staff'),
         allowNull: true
     },
     created_at: {
@@ -96,12 +57,12 @@ const SupportMessage = sequelize.define('SupportMessage', {
         defaultValue: DataTypes.NOW
     }
 }, {
-    tableName: 'support_messages',
+    tableName: 'support_conversations',
     timestamps: true,
     underscored: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
 
-module.exports = SupportMessage;
+module.exports = SupportConversation;
 

@@ -11,7 +11,8 @@ import {
     Bars3Icon,
     XMarkIcon,
     ArrowRightOnRectangleIcon,
-    ChatBubbleLeftRightIcon
+    ChatBubbleLeftRightIcon,
+    ArrowLeftIcon
 } from '@heroicons/react/24/outline';
 
 const AdminLayout = () => {
@@ -50,13 +51,15 @@ const AdminLayout = () => {
         { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon, roles: ['admin'] },
         { name: 'Sản phẩm', href: '/admin/products', icon: ShoppingBagIcon, roles: ['admin', 'staff'] },
         { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCartIcon, badge: newOrdersCount, roles: ['admin', 'staff'] },
-        { name: 'Nhân viên', href: '/admin/users', icon: UserGroupIcon, roles: ['admin'] },
-        { name: 'Tin nhắn hỗ trợ', href: '/admin/support', icon: ChatBubbleLeftRightIcon, roles: ['admin', 'staff'] },
+        { name: 'Nhân viên', href: '/admin/users', icon: UserGroupIcon, roles: ['admin', 'staff'] },
         { name: 'Thống kê', href: '/admin/analytics', icon: ChartBarIcon, roles: ['admin'] },
     ];
 
     // Filter navigation based on user role
-    const navigation = allNavigation.filter(item => item.roles.includes(user?.role || 'customer'));
+    const navigation = allNavigation.filter(item => {
+        const userRole = user?.role;
+        return item.roles.includes(userRole);
+    });
 
     const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -83,46 +86,18 @@ const AdminLayout = () => {
                     </button>
                 </div>
                 <nav className="px-2 py-4 space-y-1">
-                    {navigation.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <Link
-                                key={item.name}
-                                to={item.href}
-                                onClick={() => setSidebarOpen(false)}
-                                className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
-                                    ? 'bg-primary-50 text-primary-600 dark:bg-primary-900 dark:text-primary-200'
-                                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                                    }`}
-                            >
-                                <span className="flex items-center">
-                                    <Icon className="w-5 h-5 mr-3" />
-                                    {item.name}
-                                </span>
-                                {item.badge > 0 && (
-                                    <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                                        {item.badge}
-                                    </span>
-                                )}
-                            </Link>
-                        );
-                    })}
-                </nav>
-            </div>
-
-            {/* Sidebar for desktop */}
-            <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-                <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
-                    <div className="flex items-center flex-shrink-0 h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-                        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Antique Store</h1>
-                    </div>
-                    <nav className="flex-1 px-2 py-4 space-y-1">
-                        {navigation.map((item) => {
+                    {navigation.length === 0 ? (
+                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                            Không có menu nào
+                        </div>
+                    ) : (
+                        navigation.map((item) => {
                             const Icon = item.icon;
                             return (
                                 <Link
                                     key={item.name}
                                     to={item.href}
+                                    onClick={() => setSidebarOpen(false)}
                                     className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
                                         ? 'bg-primary-50 text-primary-600 dark:bg-primary-900 dark:text-primary-200'
                                         : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
@@ -133,13 +108,53 @@ const AdminLayout = () => {
                                         {item.name}
                                     </span>
                                     {item.badge > 0 && (
-                                        <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full animate-pulse">
+                                        <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
                                             {item.badge}
                                         </span>
                                     )}
                                 </Link>
                             );
-                        })}
+                        })
+                    )}
+                </nav>
+            </div>
+
+            {/* Sidebar for desktop */}
+            <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+                <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+                    <div className="flex items-center flex-shrink-0 h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+                        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Antique Store</h1>
+                    </div>
+                    <nav className="flex-1 px-2 py-4 space-y-1">
+                        {navigation.length === 0 ? (
+                            <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                Không có menu nào
+                            </div>
+                        ) : (
+                            navigation.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <Link
+                                        key={item.name}
+                                        to={item.href}
+                                        className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
+                                            ? 'bg-primary-50 text-primary-600 dark:bg-primary-900 dark:text-primary-200'
+                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                            }`}
+                                    >
+                                        <span className="flex items-center">
+                                            <Icon className="w-5 h-5 mr-3" />
+                                            {item.name}
+                                        </span>
+                                        {item.badge > 0 && (
+                                            <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full animate-pulse">
+                                                {item.badge}
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })
+                        )}
                     </nav>
 
                     {/* User info & logout */}
@@ -187,6 +202,14 @@ const AdminLayout = () => {
                             </h2>
                         </div>
                         <div className="ml-4 flex items-center space-x-4">
+                            <Link
+                                to="/"
+                                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                title="Quay lại trang chủ"
+                            >
+                                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                                <span className="hidden sm:inline">Trang chủ</span>
+                            </Link>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                 Xin chào, <span className="font-semibold">{user?.full_name}</span>
                             </span>

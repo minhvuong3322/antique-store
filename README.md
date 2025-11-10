@@ -75,7 +75,7 @@ npm run dev                    # Frontend: http://localhost:5173
 
 # 6. Login với admin account
 # Email: admin@antiquestore.com
-# Password: admin123
+# Password: Admin123
 ```
 
 >  **Tip**: Script setup tự động sẽ xử lý tất cả dependencies và tạo file cấu hình. Xem phần [Cài Đặt & Chạy Dự Án](#cài-đặt--chạy-dự-án) để biết hướng dẫn chi tiết hơn.

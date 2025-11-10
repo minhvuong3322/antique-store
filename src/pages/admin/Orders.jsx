@@ -41,12 +41,22 @@ const Orders = () => {
 
     const fetchOrderDetail = async (orderId) => {
         try {
+            console.log('Fetching order detail for ID:', orderId);
             const response = await orderService.getOrderById(orderId);
-            setSelectedOrder(response.data?.order);
+            console.log('Order detail response:', response);
+            
+            // API interceptor returns response.data directly
+            const order = response?.data?.order || response?.order;
+            if (!order) {
+                throw new Error('Không tìm thấy thông tin đơn hàng trong response');
+            }
+            
+            setSelectedOrder(order);
             setShowDetailModal(true);
         } catch (error) {
             console.error('Error fetching order detail:', error);
-            toast.error('Không thể tải chi tiết đơn hàng');
+            const errorMessage = error?.message || 'Không thể tải chi tiết đơn hàng';
+            toast.error(errorMessage);
         }
     };
 

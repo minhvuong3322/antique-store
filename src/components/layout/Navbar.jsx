@@ -230,18 +230,6 @@ const Navbar = () => {
                                                 </span>
                                             </Link>
 
-                                            {/* My Support Messages */}
-                                            <Link
-                                                to="/my-support"
-                                                onClick={() => setIsUserMenuOpen(false)}
-                                                className="flex items-center space-x-3 px-4 py-3 hover:bg-vintage-gold/10 transition-colors"
-                                            >
-                                                <MessageSquare className="w-4 h-4 text-vintage-bronze dark:text-vintage-gold" />
-                                                <span className="text-sm text-vintage-darkwood dark:text-vintage-cream">
-                                                    Tin nhắn hỗ trợ
-                                                </span>
-                                            </Link>
-
                                             {/* Admin Panel - Show for admin and staff users */}
                                             {(user?.role === 'admin' || user?.role === 'staff') && (
                                                 <Link

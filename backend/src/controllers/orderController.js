@@ -233,10 +233,22 @@ const getOrderById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const user_id = req.user.id;
-        const is_admin = req.user.role === 'admin';
+        const user_role = req.user.role;
+        const is_admin_or_staff = user_role === 'admin' || user_role === 'staff';
 
-        const where = { id };
-        if (!is_admin) where.user_id = user_id;
+        // Parse ID to integer to ensure correct type
+        const orderId = parseInt(id);
+        if (isNaN(orderId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID đơn hàng không hợp lệ'
+            });
+        }
+
+        const where = { id: orderId };
+        if (!is_admin_or_staff) {
+            where.user_id = user_id;
+        }
 
         const order = await Order.findOne({
             where,
