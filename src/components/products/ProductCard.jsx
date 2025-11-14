@@ -103,7 +103,7 @@ const ProductCard = ({ product }) => {
     }
 
     return (
-        <div className="card-vintage group overflow-hidden">
+        <div className="card-vintage group overflow-hidden flex flex-col h-full">
             {/* Image Container */}
             <div className="relative aspect-square overflow-hidden bg-vintage-ivory dark:bg-dark-bg">
                 {/* Loading skeleton */}
@@ -187,31 +187,37 @@ const ProductCard = ({ product }) => {
             </div>
 
             {/* Product Info */}
-            <div className="p-5">
-                {/* Category & Era */}
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-vintage-gold font-serif uppercase tracking-wider">
-                        {product.category?.name || product.category || 'Đồ cổ'}
-                    </span>
-                    <span className="text-xs text-vintage-wood dark:text-vintage-lightwood">
-                        {product.year_manufactured || product.era || 'Cổ điển'}
-                    </span>
+            <div className="p-5 flex flex-col flex-grow">
+                
+                {/* Phần nội dung chính (sẽ co giãn) */}
+                <div className="flex-grow">
+                    {/* Category & Era */}
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-vintage-gold font-serif uppercase tracking-wider">
+                            {product.category?.name || product.category || 'Đồ cổ'}
+                        </span>
+                        <span className="text-xs text-vintage-wood dark:text-vintage-lightwood">
+                            {product.year_manufactured || product.era || 'Cổ điển'}
+                        </span>
+                    </div>
+
+                    {/* Product Name */}
+                    <Link to={`/products/${product.id}`}>
+                        <h3 className="font-serif text-lg font-semibold text-vintage-darkwood dark:text-vintage-cream hover:text-vintage-gold dark:hover:text-vintage-gold transition-colors mb-2 line-clamp-2 min-h-[3.5rem]">
+                            {productName}
+                        </h3>
+                    </Link>
+
+                    {/* Origin */}
+                    <p className="text-sm text-vintage-wood dark:text-vintage-lightwood mb-3">
+                        📍 {productOrigin}
+                    </p>
                 </div>
-
-                {/* Product Name */}
-                <Link to={`/products/${product.id}`}>
-                    <h3 className="font-serif text-lg font-semibold text-vintage-darkwood dark:text-vintage-cream hover:text-vintage-gold dark:hover:text-vintage-gold transition-colors mb-2 line-clamp-2">
-                        {productName}
-                    </h3>
-                </Link>
-
-                {/* Origin */}
-                <p className="text-sm text-vintage-wood dark:text-vintage-lightwood mb-3">
-                    📍 {productOrigin}
-                </p>
-
-                {/* Divider */}
-                <div className="divider-vintage my-3"></div>
+                
+                {/* Phần đáy (sẽ bị đẩy xuống) */}
+                <div>
+                    {/* Divider */}
+                    <div className="divider-vintage my-3"></div>
 
                 {/* Price & Action */}
                 <div className="flex items-center justify-between">
@@ -243,18 +249,19 @@ const ProductCard = ({ product }) => {
                     </Link>
                 </div>
 
-                {/* Stock Status */}
-                <div className="mt-3 pt-3 border-t border-vintage-gold/10">
-                    <div className="flex items-center justify-between text-xs">
-                        <span className="text-vintage-wood dark:text-vintage-lightwood">
-                            Tình trạng:
-                        </span>
-                        <span className={`font-semibold ${(product.stock_quantity || product.inStock) > 0
-                            ? 'text-vintage-sage'
-                            : 'text-vintage-rust'
-                            }`}>
-                            {product.condition || (product.stock_quantity > 0 ? 'Còn hàng' : 'Hết hàng')}
-                        </span>
+                    {/* Stock Status */}
+                    <div className="mt-3 pt-3 border-t border-vintage-gold/10">
+                        <div className="flex items-center justify-between text-xs">
+                            <span className="text-vintage-wood dark:text-vintage-lightwood">
+                                Tình trạng:
+                            </span>
+                            <span className={`font-semibold ${(product.stock_quantity || product.inStock) > 0
+                                ? 'text-vintage-sage'
+                                : 'text-vintage-rust'
+                                }`}>
+                                {product.condition || (product.stock_quantity > 0 ? 'Còn hàng' : 'Hết hàng')}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

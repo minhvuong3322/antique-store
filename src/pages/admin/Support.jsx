@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { adminService } from '../../services/adminService';
 import { toast } from 'react-hot-toast';
 import { Send, Clock, CheckCircle, XCircle, MessageCircle, User } from 'lucide-react';
@@ -16,47 +16,7 @@ const Support = () => {
     const [isUserScrolling, setIsUserScrolling] = useState(false);
     const [statusFilter, setStatusFilter] = useState('all');
 
-    useEffect(() => {
-        fetchConversations();
-        // Auto-refresh conversations every 10 seconds
-        const interval = setInterval(fetchConversations, 10000);
-        return () => clearInterval(interval);
-    }, [statusFilter]);
-
-    useEffect(() => {
-        if (selectedConversation) {
-            fetchConversationMessages(selectedConversation.id);
-            // Auto-refresh messages every 5 seconds
-            const interval = setInterval(() => {
-                fetchConversationMessages(selectedConversation.id);
-            }, 5000);
-            return () => clearInterval(interval);
-        }
-    }, [selectedConversation]);
-
-    useEffect(() => {
-        // Only auto-scroll if user is near the bottom
-        if (!isUserScrolling) {
-            scrollToBottom();
-        }
-    }, [conversationMessages]);
-
-    const handleScroll = () => {
-        if (!messagesContainerRef.current) return;
-        
-        const container = messagesContainerRef.current;
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-        
-        setIsUserScrolling(!isNearBottom);
-    };
-
-    const scrollToBottom = () => {
-        if (messagesContainerRef.current && !isUserScrolling) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        }
-    };
-
-    const fetchConversations = async () => {
+    const fetchConversations = useCallback(async () => {
         try {
             setLoading(true);
             const params = {};
@@ -85,19 +45,22 @@ const Support = () => {
             
             setConversations(convs);
             
-            // Auto-select first conversation if none selected
-            if (!selectedConversation && convs.length > 0) {
-                setSelectedConversation(convs[0]);
-            }
+            // Dùng functional update để tránh stale state
+            setSelectedConversation(currentConversation => 
+                (currentConversation ? currentConversation : (convs.length > 0 ? convs[0] : null))
+            );
         } catch (error) {
             console.error('Error fetching conversations:', error);
-            toast.error('Không thể tải danh sách hội thoại');
+            if (conversations.length === 0) { // Chỉ toast lỗi nếu tải lần đầu thất bại
+                toast.error('Không thể tải danh sách hội thoại');
+            }
         } finally {
             setLoading(false);
         }
-    };
+    }, [statusFilter]);
 
-    const fetchConversationMessages = async (conversationId) => {
+    const fetchConversationMessages = useCallback(async (conversationId) => {
+        if (!conversationId) return; // Thêm kiểm tra
         try {
             setLoadingMessages(true);
             const response = await adminService.getAllSupportMessages({ conversation_id: conversationId });
@@ -112,7 +75,49 @@ const Support = () => {
         } finally {
             setLoadingMessages(false);
         }
+    }, []); // Mảng rỗng vì nó không phụ thuộc state nào (id lấy từ tham số)
+
+    useEffect(() => {
+        fetchConversations();
+        // Auto-refresh conversations every 10 seconds
+        const interval = setInterval(fetchConversations, 10000);
+        return () => clearInterval(interval);
+    }, [fetchConversations]);
+
+    useEffect(() => {
+        if (selectedConversation) {
+            const conversationId = selectedConversation.id;
+            fetchConversationMessages(conversationId);
+            // Auto-refresh messages every 5 seconds
+            const interval = setInterval(() => {
+                fetchConversationMessages(conversationId);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [selectedConversation, fetchConversationMessages]);
+
+    useEffect(() => {
+        // Only auto-scroll if user is near the bottom
+        if (!isUserScrolling) {
+            scrollToBottom();
+        }
+    }, [conversationMessages]);
+
+    const handleScroll = () => {
+        if (!messagesContainerRef.current) return;
+        
+        const container = messagesContainerRef.current;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        
+        setIsUserScrolling(!isNearBottom);
     };
+
+    const scrollToBottom = () => {
+        if (messagesContainerRef.current && !isUserScrolling) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    };
+
 
     const handleSendReply = async (e) => {
         e.preventDefault();

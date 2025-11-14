@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, Send, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import supportService from '../services/supportService';
@@ -33,44 +33,13 @@ const AdminChatInterface = () => {
     const [isUserScrolling, setIsUserScrolling] = useState(false);
     const [statusFilter, setStatusFilter] = useState('all');
 
-    useEffect(() => {
-        fetchConversations();
-        const interval = setInterval(fetchConversations, 10000);
-        return () => clearInterval(interval);
-    }, [statusFilter]);
-
-    useEffect(() => {
-        if (selectedConversation) {
-            fetchConversationMessages(selectedConversation.id);
-            const interval = setInterval(() => {
-                fetchConversationMessages(selectedConversation.id);
-            }, 5000);
-            return () => clearInterval(interval);
-        }
-    }, [selectedConversation]);
-
-    useEffect(() => {
-        if (!isUserScrolling) {
-            scrollToBottom();
-        }
-    }, [conversationMessages]);
-
-    const handleScroll = () => {
-        if (!messagesContainerRef.current) return;
-        const container = messagesContainerRef.current;
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-        setIsUserScrolling(!isNearBottom);
-    };
-
-    const scrollToBottom = () => {
-        if (messagesContainerRef.current && !isUserScrolling) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        }
-    };
-
-    const fetchConversations = async () => {
+    const fetchConversations = useCallback(async () => {
         try {
-            setLoading(true);
+            // SỬA UX: Chỉ hiện loading spinner nếu chưa có data
+            if (conversations.length === 0) {
+                setLoading(true);
+            }
+            
             const params = {};
             if (statusFilter !== 'all') params.status = statusFilter;
 
@@ -95,20 +64,28 @@ const AdminChatInterface = () => {
             
             setConversations(convs);
             
-            if (!selectedConversation && convs.length > 0) {
-                setSelectedConversation(convs[0]);
-            }
+            // Dùng functional update để tránh stale state
+            setSelectedConversation(currentConversation => 
+                (currentConversation ? currentConversation : (convs.length > 0 ? convs[0] : null))
+            );
         } catch (error) {
             console.error('Error fetching conversations:', error);
-            toast.error('Không thể tải danh sách hội thoại');
+            if (conversations.length === 0) {
+                toast.error('Không thể tải danh sách hội thoại');
+            }
         } finally {
             setLoading(false);
         }
-    };
+    }, [statusFilter, conversations.length]);
 
-    const fetchConversationMessages = async (conversationId) => {
+    const fetchConversationMessages = useCallback(async (conversationId) => {
+        if (!conversationId) return;
         try {
-            setLoadingMessages(true);
+            // SỬA UX: Chỉ hiện loading spinner nếu chưa có data
+            if (conversationMessages.length === 0) {
+                setLoadingMessages(true);
+            }
+            
             const response = await adminService.getAllSupportMessages({ conversation_id: conversationId });
             const messages = response.data?.messages || [];
             
@@ -121,7 +98,47 @@ const AdminChatInterface = () => {
         } finally {
             setLoadingMessages(false);
         }
+    }, [conversationMessages.length]);
+
+    useEffect(() => {
+        fetchConversations();
+        const interval = setInterval(fetchConversations, 10000);
+        return () => clearInterval(interval);
+    }, [fetchConversations]);
+
+    useEffect(() => {
+        if (selectedConversation) {
+            const conversationId = selectedConversation.id;
+            // Clear tin nhắn cũ đi để spinner loading hiện ra
+            setConversationMessages([]);
+            fetchConversationMessages(conversationId);
+            
+            const interval = setInterval(() => {
+                fetchConversationMessages(conversationId);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [selectedConversation, fetchConversationMessages]);
+
+    useEffect(() => {
+        if (!isUserScrolling) {
+            scrollToBottom();
+        }
+    }, [conversationMessages, isUserScrolling]);
+
+    const handleScroll = () => {
+        if (!messagesContainerRef.current) return;
+        const container = messagesContainerRef.current;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        setIsUserScrolling(!isNearBottom);
     };
+
+    const scrollToBottom = () => {
+        if (messagesContainerRef.current && !isUserScrolling) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    };
+
 
     const handleSendReply = async (e) => {
         e.preventDefault();
@@ -183,7 +200,8 @@ const AdminChatInterface = () => {
     }
 
     return (
-        <div className="min-h-[calc(100vh-12rem)] bg-vintage-cream dark:bg-dark-bg py-3 sm:py-4 overflow-x-hidden">
+        // SỬA LỖI ZOOM: Xóa class 'min-h-[calc(100vh-12rem)]'
+        <div className="bg-vintage-cream dark:bg-dark-bg py-3 sm:py-4 overflow-x-hidden">
             <div className="w-full mx-auto px-3 sm:px-4 lg:px-6">
                 <div className="mb-3 sm:mb-4">
                     <h1 className="font-elegant text-2xl sm:text-3xl md:text-4xl text-vintage-darkwood dark:text-vintage-gold mb-1 sm:mb-2 break-words">
@@ -208,7 +226,8 @@ const AdminChatInterface = () => {
                     </select>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4" style={{ height: 'calc(100vh - 16rem)', minHeight: '400px', maxHeight: 'calc(100vh - 16rem)' }}>
+                {/* SỬA LỖI ZOOM: Xóa style fixed height và dùng class Tailwind */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4 h-[calc(100vh-16rem)] min-h-[400px]">
                     {/* Sidebar - Customer List */}
                     <div className="lg:col-span-3 col-span-1 card-vintage overflow-hidden flex flex-col min-w-0 h-full max-w-full">
                         <div className="p-2 sm:p-3 border-b border-vintage-gold/20 flex-shrink-0">
@@ -427,44 +446,8 @@ const CustomerChatInterface = () => {
         conversation_id: null
     });
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchConversations();
-            const interval = setInterval(fetchConversations, 10000);
-            return () => clearInterval(interval);
-        }
-    }, [isAuthenticated]);
-
-    useEffect(() => {
-        if (selectedConversation) {
-            fetchConversationMessages(selectedConversation.id);
-            const interval = setInterval(() => {
-                fetchConversationMessages(selectedConversation.id);
-            }, 5000);
-            return () => clearInterval(interval);
-        }
-    }, [selectedConversation]);
-
-    useEffect(() => {
-        if (!isUserScrolling) {
-            scrollToBottom();
-        }
-    }, [conversationMessages]);
-
-    const scrollToBottom = () => {
-        if (messagesContainerRef.current && !isUserScrolling) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-        }
-    };
-
-    const handleScroll = () => {
-        if (!messagesContainerRef.current) return;
-        const container = messagesContainerRef.current;
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-        setIsUserScrolling(!isNearBottom);
-    };
-
-    const fetchConversations = async () => {
+    // SỬA LỖI: Bọc hàm fetchConversations bằng useCallback
+    const fetchConversations = useCallback(async () => {
         if (!isAuthenticated) return;
         
         try {
@@ -490,17 +473,23 @@ const CustomerChatInterface = () => {
             
             setConversations(convs);
             
-            if (!selectedConversation && convs.length > 0) {
-                setSelectedConversation(convs[0]);
-            }
+            // Dùng functional update
+            setSelectedConversation(currentConversation => 
+                (currentConversation ? currentConversation : (convs.length > 0 ? convs[0] : null))
+            );
         } catch (error) {
             console.error('Error fetching conversations:', error);
         }
-    };
+    }, [isAuthenticated]); // Phụ thuộc vào isAuthenticated
 
-    const fetchConversationMessages = async (conversationId) => {
+    // SỬA LỖI: Bọc hàm fetchConversationMessages bằng useCallback
+    const fetchConversationMessages = useCallback(async (conversationId) => {
         try {
-            setLoadingMessages(true);
+            // SỬA UX: Chỉ hiện loading spinner nếu chưa có data
+            if (conversationMessages.length === 0) {
+                setLoadingMessages(true);
+            }
+            
             const response = await supportService.getMyMessages({ conversation_id: conversationId });
             
             let messages = [];
@@ -518,6 +507,48 @@ const CustomerChatInterface = () => {
         } finally {
             setLoadingMessages(false);
         }
+    }, [conversationMessages.length]); // Phụ thuộc vào conversationMessages.length
+
+    // SỬA LỖI: Thêm [fetchConversations] vào dependency array
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchConversations();
+            const interval = setInterval(fetchConversations, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [isAuthenticated, fetchConversations]);
+
+    // SỬA LỖI: Thêm [fetchConversationMessages] vào dependency array
+    useEffect(() => {
+        if (selectedConversation) {
+            const conversationId = selectedConversation.id;
+            // Clear tin nhắn cũ đi để spinner loading hiện ra
+            setConversationMessages([]);
+            fetchConversationMessages(conversationId);
+            const interval = setInterval(() => {
+                fetchConversationMessages(conversationId);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [selectedConversation, fetchConversationMessages]);
+
+    useEffect(() => {
+        if (!isUserScrolling) {
+            scrollToBottom();
+        }
+    }, [conversationMessages, isUserScrolling]); // Thêm isUserScrolling
+
+    const scrollToBottom = () => {
+        if (messagesContainerRef.current && !isUserScrolling) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    };
+
+    const handleScroll = () => {
+        if (!messagesContainerRef.current) return;
+        const container = messagesContainerRef.current;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        setIsUserScrolling(!isNearBottom);
     };
 
     const handleChange = (e) => {
@@ -535,7 +566,9 @@ const CustomerChatInterface = () => {
             return;
         }
 
-        if (!formData.conversation_id && !formData.subject) {
+        const currentConversationId = selectedConversation?.id || formData.conversation_id;
+
+        if (!currentConversationId && !formData.subject) {
             toast.error('Vui lòng nhập chủ đề');
             return;
         }
@@ -544,33 +577,41 @@ const CustomerChatInterface = () => {
         setIsUserScrolling(false);
 
         try {
-            await supportService.createMessage({
+            const payload = {
                 ...formData,
-                subject: formData.conversation_id ? (selectedConversation?.subject || '') : formData.subject
-            });
+                conversation_id: currentConversationId,
+                subject: currentConversationId ? (selectedConversation?.subject || '') : formData.subject
+            };
+            
+            await supportService.createMessage(payload);
             
             toast.success('Tin nhắn của bạn đã được gửi!');
             
-            if (formData.conversation_id) {
-                setFormData({
-                    ...formData,
-                    message: ''
-                });
-                await fetchConversationMessages(formData.conversation_id);
+            // Clear message input
+            setFormData(prev => ({
+                ...prev,
+                message: '' 
+            }));
+
+            if (isAuthenticated) {
+                // Nếu đang trong 1 hội thoại, fetch lại tin nhắn
+                if (currentConversationId) {
+                    await fetchConversationMessages(currentConversationId);
+                }
+                // Fetch lại danh sách hội thoại để update
+                await fetchConversations();
             } else {
-            setFormData({
-                subject: '',
-                message: '',
-                guest_name: user?.full_name || '',
-                guest_email: user?.email || '',
-                    guest_phone: user?.phone || '',
+                // Nếu là guest, reset toàn bộ form
+                setFormData({
+                    subject: '',
+                    message: '',
+                    guest_name: '',
+                    guest_email: '',
+                    guest_phone: '',
                     conversation_id: null
-            });
+                });
             }
             
-            if (isAuthenticated) {
-                await fetchConversations();
-            }
         } catch (error) {
             console.error('Error sending message:', error);
             toast.error(error.response?.data?.message || 'Không thể gửi tin nhắn');
@@ -588,9 +629,35 @@ const CustomerChatInterface = () => {
         };
         return badges[status] || badges.pending;
     };
+    
+    useEffect(() => {
+        if (selectedConversation) {
+            setFormData(prev => ({
+                ...prev,
+                conversation_id: selectedConversation.id,
+                subject: selectedConversation.subject,
+                message: ''
+            }));
+        }
+    }, [selectedConversation]);
+    
+    // Nút tạo hội thoại mới
+    const handleNewConversation = () => {
+        setSelectedConversation(null);
+        setConversationMessages([]);
+        setFormData({
+            subject: '',
+            message: '',
+            guest_name: user?.full_name || '',
+            guest_email: user?.email || '',
+            guest_phone: user?.phone || '',
+            conversation_id: null
+        });
+    };
 
     return (
-        <div className="min-h-[calc(100vh-12rem)] bg-vintage-cream dark:bg-dark-bg py-3 sm:py-4 overflow-x-hidden">
+        // SỬA LỖI ZOOM: Xóa class 'min-h-[calc(100vh-12rem)]'
+        <div className="bg-vintage-cream dark:bg-dark-bg py-3 sm:py-4 overflow-x-hidden">
             <div className="w-full mx-auto px-3 sm:px-4 lg:px-6">
                 <div className="mb-3 sm:mb-4">
                     <h1 className="font-elegant text-2xl sm:text-3xl md:text-4xl text-vintage-darkwood dark:text-vintage-gold mb-1 sm:mb-2 break-words">
@@ -601,14 +668,30 @@ const CustomerChatInterface = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4" style={{ height: 'calc(100vh - 16rem)', minHeight: '400px', maxHeight: 'calc(100vh - 16rem)' }}>
+                {/* SỬA LỖI ZOOM: 
+                  - Gỡ bỏ style fixed height
+                  - Thêm class `min-h-[400px]` (để giữ chiều cao tối thiểu)
+                  - Thêm class `h-[calc(100vh-16rem)]` CHỈ KHI `isAuthenticated` (để giữ layout chat)
+                */}
+                <div 
+                    className={`grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 lg:gap-4 min-h-[400px] ${
+                        isAuthenticated ? 'h-[calc(100vh-16rem)]' : ''
+                    }`}
+                >
                     {/* Sidebar - Conversation History - Only show if authenticated */}
                     {isAuthenticated && (
                         <div className="lg:col-span-3 col-span-1 card-vintage overflow-hidden flex flex-col min-w-0 h-full max-w-full">
-                            <div className="p-2 sm:p-3 border-b border-vintage-gold/20 flex-shrink-0">
+                            <div className="p-2 sm:p-3 border-b border-vintage-gold/20 flex-shrink-0 flex justify-between items-center">
                                 <h2 className="font-serif font-semibold text-vintage-darkwood dark:text-vintage-cream">
                                     Lịch sử chat ({conversations.length})
                                 </h2>
+                                <button
+                                    onClick={handleNewConversation}
+                                    title="Tạo hội thoại mới"
+                                    className="text-sm px-2 py-1 border border-vintage-gold text-vintage-gold rounded hover:bg-vintage-gold/10"
+                                >
+                                    Tạo mới
+                                </button>
                             </div>
                             
                             <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
@@ -628,14 +711,7 @@ const CustomerChatInterface = () => {
                                         return (
                                             <div
                                                 key={conv.id}
-                                                onClick={() => {
-                                                    setSelectedConversation(conv);
-                                                    setFormData(prev => ({
-                                                        ...prev,
-                                                        conversation_id: conv.id,
-                                                        subject: conv.subject
-                                                    }));
-                                                }}
+                                                onClick={() => setSelectedConversation(conv)}
                                                 className={`p-4 border-b border-vintage-gold/20 cursor-pointer transition-colors ${
                                                     isSelected 
                                                         ? 'bg-vintage-gold/20 border-l-4 border-l-vintage-gold' 
@@ -648,14 +724,11 @@ const CustomerChatInterface = () => {
                                                             {conv.subject}
                                                         </p>
                                                         <p className="text-xs text-vintage-wood dark:text-vintage-lightwood truncate break-words">
-                                                            {conv.status}
+                                                            {statusBadge.text}
                                                         </p>
                                                     </div>
                                                     <StatusIcon className="w-4 h-4 flex-shrink-0" />
                                                 </div>
-                                                <p className="text-xs font-medium text-vintage-darkwood dark:text-vintage-cream mb-1 line-clamp-1">
-                                                    {conv.subject}
-                                                </p>
                                                 <p className="text-xs text-vintage-wood dark:text-vintage-lightwood line-clamp-2">
                                                     {conv.message}
                                                 </p>
@@ -675,9 +748,18 @@ const CustomerChatInterface = () => {
                         </div>
                     )}
 
-                    {/* Main Chat Area */}
-                    <div className={`${isAuthenticated ? "lg:col-span-9" : "lg:col-span-12"} col-span-1 card-vintage flex flex-col min-w-0 h-full max-w-full overflow-hidden`}>
-                        {selectedConversation ? (
+                    {/* Main Chat Area / Form */}
+                    {/* SỬA LỖI ZOOM: 
+                      - Thêm `flex flex-col` (luôn luôn)
+                      - Thêm class `h-full overflow-hidden` CHỈ KHI `isAuthenticated` (để giữ layout chat)
+                    */}
+                    <div className={`${
+                        isAuthenticated ? "lg:col-span-9" : "lg:col-span-12"
+                    } col-span-1 card-vintage flex flex-col min-w-0 max-w-full ${
+                        isAuthenticated ? 'h-full overflow-hidden' : ''
+                    }`}>
+                        {isAuthenticated && selectedConversation ? (
+                            // Giao diện CHAT (Đã đăng nhập VÀ đã chọn hội thoại)
                             <>
                                 {/* Chat Header */}
                                 <div className="p-2 sm:p-3 border-b border-vintage-gold/20 min-w-0 flex-shrink-0">
@@ -686,9 +768,6 @@ const CustomerChatInterface = () => {
                                             <h3 className="font-serif font-semibold text-vintage-darkwood dark:text-vintage-cream truncate break-words">
                                                 {selectedConversation.subject}
                                             </h3>
-                                            <p className="text-sm text-vintage-wood dark:text-vintage-lightwood truncate break-words">
-                                                {getStatusBadge(selectedConversation.status).text}
-                                            </p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {(() => {
@@ -701,9 +780,6 @@ const CustomerChatInterface = () => {
                                             })()}
                                         </div>
                                     </div>
-                                    <p className="text-sm text-vintage-wood dark:text-vintage-lightwood mt-2 break-words">
-                                        Chủ đề: {selectedConversation.subject}
-                                    </p>
                                 </div>
 
                                 {/* Messages */}
@@ -794,6 +870,7 @@ const CustomerChatInterface = () => {
                                 </div>
                             </>
                         ) : (
+                            // Giao diện FORM (cho cả guest VÀ user đã đăng nhập nhưng chưa chọn hội thoại)
                             <div className="flex-1 flex items-center justify-center">
                                 <div className="w-full max-w-2xl p-4 sm:p-6">
                                     {/* New Conversation Form */}
@@ -872,6 +949,7 @@ const CustomerChatInterface = () => {
                                                 className="input-vintage"
                                                 placeholder="Tôi cần hỗ trợ về..."
                                                 required={!formData.conversation_id}
+                                                disabled={!!formData.conversation_id} // Vô hiệu hóa nếu đã trong hội thoại
                                             />
                                         </div>
 
