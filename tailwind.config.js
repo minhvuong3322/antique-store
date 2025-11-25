@@ -43,7 +43,7 @@ export default {
             fontFamily: {
                 serif: ['Playfair Display', 'Georgia', 'serif'],
                 sans: ['Cormorant Garamond', 'ui-sans-serif', 'system-ui'],
-                elegant: ['Cinzel', 'serif'],
+                elegant: ['Lora', 'serif'],
             },
             boxShadow: {
                 'vintage': '0 4px 6px -1px rgba(212, 165, 116, 0.1), 0 2px 4px -1px rgba(212, 165, 116, 0.06)',
