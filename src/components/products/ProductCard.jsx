@@ -235,9 +235,15 @@ const ProductCard = ({ product }) => {
                                 </p>
                             </div>
                         ) : (
-                            <p className="font-serif text-xl font-bold text-vintage-bronze">
-                                {formatCurrency(product.price)}
-                            </p>
+                            <div className="flex flex-col">
+                                <p className="font-serif text-xl font-bold text-vintage-bronze">
+                                    {formatCurrency(product.price)}
+                                </p>
+                                {/* Dòng giá trị ẩn để tạo khoảng trống cho dòng gạch ngang */}
+                                <p className="text-sm text-gray-500 line-through opacity-0">
+                                    {formatCurrency(0)}
+                                </p>
+                            </div>
                         )}
                     </div>
 
