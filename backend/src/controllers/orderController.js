@@ -119,13 +119,18 @@ const createOrder = async (req, res, next) => {
             });
         }
 
+        // Determine payment status based on method
+        const instantPaymentMethods = ['COD', 'BankTransfer', 'QRCode', 'VNPay'];
+        const paymentStatus = instantPaymentMethods.includes(payment_method) ? 'completed' : 'pending';
+
         // Create payment record
         await Payment.create(
             {
                 order_id: order.id,
                 amount: total_amount,
                 payment_method,
-                payment_status: payment_method === 'COD' ? 'pending' : 'pending'
+                payment_status: paymentStatus,
+                paid_at: paymentStatus === 'completed' ? new Date() : null
             },
             { transaction }
         );

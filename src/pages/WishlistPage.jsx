@@ -81,7 +81,7 @@ const WishlistPage = () => {
                         return (
                             <div
                                 key={product.id}
-                                className="card-vintage group relative"
+                                className="card-vintage group relative p-4"
                             >
                                 {/* Remove from Wishlist Button */}
                                 <button
