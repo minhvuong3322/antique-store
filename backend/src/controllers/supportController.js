@@ -10,16 +10,6 @@ const createSupportMessage = async (req, res, next) => {
     try {
         const { subject, message, guest_name, guest_email, guest_phone, conversation_id, parent_id } = req.body;
         const user_id = req.user?.id || null;
-        const user_role = req.user?.role;
-
-        // Prevent admin/staff from creating support messages (they use admin routes)
-        if (user_role === 'admin' || user_role === 'staff') {
-            return res.status(403).json({
-                success: false,
-                message: 'Admin và nhân viên không thể tạo tin nhắn hỗ trợ. Vui lòng sử dụng trang quản trị.'
-            });
-        }
-
         // Validation
         if (!message) {
             return res.status(400).json({
@@ -97,16 +87,6 @@ const createSupportMessage = async (req, res, next) => {
 const getMyMessages = async (req, res, next) => {
     try {
         const user_id = req.user.id;
-        const user_role = req.user.role;
-
-        // Prevent admin/staff from accessing customer support messages
-        if (user_role === 'admin' || user_role === 'staff') {
-            return res.status(403).json({
-                success: false,
-                message: 'Admin và nhân viên không thể truy cập tin nhắn hỗ trợ của khách hàng. Vui lòng sử dụng trang quản trị.'
-            });
-        }
-
         const { page = 1, limit = 20, conversation_id } = req.query;
 
         // If conversation_id provided, get all messages in that conversation
