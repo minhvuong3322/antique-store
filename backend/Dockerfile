@@ -1,49 +1,19 @@
-# =====================================================
-# Multi-stage build for Antique Store Backend
-# =====================================================
-
-# Stage 1: Build
-FROM node:16-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Cài đặt dependencies trước để tận dụng Docker Cache
 COPY package*.json ./
+RUN npm install
 
-# Install dependencies
-RUN npm ci --only=production
+# Copy toàn bộ mã nguồn backend
+COPY . .
 
-# Stage 2: Production
-FROM node:16-alpine
+# Tạo thư mục uploads và logs nếu chưa có
+RUN mkdir -p uploads logs
 
-WORKDIR /app
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Copy dependencies from builder
-COPY --from=builder /app/node_modules ./node_modules
-
-# Copy application code
-COPY --chown=nodejs:nodejs . .
-
-# Create necessary directories
-RUN mkdir -p uploads logs && \
-    chown -R nodejs:nodejs uploads logs
-
-# Switch to non-root user
-USER nodejs
-
-# Expose port
+# Mở port 5000 (khớp với PORT trong env.example)
 EXPOSE 5000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:5000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Start application
+# Chạy server dựa trên script trong package.json
 CMD ["npm", "start"]
-
-
-

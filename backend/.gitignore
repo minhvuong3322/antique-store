@@ -55,3 +55,4 @@ certs/*.csr
 temp/
 tmp/
 
+serviceAccountKey.json

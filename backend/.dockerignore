@@ -115,3 +115,5 @@ nodemon.json
 # Uploads (should be managed separately, e.g., S3, external volume)
 uploads/*
 !uploads/.gitkeep
+
+ 

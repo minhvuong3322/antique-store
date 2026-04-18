@@ -4,13 +4,13 @@ import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth
 
 // Dán firebaseConfig 
 const firebaseConfig = {
-  apiKey: "AIzaSyCtC6k6bJVJa80BHPtDiAY1OkVw90_H9Is",
-  authDomain: "antique-store-c37b4.firebaseapp.com",
-  projectId: "antique-store-c37b4",
-  storageBucket: "antique-store-c37b4.firebasestorage.app",
-  messagingSenderId: "216242573161",
-  appId: "1:216242573161:web:10d439c715d9b83a57b7f8",
-  measurementId: "G-4FC8LNG8C7"
+  apiKey: "AIzaSyAZo5DC9OOTR1u8asIQQDx_l-pCUgu1jtQ",
+  authDomain: "dvt2-2a5bb.firebaseapp.com",
+  projectId: "dvt2-2a5bb",
+  storageBucket: "dvt2-2a5bb.firebasestorage.app",
+  messagingSenderId: "633190741023",
+  appId: "1:633190741023:web:a2d62bc5579e7369fa512a",
+  measurementId: "G-6M9YRYLREJ"
 };
 
 // Khởi tạo Firebase

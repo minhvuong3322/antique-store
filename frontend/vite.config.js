@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
         plugins: [react()],
         server: {
             // Disable cache in development
+            host: true,
             force: true,
             port: 5173,
             // HTTPS configuration (nếu enable)
